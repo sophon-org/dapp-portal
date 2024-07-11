@@ -28,24 +28,12 @@ export default defineNuxtConfig({
         },
         {
           property: "og:image:width",
-          content: "1200",
+          content: "2400",
         },
         {
           property: "og:image:height",
-          content: "630",
+          content: "1260",
         },
-      ],
-      script: [
-        {
-          src: "/config.js",
-        },
-        process.env.RUDDER_KEY
-          ? {
-              hid: "Rudder-JS",
-              src: "https://cdn.rudderlabs.com/v1.1/rudder-analytics.min.js",
-              defer: true,
-            }
-          : undefined,
       ],
     },
   },

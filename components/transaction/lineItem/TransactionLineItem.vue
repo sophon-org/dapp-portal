@@ -20,7 +20,7 @@
       </CommonButtonLineBodyInfo>
       <div class="flex flex-wrap items-center gap-x-2 sm:hidden">
         <slot name="top-right" />
-        <div v-if="$slots['bottom-right']" class="text-gray-secondary opacity-70 dark:text-white">
+        <div v-if="$slots['bottom-right']" class="text-gray opacity-70">
           <slot name="bottom-right" />
         </div>
       </div>

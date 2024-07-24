@@ -1,9 +1,6 @@
-html.dark {
-  @apply bg-black;
-}
 html,
 body {
-  @apply min-h-full text-neutral-950 w-full bg-neutral-50 font-sans antialiased dark:bg-black dark:text-white;
+  @apply min-h-full w-full bg-white font-sans text-black antialiased;
   -webkit-text-size-adjust: 100%;
 
   .tippy-box {
@@ -20,4 +17,7 @@ body {
     }
   }
 }
-button, a { -webkit-tap-highlight-color: transparent; }
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}

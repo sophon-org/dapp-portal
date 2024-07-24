@@ -13,7 +13,7 @@
           <QrCode :value="address" :options="{ margin: 0, width: '100%', style: { padding: '0px' } }" />
         </CommonQrCodeStyled>
         <div class="flex flex-col items-center text-center sm:items-start sm:text-left">
-          <div class="flex items-center gap-1 text-neutral-400">
+          <div class="flex items-center gap-1 text-gray">
             <IconsEra class="h-6 w-6" />
             <span>Your {{ eraNetwork.name }} address</span>
           </div>

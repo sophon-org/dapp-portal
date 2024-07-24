@@ -45,32 +45,32 @@ defineProps({
   }
   &.variant- {
     &default {
-      @apply bg-neutral-100 dark:bg-neutral-900;
+      @apply bg-white;
 
       &:enabled,
       &:is(a) {
         &:not([aria-disabled="true"]) {
-          @apply hover:bg-white dark:hover:bg-neutral-800;
+          @apply hover:bg-white;
         }
       }
     }
-    &light {
-      @apply bg-neutral-50 dark:bg-neutral-900;
+    &.light {
+      @apply bg-white;
 
       &:enabled,
       &:is(a) {
         &:not([aria-disabled="true"]) {
-          @apply hover:bg-white dark:hover:bg-neutral-800;
+          @apply hover:bg-white;
         }
       }
     }
-    &primary {
-      @apply bg-primary-400;
+    &.primary {
+      @apply bg-blue;
 
       &:enabled,
       &:is(a) {
         &:not([aria-disabled="true"]) {
-          @apply hover:bg-primary-300;
+          @apply hover:bg-blue;
         }
       }
     }

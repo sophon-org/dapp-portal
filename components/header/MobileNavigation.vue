@@ -63,12 +63,12 @@ const close = () => {
 
 <style scoped lang="scss">
 .mobile-navigation-container {
-  @apply fixed left-0 top-0 z-[60] w-full overflow-y-auto overflow-x-hidden bg-neutral-50 dark:bg-black;
+  @apply fixed left-0 top-0 z-[60] w-full overflow-y-auto overflow-x-hidden bg-white;
   height: 100vh;
   height: 100dvh;
 
   .navigation-header {
-    @apply sticky top-0 flex items-center justify-between bg-neutral-50/70 p-2 backdrop-blur dark:bg-black/70 sm:p-4;
+    @apply sticky top-0 flex items-center justify-between bg-white/70 p-2 backdrop-blur sm:p-4;
 
     .navigation-title {
       @apply mb-0;

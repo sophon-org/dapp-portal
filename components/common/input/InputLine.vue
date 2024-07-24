@@ -26,9 +26,9 @@ const inputted = computed({
 
 <style lang="scss" scoped>
 .input-line {
-  @apply block w-full overflow-hidden rounded-none border-b-2 bg-transparent leading-snug outline-none transition placeholder:text-neutral-300 dark:placeholder:text-neutral-700;
-  @apply border-neutral-200 hover:border-neutral-300 focus:border-neutral-950;
-  @apply dark:border-neutral-800 dark:hover:border-neutral-600 dark:focus:border-white;
+  @apply block w-full overflow-hidden rounded-none border-b-2 bg-transparent leading-snug outline-none transition placeholder:text-gray;
+  @apply border-white hover:border-gray focus:border-black;
+
   &.has-error {
     @apply border-error-300;
   }

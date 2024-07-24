@@ -49,10 +49,10 @@
           <HeaderAccountDropdown />
         </div>
       </template>
-      <CommonButton class="color-mode-button" @click="switchColorMode()">
+      <!-- <CommonButton class="color-mode-button" @click="switchColorMode()">
         <SunIcon v-if="selectedColorMode === 'dark'" class="h-6 w-6" aria-hidden="true" />
         <MoonIcon v-else class="h-6 w-6" aria-hidden="true" />
-      </CommonButton>
+      </CommonButton> -->
       <CommonButton class="hamburger-icon" @click="mobileMainNavigationOpened = true">
         <Bars3Icon class="h-6 w-6" aria-hidden="true" />
         <transition v-bind="TransitionOpacity()">
@@ -70,8 +70,8 @@ import {
   ArrowsRightLeftIcon,
   ArrowsUpDownIcon,
   Bars3Icon,
-  MoonIcon,
-  SunIcon,
+  // MoonIcon,
+  // SunIcon,
   WalletIcon,
 } from "@heroicons/vue/24/outline";
 
@@ -89,7 +89,7 @@ const { withdrawalsAvailableForClaiming } = storeToRefs(useZkSyncWithdrawalsStor
 const mobileMainNavigationOpened = ref(false);
 const mobileAccountNavigationOpened = ref(false);
 
-const { selectedColorMode, switchColorMode } = useColorMode();
+// const { selectedColorMode, switchColorMode } = useColorMode();
 </script>
 
 <style lang="scss" scoped>
@@ -102,24 +102,24 @@ const { selectedColorMode, switchColorMode } = useColorMode();
       @apply h-auto w-full max-w-[140px] sm:max-w-[160px];
     }
     .beta-label {
-      @apply block rounded-lg bg-neutral-100 p-2 text-xs font-normal uppercase leading-none dark:bg-neutral-900;
+      @apply block rounded-lg bg-white p-2 text-xs font-normal uppercase leading-none;
     }
   }
   .links-container {
     @apply hidden items-center gap-10 lg:flex;
 
     .link-item {
-      @apply flex items-center gap-1 text-lg text-neutral-600 dark:text-neutral-500;
+      @apply flex items-center gap-1 text-lg text-black;
       &.router-link-exact-active {
-        @apply text-black dark:text-white;
+        @apply text-black;
 
         .link-icon {
-          @apply text-black dark:text-white;
+          @apply text-black;
         }
       }
 
       .link-icon {
-        @apply h-6 w-6 text-neutral-400 dark:text-neutral-500;
+        @apply h-6 w-6 text-gray;
       }
     }
   }

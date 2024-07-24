@@ -28,15 +28,15 @@ defineProps({
   }
   &.variant- {
     &default {
-      @apply text-neutral-600 dark:text-neutral-500;
+      @apply text-black;
       @include interactiveStyles {
-        @apply hover:text-neutral-950 dark:hover:text-white;
+        @apply hover:text-black;
       }
     }
-    &light {
-      @apply text-neutral-700 dark:text-neutral-400;
+    &.light {
+      @apply text-black;
       @include interactiveStyles {
-        @apply hover:text-neutral-950 dark:hover:text-white;
+        @apply hover:text-black;
       }
     }
   }

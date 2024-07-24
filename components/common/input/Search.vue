@@ -65,20 +65,20 @@ const inputted = computed({
 
 <style lang="scss" scoped>
 .search-input {
-  @apply flex w-full items-center gap-2 rounded-2xl border border-neutral-200 p-block-padding-1/2 text-neutral-700 transition-colors dark:border-neutral-800 dark:text-neutral-400;
+  @apply flex w-full items-center gap-2 rounded-2xl border border-white p-block-padding-1/2 text-black transition-colors;
   &:has(.search-input-field:focus),
   &:hover {
-    @apply border-neutral-500 dark:border-neutral-400;
+    @apply border-gray;
   }
 
   .search-icon {
     @apply h-6 w-6 flex-shrink-0;
   }
   .search-input-field {
-    @apply w-full truncate rounded-none border-none bg-transparent text-neutral-950 outline-none placeholder:text-neutral-700 dark:text-white dark:placeholder:text-neutral-400;
+    @apply w-full truncate rounded-none border-none bg-transparent text-black outline-none placeholder:text-black;
   }
   .search-input-clear-button {
-    @apply block aspect-square h-6 w-6 self-end rounded-full p-1 transition-all hover:text-neutral-950 hover:dark:text-white;
+    @apply block aspect-square h-6 w-6 self-end rounded-full p-1 transition-all hover:text-black;
 
     .search-input-clear-button-icon {
       @apply h-full w-full;

@@ -15,7 +15,6 @@ const emit = defineEmits<{
 
 <style lang="scss" scoped>
 .qr-upload-icon-button {
-  @apply aspect-square scale-125 cursor-pointer rounded p-0.5 transition-colors hover:bg-gray-300;
-  @apply dark:hover:bg-neutral-700;
+  @apply aspect-square scale-125 cursor-pointer rounded p-0.5 transition-colors hover:bg-gray;
 }
 </style>

@@ -21,11 +21,11 @@ defineProps({
 .content-block-container {
   @apply block h-max w-full rounded-3xl px-block-padding-1/2 py-block-padding sm:px-block-padding;
   &.variant- {
-    &default {
-      @apply bg-neutral-100 dark:bg-neutral-900;
+    &.default {
+      @apply bg-white;
     }
-    &primary {
-      @apply bg-primary-400;
+    &.primary {
+      @apply bg-blue;
     }
   }
 }

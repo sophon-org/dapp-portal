@@ -47,7 +47,7 @@ defineProps({
   }
   &.variant- {
     &darker {
-      @apply text-neutral-700 dark:text-neutral-400;
+      @apply text-black;
     }
   }
 }

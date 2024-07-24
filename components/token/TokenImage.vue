@@ -41,7 +41,7 @@ defineProps({
   @apply aspect-square;
 
   .token-placeholder {
-    @apply h-full w-full rounded-full border border-neutral-400 bg-neutral-200 dark:border-neutral-500 dark:bg-neutral-700;
+    @apply h-full w-full rounded-full border border-gray bg-white;
 
     .no-icon-placeholder {
       @apply h-full w-full opacity-50;

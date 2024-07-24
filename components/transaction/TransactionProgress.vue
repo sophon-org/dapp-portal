@@ -78,7 +78,7 @@
 
     <div class="mt-block-padding flex flex-wrap items-center justify-center gap-4">
       <div>
-        <span class="text-neutral-400">Value:</span>
+        <span class="text-gray">Value:</span>
         <span class="ml-1 inline-flex items-center">
           {{ parseTokenAmount(token.amount, token.decimals) }}
           {{ token.symbol }}
@@ -86,7 +86,7 @@
         </span>
       </div>
       <div v-if="expectedCompleteTimestamp && !completed">
-        <span class="text-neutral-400">Time: </span>
+        <span class="text-gray">Time: </span>
         <CommonTimer format="human-readable" :future-date="expectedCompleteTimestamp">
           <template #default="{ timer, isTimerFinished }">
             <template v-if="isTimerFinished">Funds should arrive soon!</template>
@@ -198,7 +198,7 @@ const transactionProgressAnimationState = computed<AnimationState>(() => {
     grid-area: divider;
   }
   .divider {
-    @apply relative border-t border-dashed border-neutral-500;
+    @apply relative border-t border-dashed border-gray;
     grid-area: divider;
 
     .airplane {

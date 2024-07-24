@@ -118,7 +118,7 @@ const timeAgo = useTimeAgo(props.transfer.timestamp);
   .withdrawal-line-body {
     @apply w-full;
     .withdrawal-line-separator {
-      @apply my-4 w-full border-t border-neutral-200 dark:border-neutral-800;
+      @apply my-4 w-full border-t border-white;
     }
 
     .withdrawal-line-top {

@@ -1,10 +1,14 @@
 <template>
   <div>
     <NetworkDeprecationAlert v-if="step === 'form'" />
-    <PageTitle v-if="step === 'form'">Bridge</PageTitle>
-    <PageTitle v-else-if="step === 'wallet-warning'">Wallet warning</PageTitle>
+    <PageTitle v-if="step === 'form'" class="text-balance text-center font-semibold text-black">
+      Bridge.
+      <span class="text-gray">The gateway to Sophon.</span>
+    </PageTitle>
+    <PageTitle v-else-if="step === 'wallet-warning'" class="font-semibold text-black">Wallet warning</PageTitle>
     <PageTitle
       v-else-if="step === 'confirm'"
+      class="font-semibold text-black"
       :back-function="
         () => {
           step = 'form';
@@ -173,7 +177,14 @@
               :loading="feeLoading"
             />
           </transition>
-          <CommonButtonLabel v-if="!isCustomNode" as="span" class="ml-auto text-right">~15 minutes</CommonButtonLabel>
+          <CommonButtonLabel
+            v-if="!isCustomNode"
+            as="span"
+            class="ml-auto text-right font-semibold text-gray-2"
+            variant="light"
+          >
+            ~15 minutes
+          </CommonButtonLabel>
         </div>
         <transition v-bind="TransitionAlertScaleInOutTransition" mode="out-in">
           <CommonAlert

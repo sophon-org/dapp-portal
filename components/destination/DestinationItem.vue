@@ -2,7 +2,7 @@
   <CommonButtonLineWithImg :as="as" :icon="icon" class="destination-item">
     <template #image>
       <slot name="image">
-        <CommonImageLoader class="destination-item-icon" :src="iconUrl" />
+        <CommonImageLoader class="destination-item-icon aspect-square h-auto w-full rounded-full" :src="iconUrl" />
       </slot>
     </template>
     <template #default>
@@ -42,13 +42,7 @@ defineProps({
 </script>
 
 <style lang="scss">
-.destination-item {
-  .destination-item-icon {
-    @apply aspect-square h-auto w-full rounded-full border border-neutral-950/10 dark:border-white/10;
-
-    .image-loader-image {
-      @apply box-content;
-    }
-  }
+.destination-item-icon .image-loader-image {
+  box-sizing: content-box;
 }
 </style>

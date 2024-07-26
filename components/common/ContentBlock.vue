@@ -1,5 +1,9 @@
 <template>
-  <component :is="as" class="content-block-container" :class="`variant-${variant}`">
+  <component
+    :is="as"
+    class="content-block-container block h-max w-full rounded-2xl px-block-padding-1/2 py-block-padding shadow-soft sm:px-block-padding"
+    :class="`variant-${variant}`"
+  >
     <slot />
   </component>
 </template>
@@ -19,13 +23,13 @@ defineProps({
 
 <style lang="scss" scoped>
 .content-block-container {
-  @apply block h-max w-full rounded-3xl px-block-padding-1/2 py-block-padding sm:px-block-padding;
   &.variant- {
     &default {
-      @apply bg-neutral-100 dark:bg-neutral-900;
+      @apply bg-white;
     }
+
     &primary {
-      @apply bg-primary-400;
+      @apply bg-blue;
     }
   }
 }

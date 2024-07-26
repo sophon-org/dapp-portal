@@ -49,7 +49,7 @@ defineProps({
   @apply relative isolate overflow-visible;
   &::before,
   &::after {
-    @apply absolute top-1/2 z-[1] h-10 w-[25%] -translate-y-1/2 transform from-neutral-100 to-transparent dark:from-neutral-900 sm:w-[15%];
+    @apply absolute top-1/2 z-[1] h-10 w-[25%] -translate-y-1/2 transform from-white to-transparent sm:w-[15%];
     content: "";
   }
   &::before {
@@ -113,7 +113,7 @@ defineProps({
       }
 
       .line {
-        @apply h-full w-full rounded bg-neutral-600 dark:bg-neutral-700;
+        @apply h-full w-full rounded bg-black;
         @media screen and (max-width: 640px) {
           &:nth-child(n + 20) {
             @apply hidden;
@@ -136,7 +136,7 @@ defineProps({
       }
 
       .airplane-path {
-        @apply fill-neutral-100 dark:fill-neutral-900;
+        @apply fill-white;
       }
     }
     .check-icon {

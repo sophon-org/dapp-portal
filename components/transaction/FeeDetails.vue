@@ -73,6 +73,6 @@ const totalPrice = computed(() => {
 
 <style lang="scss" scoped>
 .fee-details-container {
-  @apply flex items-center whitespace-nowrap text-neutral-700 dark:text-neutral-500;
+  @apply flex items-center whitespace-nowrap text-black;
 }
 </style>

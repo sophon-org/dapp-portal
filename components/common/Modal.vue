@@ -10,7 +10,7 @@
         leave-from="opacity-100"
         leave-to="opacity-0"
       >
-        <div class="modal-background" />
+        <div class="modal-background fixed inset-0 bg-blue-lightest/70 backdrop-blur-md transition" />
       </TransitionChild>
 
       <div class="modal-card-y-container">
@@ -26,7 +26,7 @@
           >
             <DialogPanel
               ref="modal"
-              class="modal-card"
+              class="modal-card relative max-h-[600px] w-full max-w-[600px] transform overflow-hidden rounded-3xl rounded-b-none bg-white p-block-padding-1/2 text-left shadow-soft transition-all sm:rounded-b-3xl sm:p-block-padding"
               aria-hidden="true"
               aria-modal="true"
               role="dialog"
@@ -34,10 +34,10 @@
               @trigger="closeOnBackgroundClick"
               @keydown.esc="closeOnBackgroundClick"
             >
-              <div class="modal-header" :class="{ 'mb-4': title }">
-                <DialogTitle v-if="title" as="div" class="modal-title">{{ title }}</DialogTitle>
+              <div class="modal-header flex items-center justify-between" :class="{ 'mb-4': title }">
+                <DialogTitle v-if="title" class="modal-title text-2xl" as="div">{{ title }}</DialogTitle>
                 <button v-if="closable" data-testid="close-button" @click="closeModal">
-                  <XMarkIcon class="modal-close-icon" aria-hidden="true" />
+                  <XMarkIcon class="modal-close-icon h-6 w-6 text-gray" aria-hidden="true" />
                 </button>
               </div>
               <slot />
@@ -105,36 +105,24 @@ const afterLeave = () => {
 <style lang="scss">
 .modal-container {
   // can not apply styles to this block in scoped style
-  @apply relative z-[60];
+  position: relative;
+  z-index: 60;
 }
 </style>
 
 <style lang="scss" scoped>
 .modal-container {
-  .modal-background {
-    @apply fixed inset-0 bg-black bg-opacity-70 transition-opacity;
-  }
   .modal-card-y-container {
     @apply fixed inset-0 z-10 overflow-y-auto;
   }
+
   .modal-card-container {
     @apply flex h-full items-end justify-center text-center sm:items-center sm:p-[72px];
 
     .modal-card {
-      @apply relative max-h-[600px] w-full max-w-[600px] transform overflow-hidden rounded-3xl rounded-b-none bg-neutral-50 p-block-padding-1/2 text-left shadow-xl transition-all dark:bg-neutral-900 sm:rounded-b-3xl sm:p-block-padding;
       @media screen and (max-height: 640px) {
         max-height: calc(100vh - 96px);
         max-height: calc(100dvh - 96px);
-      }
-      .modal-header {
-        @apply flex items-center justify-between;
-
-        .modal-title {
-          @apply text-2xl;
-        }
-        .modal-close-icon {
-          @apply h-6 w-6 text-neutral-700 dark:text-white;
-        }
       }
     }
   }

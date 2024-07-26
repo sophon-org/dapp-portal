@@ -1,7 +1,7 @@
 <template>
   <div>
     <NetworkDeprecationAlert />
-    <PageTitle>Assets</PageTitle>
+    <PageTitle class="font-semibold">Assets</PageTitle>
 
     <template v-if="!isConnected">
       <ConnectWalletBlock>Connect wallet to view your balances on {{ eraNetwork.name }}</ConnectWalletBlock>

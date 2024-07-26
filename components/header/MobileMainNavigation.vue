@@ -50,27 +50,11 @@
             </template>
           </DestinationItem>
         </CommonCardWithLineButtons>
-
-        <TypographyCategoryLabel size="sm">Theme</TypographyCategoryLabel>
-        <CommonCardWithLineButtons>
-          <DestinationItem
-            :label="selectedColorMode === 'dark' ? 'Dark mode' : 'Light mode'"
-            size="sm"
-            @click="switchColorMode()"
-          >
-            <template #image>
-              <DestinationIconContainer>
-                <SunIcon v-if="selectedColorMode === 'dark'" aria-hidden="true" />
-                <MoonIcon v-else aria-hidden="true" />
-              </DestinationIconContainer>
-            </template>
-          </DestinationItem>
-        </CommonCardWithLineButtons>
       </div>
       <div v-else-if="openedTab === 'network'">
         <div class="mb-block-gap flex items-center gap-block-padding-1/2">
-          <CommonButtonBack size="sm" @click="openedTab = 'main'" />
-          <span class="text-lg">Choose network</span>
+          <CommonButtonBack variant="icon" @click="openedTab = 'main'" />
+          <span class="text-lg font-semibold">Choose network</span>
         </div>
         <CommonCardWithLineButtons>
           <DestinationItem
@@ -99,8 +83,6 @@ import {
   ArrowsUpDownIcon,
   CheckIcon,
   ChevronRightIcon,
-  MoonIcon,
-  SunIcon,
   WalletIcon,
 } from "@heroicons/vue/24/outline";
 
@@ -141,7 +123,7 @@ watch(
   }
 );
 
-const { switchColorMode, selectedColorMode } = useColorMode();
+// const { switchColorMode, selectedColorMode } = useColorMode();
 
 const { selectedNetwork } = storeToRefs(useNetworkStore());
 const isNetworkSelected = (network: ZkSyncNetwork) => selectedNetwork.value.key === network.key;

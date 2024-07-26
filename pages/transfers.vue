@@ -1,7 +1,7 @@
 <template>
   <div>
     <NetworkDeprecationAlert />
-    <PageTitle>Transfers</PageTitle>
+    <PageTitle class="font-semibold">Transfers</PageTitle>
 
     <template v-if="!isConnected">
       <ConnectWalletBlock>Connect wallet to view your latest transfers on {{ eraNetwork.name }}</ConnectWalletBlock>

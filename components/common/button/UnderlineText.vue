@@ -1,6 +1,6 @@
 <template>
   <CommonHeightTransition :opened="opened">
-    <div class="text-center text-sm font-medium text-gray-500 dark:text-neutral-400">
+    <div class="text-center text-sm font-medium text-gray">
       <div class="pt-1"></div>
       <slot />
     </div>

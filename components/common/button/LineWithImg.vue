@@ -43,7 +43,7 @@ defineProps({
     @apply w-max;
   }
   .line-button-with-img-icon {
-    @apply ml-1 mr-2 h-5 w-5 flex-none text-neutral-500 dark:text-neutral-400;
+    @apply ml-1 mr-2 h-5 w-5 flex-none text-gray;
   }
   .line-button-with-img-icon-loading {
     @apply mx-1 h-7 w-7 flex-none rounded-full;

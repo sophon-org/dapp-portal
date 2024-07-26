@@ -1,5 +1,11 @@
 <template>
-  <component :is="as" type="button" class="default-button" :class="[`size-${size}`, `variant-${variant}`]">
+  <!-- <component :is="as" type="button" class="default-button" :class="[`size-${size}`, `variant-${variant}`]"> -->
+  <component
+    :is="as"
+    type="button"
+    class="default-button flex items-center justify-center rounded-full py-[0.5em] text-center font-semibold shadow-inner-glow transition-colors wrap-balance"
+    :class="[`size-${size}`, `variant-${variant}`]"
+  >
     <span v-if="$slots.icon" class="icon-container">
       <slot name="icon" />
     </span>
@@ -14,7 +20,7 @@ defineProps({
     default: "button",
   },
   variant: {
-    type: String as PropType<"default" | "primary" | "light" | "error">,
+    type: String as PropType<"default" | "primary" | "light" | "error" | "icon">,
     default: "default",
   },
   size: {
@@ -26,63 +32,83 @@ defineProps({
 
 <style lang="scss">
 .default-button {
-  @apply flex items-center justify-center text-center backdrop-blur-sm transition-colors wrap-balance;
   &:is(label) {
-    @apply cursor-pointer;
+    cursor: pointer;
   }
+
   &.size- {
     &xs {
-      @apply rounded-2xl px-4 py-2;
+      @apply px-4 py-2;
     }
     &sm {
-      @apply rounded-[20px] p-3;
+      @apply p-3;
     }
     &md {
-      @apply rounded-3xl p-4;
+      padding-left: 1em;
+      padding-right: 1em;
     }
   }
+
+  &:disabled,
+  &[aria-disabled="true"] {
+    @apply bg-opacity-50;
+  }
+
   &.variant- {
     &default {
-      @apply bg-neutral-100 dark:bg-neutral-900;
+      &,
       &:enabled,
       &:is(a, label) {
         &:not([aria-disabled="true"]) {
-          @apply hover:bg-neutral-200 dark:hover:bg-neutral-800 dark:focus-visible:bg-neutral-800;
+          background-color: #fff;
         }
       }
     }
-    &light {
-      @apply bg-neutral-200 transition disabled:opacity-70 dark:bg-neutral-800;
-      &:enabled,
-      &:is(a, label) {
-        &:not([aria-disabled="true"]) {
-          @apply hover:bg-neutral-300 dark:hover:bg-neutral-700 dark:focus-visible:bg-neutral-700;
-        }
-      }
-    }
+
     &primary {
-      @apply bg-primary-400 px-6 text-white;
+      color: #fff;
+
+      &,
       &:enabled,
       &:is(a, label) {
         &:not([aria-disabled="true"]) {
-          @apply hover:bg-primary-300;
+          background-color: var(--color-blue);
         }
-      }
-      &:disabled,
-      &[aria-disabled="true"] {
-        @apply bg-opacity-50 dark:bg-neutral-800 dark:bg-opacity-50;
       }
     }
-    &error {
-      @apply bg-red-100/50 text-red-400 dark:bg-red-700 dark:text-white;
+
+    &light {
+      box-shadow: none;
+
+      &,
       &:enabled,
       &:is(a, label) {
         &:not([aria-disabled="true"]) {
-          @apply hover:bg-red-100/75 dark:hover:bg-red-600;
+          background-color: var(--color-blue-lightest);
         }
       }
+    }
+
+    &error {
+      @apply bg-red-100/50 text-red-400;
+
+      &:enabled,
+      &:is(a, label) {
+        &:not([aria-disabled="true"]) {
+          @apply hover:bg-red-100/75;
+        }
+      }
+    }
+
+    &icon {
+      aspect-ratio: 1 / 1;
+      background-color: #fff;
+      height: 40px;
+      padding-left: 0;
+      padding-right: 0;
     }
   }
+
   .icon-container {
     @apply -ml-0.5 mr-2 inline-flex items-center;
 

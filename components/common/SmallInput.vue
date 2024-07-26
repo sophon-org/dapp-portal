@@ -69,30 +69,34 @@ const inputted = computed({
 
 <style lang="scss">
 .small-input-container {
-  @apply flex h-12 w-full items-center rounded-3xl bg-gray-input px-4 py-3 transition-colors dark:bg-neutral-900;
+  @apply bg-gray-input flex h-12 w-full items-center rounded-3xl px-4 py-3 transition-colors;
+
   &.focused,
   &:hover {
-    @apply bg-gray-input-focus dark:bg-neutral-800;
+    @apply bg-gray-input-focus;
 
     .small-input-clear-button {
-      @apply bg-gray-400 dark:bg-neutral-500;
+      @apply bg-gray;
     }
   }
 
   .small-input-icon-container {
-    @apply flex h-5 w-5 flex-none items-center justify-center text-gray-secondary dark:text-neutral-400;
+    @apply flex h-5 w-5 flex-none items-center justify-center text-gray;
 
     svg {
       @apply block aspect-square h-full w-full;
     }
   }
+
   .small-input-field {
-    @apply mx-2 w-full truncate rounded-none border-none bg-transparent outline-none placeholder:text-gray-secondary dark:placeholder:text-neutral-400;
+    @apply mx-2 w-full truncate rounded-none border-none bg-transparent outline-none placeholder:text-gray;
   }
+
   .small-input-clear-button {
-    @apply block aspect-square h-6 w-6 self-end rounded-full bg-gray-300 p-1 transition-all dark:bg-neutral-800;
+    @apply block aspect-square h-6 w-6 self-end rounded-full bg-gray p-1 transition-all;
+
     &:hover {
-      @apply bg-gray-500 dark:bg-neutral-600;
+      @apply bg-gray;
     }
 
     .small-input-clear-button-icon {

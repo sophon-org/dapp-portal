@@ -1,6 +1,6 @@
 <template>
   <label
-    class="flex w-full cursor-pointer items-center rounded-2xl bg-white px-3 py-2.5 outline-none ring-0 ring-primary-400 transition-colors focus-visible:ring-2 dark:bg-white/5 dark:hover:bg-white/10"
+    class="flex w-full cursor-pointer items-center rounded-2xl bg-white px-3 py-2.5 outline-none ring-0 ring-blue transition-colors focus-visible:ring-2"
     tabindex="0"
     @keyup.enter="checked = !checked"
   >
@@ -8,7 +8,7 @@
       <input v-model="checked" type="checkbox" class="sr-only" tabindex="-1" />
       <div
         class="flex h-6 w-6 items-center justify-center rounded-md border-2"
-        :class="checked ? 'border-primary-400 bg-primary-400' : 'border-neutral-300 bg-white'"
+        :class="checked ? 'border-blue bg-blue' : 'border-gray bg-white'"
       >
         <svg v-if="checked" class="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor">
           <path

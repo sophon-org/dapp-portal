@@ -40,9 +40,9 @@ const checked = computed({
   @apply flex w-full cursor-pointer items-center justify-center outline-none ring-0;
 
   .checkbox-input {
-    @apply flex h-6 w-6 items-center justify-center rounded-lg border border-neutral-400 dark:bg-neutral-800;
+    @apply flex h-6 w-6 items-center justify-center rounded-lg border border-gray;
     &.checked {
-      @apply border-primary-400 bg-primary-400;
+      @apply border-blue bg-blue;
     }
 
     .checkbox-icon {

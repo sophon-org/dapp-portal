@@ -9,7 +9,7 @@
       </div>
     </div>
     <div class="inset flex p-[2px]">
-      <div class="h-full w-full rounded-full bg-gray-input dark:bg-neutral-900"></div>
+      <div class="bg-gray-input h-full w-full rounded-full"></div>
     </div>
   </div>
 </template>
@@ -80,12 +80,12 @@ onBeforeUnmount(() => {
       }
       .fill {
         clip: rect(0px, math.div($circle-size, 2), $circle-size, 0px);
-        @apply bg-primary-400;
+        @apply bg-blue;
       }
     }
   }
   .inset {
-    @apply absolute left-1/2 top-1/2 aspect-square w-9/12 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gray dark:bg-neutral-900;
+    @apply absolute left-1/2 top-1/2 aspect-square w-9/12 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gray;
   }
 
   @keyframes animateCircle {

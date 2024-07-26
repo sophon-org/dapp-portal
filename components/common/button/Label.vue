@@ -26,17 +26,24 @@ defineProps({
   @include interactiveStyles {
     @apply underline underline-offset-2 transition;
   }
+
   &.variant- {
     &default {
-      @apply text-neutral-600 dark:text-neutral-500;
+      color: var(--color-black);
+
       @include interactiveStyles {
-        @apply hover:text-neutral-950 dark:hover:text-white;
+        &:hover {
+          color: var(--color-gray-2);
+        }
       }
     }
-    &light {
-      @apply text-neutral-700 dark:text-neutral-400;
+    &.light {
+      color: var(--color-gray-2);
+
       @include interactiveStyles {
-        @apply hover:text-neutral-950 dark:hover:text-white;
+        &:hover {
+          color: var(--color-black);
+        }
       }
     }
   }

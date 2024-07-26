@@ -79,9 +79,9 @@
           </div>
         </transition>
         <CommonButtonDropdown
-          class="h-max"
           :toggled="selectTokenModalOpened"
           variant="light"
+          size="md"
           @click="selectTokenModalOpened = true"
         >
           <template #left-icon>

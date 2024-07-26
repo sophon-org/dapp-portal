@@ -1,5 +1,5 @@
 <template>
-  <div class="transaction-footer">
+  <div class="transaction-footer sticky bottom-0 z-10 flex flex-col items-center pb-2 pt-4">
     <!-- Change network -->
     <transition v-bind="TransitionAlertScaleInOutTransition">
       <CommonErrorBlock
@@ -11,12 +11,12 @@
       </CommonErrorBlock>
     </transition>
 
-    <div v-if="buttonStep === 'connect'" class="transaction-footer-row">
+    <div v-if="buttonStep === 'connect'" class="transaction-footer-row flex w-full flex-col items-center">
       <CommonButton variant="primary" :disabled="isConnectingWallet" class="w-full" @click="onboardStore.openModal">
         Connect wallet
       </CommonButton>
     </div>
-    <div v-if="buttonStep === 'network'" class="transaction-footer-row">
+    <div v-if="buttonStep === 'network'" class="transaction-footer-row flex w-full flex-col items-center">
       <CommonButtonTopInfo>Incorrect network selected in your wallet</CommonButtonTopInfo>
       <CommonButton
         v-if="connectorName !== 'WalletConnect'"
@@ -32,7 +32,7 @@
         Change network manually to {{ eraNetwork.name }} in your {{ walletName }} wallet
       </CommonButton>
     </div>
-    <div v-else-if="buttonStep === 'continue'" class="transaction-footer-row">
+    <div v-else-if="buttonStep === 'continue'" class="transaction-footer-row flex w-full flex-col items-center">
       <slot name="after-checks" />
     </div>
 
@@ -66,12 +66,5 @@ const continueInWalletTipDisplayed = computed(() => {
 });
 </script>
 
-<style lang="scss" scoped>
-.transaction-footer {
-  @apply sticky bottom-0 z-10 flex flex-col items-center bg-white/60 bg-opacity-60 pb-2 pt-4 backdrop-blur-sm;
-
-  .transaction-footer-row {
-    @apply flex w-full flex-col items-center;
-  }
-}
-</style>
+<!-- <style lang="scss" scoped>
+</style> -->

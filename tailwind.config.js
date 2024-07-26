@@ -53,6 +53,9 @@ module.exports = {
           "Segoe UI Symbol",
         ],
       },
+      fontSize: {
+        "2xs": "0.5rem",
+      },
       spacing: {
         "block-padding": "32px",
         "block-padding-1/2": "16px",

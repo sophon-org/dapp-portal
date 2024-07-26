@@ -3,8 +3,8 @@
   <component
     :is="as"
     type="button"
-    class="default-button flex items-center justify-center rounded-full py-[0.5em] text-center shadow-inner-glow backdrop-blur-sm transition-colors wrap-balance"
-    :class="[`variant-${variant}`]"
+    class="default-button flex items-center justify-center rounded-full py-[0.5em] text-center font-semibold shadow-inner-glow transition-colors wrap-balance"
+    :class="[`size-${size}`, `variant-${variant}`]"
   >
     <span v-if="$slots.icon" class="icon-container">
       <slot name="icon" />
@@ -33,54 +33,59 @@ defineProps({
 <style lang="scss">
 .default-button {
   &:is(label) {
-    @apply cursor-pointer;
+    cursor: pointer;
   }
+
   &.size- {
     &xs {
-      @apply rounded-2xl px-4 py-2;
+      @apply px-4 py-2;
     }
     &sm {
-      @apply rounded-[20px] p-3;
+      @apply p-3;
     }
     &md {
-      @apply rounded-3xl p-4;
+      padding-left: 1em;
+      padding-right: 1em;
     }
   }
+
+  &:disabled,
+  &[aria-disabled="true"] {
+    @apply bg-opacity-50;
+  }
+
   &.variant- {
     &default {
-      @apply bg-white;
-
+      &,
       &:enabled,
       &:is(a, label) {
         &:not([aria-disabled="true"]) {
-          @apply hover:bg-white;
-        }
-      }
-    }
-
-    &light {
-      @apply bg-white transition disabled:opacity-70;
-
-      &:enabled,
-      &:is(a, label) {
-        &:not([aria-disabled="true"]) {
-          @apply hover:bg-gray;
+          background-color: #fff;
         }
       }
     }
 
     &primary {
-      @apply bg-blue px-6 text-white;
+      color: #fff;
+
+      &,
+      &:enabled,
+      &:is(a, label) {
+        &:not([aria-disabled="true"]) {
+          background-color: var(--color-blue);
+        }
+      }
+    }
+
+    &light {
+      background-color: var(--color-blue-lightest);
+      box-shadow: none;
 
       &:enabled,
       &:is(a, label) {
         &:not([aria-disabled="true"]) {
-          @apply hover:bg-blue;
+          background-color: var(--color-blue-lightest);
         }
-      }
-      &:disabled,
-      &[aria-disabled="true"] {
-        @apply bg-opacity-50;
       }
     }
 

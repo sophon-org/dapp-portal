@@ -1,33 +1,39 @@
 <template>
-  <header class="header">
+  <header class="header z-50 flex w-full items-center gap-2 p-2 sm:gap-10 sm:p-4">
     <HeaderMobileMainNavigation v-model:opened="mobileMainNavigationOpened" />
     <HeaderMobileAccountNavigation v-model:opened="mobileAccountNavigationOpened" />
 
     <div class="logo-container">
-      <NuxtLink :to="{ name: 'bridge' }">
-        <IconsZkSync class="logo-icon" />
+      <NuxtLink class="flex items-center gap-2 text-black no-underline" :to="{ name: 'bridge' }">
+        <div class="aspect-square text-[46px]">
+          <sophon />
+        </div>
+        <span class="text-2xl font-medium">Sophon</span>
+        <span class="relative top-[2px] rounded-full bg-blue px-2 text-2xs/4 font-semibold uppercase text-white"
+          >Testnet</span
+        >
       </NuxtLink>
-      <span class="beta-label">Beta</span>
     </div>
-    <div class="links-container">
+
+    <div class="links-container hidden items-center gap-10 lg:flex">
       <NuxtLink
-        class="link-item"
+        class="link-item items-center; flex gap-1 text-lg font-medium text-gray-2"
         :to="{ name: 'bridge' }"
         :class="{ 'router-link-exact-active': routes.bridge.includes(route.name?.toString() || '') }"
       >
-        <ArrowsUpDownIcon class="link-icon" aria-hidden="true" />
+        <ArrowsUpDownIcon class="link-icon h-6 w-6" aria-hidden="true" />
         Bridge
       </NuxtLink>
       <NuxtLink
-        class="link-item"
+        class="link-item items-center; flex gap-1 text-lg font-medium text-gray-2"
         :to="{ name: 'assets' }"
         :class="{ 'router-link-exact-active': routes.assets.includes(route.name?.toString() || '') }"
       >
-        <WalletIcon class="link-icon" aria-hidden="true" />
+        <WalletIcon class="link-icon h-6 w-6" aria-hidden="true" />
         Assets
       </NuxtLink>
-      <NuxtLink class="link-item" :to="{ name: 'transfers' }">
-        <ArrowsRightLeftIcon class="link-icon" aria-hidden="true" />
+      <NuxtLink class="link-item items-center; flex gap-1 text-lg font-medium text-gray-2" :to="{ name: 'transfers' }">
+        <ArrowsRightLeftIcon class="link-icon h-6 w-6" aria-hidden="true" />
         Transfers
         <transition v-bind="TransitionOpacity()">
           <CommonBadge v-if="withdrawalsAvailableForClaiming.length">
@@ -36,8 +42,8 @@
         </transition>
       </NuxtLink>
     </div>
-    <div class="right-side">
-      <HeaderNetworkDropdown class="network-dropdown" />
+    <div class="right-side ml-auto flex items-center gap-1 sm:gap-3">
+      <HeaderNetworkDropdown class="network-dropdown hidden xl:block" />
       <CommonButton v-if="!isConnected" variant="primary" @click="onboardStore.openModal()">
         <span class="whitespace-nowrap">Connect wallet</span>
       </CommonButton>
@@ -49,14 +55,13 @@
           <HeaderAccountDropdown />
         </div>
       </template>
-      <!-- <CommonButton class="color-mode-button" @click="switchColorMode()">
-        <SunIcon v-if="selectedColorMode === 'dark'" class="h-6 w-6" aria-hidden="true" />
-        <MoonIcon v-else class="h-6 w-6" aria-hidden="true" />
-      </CommonButton> -->
-      <CommonButton class="hamburger-icon" @click="mobileMainNavigationOpened = true">
+      <CommonButton class="hamburger-icon relative xl:hidden" @click="mobileMainNavigationOpened = true">
         <Bars3Icon class="h-6 w-6" aria-hidden="true" />
         <transition v-bind="TransitionOpacity()">
-          <CommonBadge v-if="withdrawalsAvailableForClaiming.length" class="action-available-badge">
+          <CommonBadge
+            v-if="withdrawalsAvailableForClaiming.length"
+            class="action-available-badge absolute -right-1 -top-1 lg:hidden"
+          >
             {{ withdrawalsAvailableForClaiming.length }}
           </CommonBadge>
         </transition>
@@ -74,6 +79,8 @@ import {
   // SunIcon,
   WalletIcon,
 } from "@heroicons/vue/24/outline";
+
+import Sophon from "@/components/icons/Sophon.vue";
 
 const route = useRoute();
 
@@ -93,50 +100,13 @@ const mobileAccountNavigationOpened = ref(false);
 </script>
 
 <style lang="scss" scoped>
-.header {
-  @apply z-50 flex w-full items-center gap-2 p-2 sm:gap-10 sm:p-4;
-
-  .logo-container {
-    @apply flex w-full flex-shrink items-center gap-2 sm:w-max;
-    .logo-icon {
-      @apply h-auto w-full max-w-[140px] sm:max-w-[160px];
-    }
-    .beta-label {
-      @apply block rounded-lg bg-white p-2 text-xs font-normal uppercase leading-none;
-    }
+.link-item {
+  &:hover {
+    color: var(--color-blue);
   }
-  .links-container {
-    @apply hidden items-center gap-10 lg:flex;
 
-    .link-item {
-      @apply flex items-center gap-1 text-lg text-black;
-      &.router-link-exact-active {
-        @apply text-black;
-
-        .link-icon {
-          @apply text-black;
-        }
-      }
-
-      .link-icon {
-        @apply h-6 w-6 text-gray;
-      }
-    }
-  }
-  .right-side {
-    @apply ml-auto flex items-center gap-1 sm:gap-3;
-
-    .network-dropdown,
-    .color-mode-button {
-      @apply hidden xl:block;
-    }
-    .hamburger-icon {
-      @apply relative xl:hidden;
-
-      .action-available-badge {
-        @apply absolute -right-1 -top-1 lg:hidden;
-      }
-    }
+  &.router-link-exact-active {
+    color: var(--color-black);
   }
 }
 </style>

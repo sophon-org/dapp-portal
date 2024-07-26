@@ -1,5 +1,6 @@
 <template>
-  <div class="page-title">
+  <!-- <div class="page-title mb-block-gap-2/3 flex items-start gap-4 sm:mb-block-gap"> -->
+  <div class="page-title mb-[1em]">
     <PageBackButton v-if="fallbackRoute" :fallback="fallbackRoute" />
     <CommonButtonBack v-else-if="backFunction" @click="backFunction()" />
     <h1 class="title">
@@ -22,11 +23,10 @@ defineProps({
 </script>
 
 <style lang="scss" scoped>
-.page-title {
-  @apply mb-block-gap-2/3 flex items-start gap-4 sm:mb-block-gap;
-
-  .title {
-    @apply h1 my-auto inline;
-  }
+.page-title .title {
+  font-size: 40px;
+  line-height: 1.4;
+  margin-bottom: auto;
+  margin-top: auto;
 }
 </style>

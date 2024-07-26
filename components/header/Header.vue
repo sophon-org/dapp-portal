@@ -55,7 +55,7 @@
           <HeaderAccountDropdown />
         </div>
       </template>
-      <CommonButton class="hamburger-icon relative xl:hidden" @click="mobileMainNavigationOpened = true">
+      <CommonButton class="hamburger-icon relative xl:hidden" variant="icon" @click="mobileMainNavigationOpened = true">
         <Bars3Icon class="h-6 w-6" aria-hidden="true" />
         <transition v-bind="TransitionOpacity()">
           <CommonBadge

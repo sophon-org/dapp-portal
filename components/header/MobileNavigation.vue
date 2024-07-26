@@ -1,14 +1,15 @@
 <template>
   <Dialog as="template" :open="modalOpened">
-    <DialogPanel class="mobile-navigation-container">
+    <DialogPanel
+      class="mobile-navigation-container fixed left-0 top-0 z-[60] w-full overflow-y-auto overflow-x-hidden bg-blue-lightest/70 backdrop-blur-md"
+    >
       <div class="mx-auto max-w-[600px]">
-        <div class="navigation-header">
-          <PageTitle :as="DialogTitle" class="navigation-title">{{ title }}</PageTitle>
-          <CommonButton @click="close()">
+        <div class="navigation-header sticky top-0 flex items-center justify-end p-2 sm:p-4">
+          <CommonButton variant="icon" @click="close()">
             <XMarkIcon class="h-6 w-6" aria-hidden="true" />
           </CommonButton>
         </div>
-        <div class="navigation-body">
+        <div class="navigation-body p-2">
           <slot />
         </div>
       </div>
@@ -17,7 +18,7 @@
 </template>
 
 <script lang="ts" setup>
-import { Dialog, DialogPanel, DialogTitle } from "@headlessui/vue";
+import { Dialog, DialogPanel } from "@headlessui/vue";
 import { XMarkIcon } from "@heroicons/vue/24/outline";
 
 const props = defineProps({
@@ -63,19 +64,15 @@ const close = () => {
 
 <style scoped lang="scss">
 .mobile-navigation-container {
-  @apply fixed left-0 top-0 z-[60] w-full overflow-y-auto overflow-x-hidden bg-white;
   height: 100vh;
   height: 100dvh;
 
   .navigation-header {
-    @apply sticky top-0 flex items-center justify-between bg-white/70 p-2 backdrop-blur sm:p-4;
+    background-color: transparent;
 
     .navigation-title {
-      @apply mb-0;
+      margin-bottom: 0;
     }
-  }
-  .navigation-body {
-    @apply p-2;
   }
 }
 </style>

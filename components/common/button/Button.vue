@@ -20,7 +20,7 @@ defineProps({
     default: "button",
   },
   variant: {
-    type: String as PropType<"default" | "primary" | "light" | "error">,
+    type: String as PropType<"default" | "primary" | "light" | "error" | "icon">,
     default: "default",
   },
   size: {
@@ -78,9 +78,9 @@ defineProps({
     }
 
     &light {
-      background-color: var(--color-blue-lightest);
       box-shadow: none;
 
+      &,
       &:enabled,
       &:is(a, label) {
         &:not([aria-disabled="true"]) {
@@ -98,6 +98,14 @@ defineProps({
           @apply hover:bg-red-100/75;
         }
       }
+    }
+
+    &icon {
+      aspect-ratio: 1 / 1;
+      background-color: #fff;
+      height: 40px;
+      padding-left: 0;
+      padding-right: 0;
     }
   }
 

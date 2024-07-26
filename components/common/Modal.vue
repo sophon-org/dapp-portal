@@ -10,7 +10,7 @@
         leave-from="opacity-100"
         leave-to="opacity-0"
       >
-        <div class="modal-background fixed inset-0 bg-white/90 transition-opacity" />
+        <div class="modal-background fixed inset-0 bg-blue-lightest/70 backdrop-blur-md transition" />
       </TransitionChild>
 
       <div class="modal-card-y-container">

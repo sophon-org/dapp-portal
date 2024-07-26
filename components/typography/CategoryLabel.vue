@@ -1,7 +1,7 @@
 <template>
   <component
     :is="as"
-    class="category-label"
+    class="category-label font-semibold"
     :class="[{ 'has-padding': padded, 'with-side-content': $slots.right }, `size-${size}`, `variant-${variant}`]"
   >
     <slot />

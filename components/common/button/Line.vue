@@ -23,7 +23,8 @@ defineProps({
 
 <style lang="scss" scoped>
 .line-button-container {
-  @apply w-full rounded-[1.24rem] px-block-padding-1/4 transition-colors sm:px-block-padding-1/2;
+  @apply w-full rounded-2xl px-block-padding-1/4 transition-colors sm:px-block-padding-1/2;
+
   &:enabled,
   &:is(a) {
     &:not([aria-disabled="true"]) {
@@ -43,36 +44,25 @@ defineProps({
       @apply py-block-padding-1/4;
     }
   }
+
   &.variant- {
     &default {
-      @apply bg-white;
-
-      &:enabled,
-      &:is(a) {
-        &:not([aria-disabled="true"]) {
-          @apply hover:bg-white;
-        }
-      }
+      background-color: #fff;
     }
+
     &.light {
-      @apply bg-white;
+      background-color: var(--color-blue-lightest);
 
-      &:enabled,
+      /* &:enabled,
       &:is(a) {
         &:not([aria-disabled="true"]) {
           @apply hover:bg-white;
         }
-      }
+      } */
     }
-    &.primary {
-      @apply bg-blue;
 
-      &:enabled,
-      &:is(a) {
-        &:not([aria-disabled="true"]) {
-          @apply hover:bg-blue;
-        }
-      }
+    &.primary {
+      background-color: var(--color-blue);
     }
   }
 }

@@ -20,7 +20,7 @@ defineProps({
 
 <style lang="scss" scoped>
 .destination-label {
-  @apply flex items-center space-x-1 dark:text-white;
+  @apply flex items-center space-x-1;
   .destination-label-img {
     @apply h-5 w-5;
   }

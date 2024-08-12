@@ -1,7 +1,7 @@
 <template>
   <component
     :is="as"
-    class="category-label"
+    class="category-label font-semibold"
     :class="[{ 'has-padding': padded, 'with-side-content': $slots.right }, `size-${size}`, `variant-${variant}`]"
   >
     <slot />
@@ -47,7 +47,7 @@ defineProps({
   }
   &.variant- {
     &darker {
-      @apply text-neutral-700 dark:text-neutral-400;
+      @apply text-black;
     }
   }
 }

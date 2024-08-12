@@ -3,7 +3,6 @@ const defaultTheme = require("tailwindcss/defaultTheme");
 const plugin = require("tailwindcss/plugin");
 
 module.exports = {
-  darkMode: "class",
   content: [
     "./components/**/*.{js,vue,ts}",
     "./views/**/*.vue",
@@ -16,46 +15,46 @@ module.exports = {
   ],
   theme: {
     extend: {
-      fontFamily: {
-        sans: ["'Inter'", ...defaultTheme.fontFamily.sans],
+      boxShadow: {
+        soft: "2px 4px 12px rgba(0, 0, 0, 0.04)",
+        "inner-glow": "inset 0 0 7px #ffffff90",
       },
       colors: {
-        primary: {
-          300: "#4075FF",
-          400: "#1755F4",
-          700: "#1347CC",
-        },
-        neutral: {
-          50: "#F7F9FC",
-          100: "#E8ECF2",
-          200: "#DADDE5",
-          300: "#BEC2CC",
-          400: "#A1A7B3",
-          500: "#858C99",
-          600: "#6C7380",
-          700: "#555A66",
-          800: "#3D424D",
-          900: "#262B33",
-          950: "#11141A",
-        },
-        gray: {
-          DEFAULT: "#f7f7f7",
-          secondary: "#75808a",
-          input: "#edeff2",
-          "input-focus": "#dfe3e7",
-        },
+        black: "#131313",
+        blue: "#0071e3",
+        "blue-lightest": "#f5f5f7",
+        gray: "#6e6e73",
+        "gray-2": "#888",
+        secondary: "#0071e3",
+        "error-red": "#ff4f00",
         error: {
-          300: "#FF6666",
-          500: "#FF0000",
+          300: "#f66",
+          500: "#f00",
         },
         warning: {
-          400: "#FFC81A",
-          600: "#E5AF00",
+          400: "#ffc81a",
+          600: "#e5af00",
         },
         success: {
-          400: "#33FF99",
-          600: "#00CC66",
+          400: "#3f9",
+          600: "#0c6",
         },
+      },
+      fontFamily: {
+        sans: [
+          "system-ui",
+          "Segoe UI",
+          "Roboto",
+          "Helvetica",
+          "Arial",
+          "sans-serif",
+          "Apple Color Emoji",
+          "Segoe UI Emoji",
+          "Segoe UI Symbol",
+        ],
+      },
+      fontSize: {
+        "2xs": "0.5rem",
       },
       spacing: {
         "block-padding": "32px",

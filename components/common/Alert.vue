@@ -32,54 +32,53 @@ defineProps({
   }
   &.variant- {
     &info {
-      @apply border bg-primary-300 text-primary-700;
-      @apply dark:border-primary-300/50 dark:bg-primary-300/10 dark:text-white;
+      @apply border bg-blue text-blue;
 
       .alert-icon {
-        @apply dark:text-primary-300;
       }
+
       .alert-body {
         .alert-link {
-          @apply hover:text-primary-400 dark:hover:text-primary-300;
+          @apply hover:text-blue;
         }
       }
     }
     &neutral {
-      @apply border border-gray-200 bg-gray-200 bg-opacity-70 text-gray-700 backdrop-blur-sm;
-      @apply dark:border-white/50 dark:bg-white/10 dark:text-white;
+      @apply border border-gray bg-gray bg-opacity-70 text-gray backdrop-blur-sm;
 
       .alert-body {
         .alert-link {
-          @apply hover:text-gray-500 dark:hover:text-neutral-200;
+          @apply hover:text-gray;
         }
       }
     }
     &success {
       @apply border border-green-200 bg-green-200 text-green-700;
-      @apply dark:border-success-400/50 dark:bg-success-400/10 dark:text-white;
 
       .alert-icon {
-        @apply dark:text-success-600;
       }
+
       .alert-body {
         .alert-link {
-          @apply hover:text-green-600 dark:hover:text-green-600;
+          @apply hover:text-green-600;
         }
       }
     }
     &warning {
       @apply border border-warning-400/30 bg-warning-400/10;
+
       &.size-md {
         .alert-icon-container {
           @apply h-12 w-12 bg-warning-400;
 
           .alert-icon {
-            @apply text-neutral-950;
+            @apply text-black;
           }
         }
 
         @apply sm:p-block-padding;
       }
+
       &.size-sm {
         @apply p-block-padding-1/2;
 
@@ -90,20 +89,19 @@ defineProps({
 
       .alert-body {
         .alert-link {
-          @apply hover:text-orange-600 dark:text-warning-400 dark:hover:text-warning-600;
+          @apply hover:text-orange-600;
         }
       }
     }
-    &error {
+    &.error {
       @apply border border-red-100 bg-red-100 text-red-700;
-      @apply dark:border-red-400/50 dark:bg-red-400/10 dark:text-white;
 
       .alert-icon {
-        @apply dark:text-red-400;
       }
+
       .alert-body {
         .alert-link {
-          @apply hover:text-red-600 dark:text-red-400 dark:hover:text-red-500;
+          @apply hover:text-red-600;
         }
       }
     }

@@ -5,7 +5,7 @@
       <h1 class="h1 mb-2 text-center">{{ title }}</h1>
       <svg
         aria-hidden="true"
-        class="h-16 w-16 animate-spin fill-primary-300 text-gray-200"
+        class="h-16 w-16 animate-spin fill-blue text-gray"
         viewBox="0 0 100 101"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
@@ -37,6 +37,6 @@ const title = computed(() => {
 
 <style lang="scss" scoped>
 .connecting-container {
-  @apply absolute inset-0 z-[70] flex h-full w-full flex-col items-center justify-center bg-gray dark:bg-neutral-950;
+  @apply absolute inset-0 z-[70] flex h-full w-full flex-col items-center justify-center bg-gray;
 }
 </style>

@@ -5,11 +5,7 @@
       <div class="entry-text-info">
         <div class="account-label">{{ accountLabel }}</div>
         <div class="account-address">
-          <span
-            v-for="(part, index) in addressParts"
-            :key="index"
-            :class="{ 'text-neutral-600 dark:text-neutral-400': index === 1 }"
-          >
+          <span v-for="(part, index) in addressParts" :key="index" :class="{ 'text-black': index === 1 }">
             {{ part }}
           </span>
         </div>

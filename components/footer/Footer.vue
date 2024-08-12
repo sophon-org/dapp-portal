@@ -6,12 +6,20 @@
       </CommonButtonLabel>
     </div>
     <div class="links-container">
-      <CommonButtonLabel as="a" href="https://zksync.io/terms" target="_blank" class="footer-link">
+      <a
+        class="text-gray-2 no-underline transition-colors hover:text-black"
+        href="https://zksync.io/terms"
+        target="_blank"
+      >
         Terms of Service
-      </CommonButtonLabel>
-      <CommonButtonLabel as="a" href="https://zksync.io/privacy" target="_blank" class="footer-link">
+      </a>
+      <a
+        class="text-gray-2 no-underline transition-colors hover:text-black"
+        href="https://zksync.io/privacy"
+        target="_blank"
+      >
         Privacy Policy
-      </CommonButtonLabel>
+      </a>
     </div>
   </footer>
 </template>

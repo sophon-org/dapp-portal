@@ -27,14 +27,11 @@ defineProps({
 <style lang="scss" scoped>
 .spinner {
   &.variant- {
-    &default {
-      @apply fill-primary-300 dark:fill-white;
+    &.default {
+      @apply fill-blue;
     }
-    &text-color {
-      @apply fill-neutral-950 dark:fill-white;
-    }
-    &dark {
-      @apply fill-neutral-950;
+    &.text-color {
+      @apply fill-black;
     }
   }
 }

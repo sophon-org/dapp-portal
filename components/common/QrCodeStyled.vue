@@ -18,7 +18,7 @@ defineProps({
 <style lang="scss">
 .qr-code-styles-container {
   .qr-code-container {
-    @apply mx-auto aspect-square h-36 w-36 rounded-xl bg-neutral-100 p-2 shadow-sm;
+    @apply mx-auto aspect-square h-36 w-36 rounded-xl bg-white p-2 shadow-sm;
 
     & > * {
       width: 100% !important;
@@ -26,7 +26,7 @@ defineProps({
     }
   }
   .qr-code-styled-underline {
-    @apply mt-1.5 text-center text-sm text-gray-secondary dark:text-neutral-400;
+    @apply mt-1.5 text-center text-sm text-gray;
   }
 }
 </style>

@@ -36,9 +36,10 @@ export default (getSigner: () => Promise<Signer | undefined>, getProvider: () =>
       status.value = "processing";
       const signer = await getSigner();
       if (!signer) throw new Error("zkSync Signer is not available");
+      const provider = getProvider();
 
       const getRequiredBridgeAddress = async () => {
-        if (transaction.tokenAddress === ETH_TOKEN.address) return undefined;
+        if (transaction.tokenAddress === L2_BASE_TOKEN_ADDRESS) return undefined;
         const bridgeAddresses = await retrieveBridgeAddresses();
         return bridgeAddresses.sharedL2;
       };
@@ -48,9 +49,10 @@ export default (getSigner: () => Promise<Signer | undefined>, getProvider: () =>
       await validateAddress(transaction.to);
 
       status.value = "waiting-for-signature";
-      const tx = await signer[transaction.type === "transfer" ? "transfer" : "withdraw"]({
+      const txRequest = await provider[transaction.type === "transfer" ? "getTransferTx" : "getWithdrawTx"]({
+        from: await signer.getAddress(),
         to: transaction.to,
-        token: transaction.tokenAddress === ETH_TOKEN.address ? ETH_TOKEN.l1Address! : transaction.tokenAddress,
+        token: transaction.tokenAddress,
         amount: transaction.amount,
         bridgeAddress,
         overrides: {
@@ -58,6 +60,9 @@ export default (getSigner: () => Promise<Signer | undefined>, getProvider: () =>
           gasLimit: fee.gasLimit,
         },
       });
+
+      const txResponse = await signer.sendTransaction(txRequest);
+      const tx = getProvider()._wrapTransaction(txResponse);
 
       transactionHash.value = tx.hash;
       status.value = "done";

@@ -21,7 +21,7 @@ const { isConnectingWallet } = storeToRefs(useOnboardStore());
 
 <style lang="scss" scoped>
 .app-layout {
-  background: url("/public/background.webp") no-repeat center center fixed;
+  background: url("/public/the-correct-background.webp") no-repeat center center fixed;
   display: grid;
   grid-template-rows: auto 1fr max-content;
   min-height: 100vh;

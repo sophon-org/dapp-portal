@@ -45,6 +45,7 @@ export default (getL1Signer: () => Promise<L1Signer | undefined>) => {
         amount: transaction.amount,
         l2GasLimit: fee.l2GasLimit,
         approveBaseERC20: true,
+        bridgeAddress: "0xDeD1517595815D2B495086c33Ee663D528a53478",
         overrides,
       });
 

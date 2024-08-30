@@ -491,7 +491,7 @@ const {
 } = useAllowance(
   computed(() => account.value.address),
   computed(() => selectedToken.value?.address),
-  async () => (await providerStore.requestProvider().getDefaultBridgeAddresses()).sharedL1
+  async () => "0x91951F0903381C24E02c0fd0470694a8a3dd63cF"
 );
 const enoughAllowance = computed(() => {
   if (!allowance.value || !selectedToken.value) {

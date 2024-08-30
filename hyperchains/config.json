@@ -18,14 +18,10 @@
         },
         "rpcUrls": {
           "default": {
-            "http": [
-              "https://rpc.testnet.sophon.xyz"
-            ]
+            "http": ["https://rpc.sepolia.org"]
           },
           "public": {
-            "http": [
-              "https://rpc.testnet.sophon.xyz"
-            ]
+            "http": ["https://rpc.sepolia.org"]
           }
         }
       }
@@ -33,10 +29,24 @@
     "tokens": [
       {
         "address": "0x000000000000000000000000000000000000800A",
-        "l1Address": "0x0000000000000000000000000000000000000000",
+        "l1Address": "0x06c03F9319EBbd84065336240dcc243bda9D8896",
         "symbol": "SOPH",
         "decimals": 18,
         "iconUrl": "/img/sophon.svg"
+      },
+      {
+        "address": "0xa02dbfB2b65b4e13501d066Df432A39c6068Eded",
+        "l1Address": "0x0000000000000000000000000000000000000000",
+        "symbol": "ETH",
+        "decimals": 18,
+        "iconUrl": "/img/eth.svg"
+      },
+      {
+        "l1Address": "0x94a9D9AC8a22534E3FaCa9F4e7F2E2cf85d5E4C8",
+        "symbol": "USDC",
+        "name": "USD coin",
+        "decimals": 6,
+        "iconUrl": "/img/usdc.svg"
       }
     ]
   }

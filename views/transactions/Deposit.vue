@@ -491,7 +491,7 @@ const {
 } = useAllowance(
   computed(() => account.value.address),
   computed(() => selectedToken.value?.address),
-  async () => "0x91951F0903381C24E02c0fd0470694a8a3dd63cF"
+  async () => "0x11Cb5B7C32F69947Ef2D712E1a26F0B5d2d4f418"
 );
 const enoughAllowance = computed(() => {
   if (!allowance.value || !selectedToken.value) {

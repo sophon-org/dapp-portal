@@ -47,6 +47,13 @@
         "name": "USD coin",
         "decimals": 6,
         "iconUrl": "/img/usdc.svg"
+      },
+      {
+        "l1Address": "0xBF4FdF7BF4014EA78C0A07259FBc4315Cb10d94E",
+        "symbol": "MockUSDC",
+        "name": "Mock USD coin",
+        "decimals": 6,
+        "iconUrl": "/img/usdc.svg"
       }
     ]
   }

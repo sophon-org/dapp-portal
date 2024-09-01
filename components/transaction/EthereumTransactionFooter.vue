@@ -12,7 +12,13 @@
     </transition>
 
     <div v-if="buttonStep === 'connect'" class="transaction-footer-row flex w-full flex-col items-center">
-      <CommonButton variant="primary" :disabled="isConnectingWallet" class="w-full" @click="onboardStore.openModal">
+      <CommonButton
+        size="lg"
+        variant="primary"
+        :disabled="isConnectingWallet"
+        class="w-full"
+        @click="onboardStore.openModal"
+      >
         Connect wallet
       </CommonButton>
     </div>
@@ -82,6 +88,3 @@ const continueInWalletTipDisplayed = computed(() => {
   return false;
 });
 </script>
-
-<!-- <style lang="scss" scoped>
-</style> -->

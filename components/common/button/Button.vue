@@ -1,5 +1,4 @@
 <template>
-  <!-- <component :is="as" type="button" class="default-button" :class="[`size-${size}`, `variant-${variant}`]"> -->
   <component
     :is="as"
     type="button"
@@ -24,7 +23,7 @@ defineProps({
     default: "default",
   },
   size: {
-    type: String as PropType<"xs" | "sm" | "md">,
+    type: String as PropType<"xs" | "sm" | "md" | "lg">,
     default: "md",
   },
 });
@@ -40,12 +39,18 @@ defineProps({
     &xs {
       @apply px-4 py-2;
     }
+
     &sm {
       @apply p-3;
     }
+
     &md {
       padding-left: 1em;
       padding-right: 1em;
+    }
+
+    &lg {
+      padding: 1em 1.75em;
     }
   }
 
@@ -101,11 +106,8 @@ defineProps({
     }
 
     &icon {
-      aspect-ratio: 1 / 1;
       background-color: #fff;
-      height: 40px;
-      padding-left: 0;
-      padding-right: 0;
+      padding: 1em;
     }
   }
 

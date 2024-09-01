@@ -1,7 +1,7 @@
 <template>
   <Menu v-slot="{ open }" as="div" class="network-dropdown-container">
     <MenuButton as="template">
-      <CommonButtonDropdown :toggled="open">
+      <CommonButtonDropdown class="!px-[1.25em]" :toggled="open" size="lg">
         <template #left-icon>
           <IconsEra />
         </template>

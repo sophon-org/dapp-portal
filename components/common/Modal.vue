@@ -36,7 +36,7 @@
             >
               <div class="modal-header flex items-center justify-between" :class="{ 'mb-4': title }">
                 <DialogTitle v-if="title" class="modal-title text-2xl" as="div">{{ title }}</DialogTitle>
-                <button v-if="closable" data-testid="close-button" @click="closeModal">
+                <button v-if="closable" class="mr-1.5" data-testid="close-button" @click="closeModal">
                   <XMarkIcon class="modal-close-icon h-6 w-6 text-gray" aria-hidden="true" />
                 </button>
               </div>

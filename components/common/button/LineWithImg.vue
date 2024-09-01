@@ -10,6 +10,21 @@
       <slot name="right" />
     </div>
     <component :is="icon" v-if="icon" class="line-button-with-img-icon" aria-hidden="true" />
+    <!-- TODO:
+     How to implemtent various icons?
+     Not sure how to get around this in Vue -->
+    <!-- <svg
+      v-if="icon"
+      class="inline-block h-[0.85em] w-[0.85em] -rotate-90"
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+    >
+      <path
+        fill="currentColor"
+        d="M.49 5.66c.65-.65 1.7-.65 2.35 0L12 14.82l9.16-9.16A1.66 1.66 0 0 1 23.51 8L13.17 18.34c-.64.65-1.7.65-2.34 0L.49 8.01a1.66 1.66 0 0 1 0-2.35Z"
+      />
+    </svg> -->
     <CommonContentLoader v-else-if="iconLoading" :length="0" class="line-button-with-img-icon-loading" />
   </CommonButtonLine>
 </template>

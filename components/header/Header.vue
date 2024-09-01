@@ -53,7 +53,7 @@
     </div>
     <div class="right-side ml-auto flex items-center gap-1 sm:gap-3">
       <HeaderNetworkDropdown class="network-dropdown hidden xl:block" />
-      <CommonButton v-if="!isConnected" variant="primary" @click="onboardStore.openModal()">
+      <CommonButton v-if="!isConnected" size="lg" variant="primary" @click="onboardStore.openModal()">
         <span class="whitespace-nowrap">Connect wallet</span>
       </CommonButton>
       <template v-else>
@@ -64,7 +64,12 @@
           <HeaderAccountDropdown />
         </div>
       </template>
-      <CommonButton class="hamburger-icon relative xl:hidden" variant="icon" @click="mobileMainNavigationOpened = true">
+      <CommonButton
+        class="hamburger-icon relative xl:hidden"
+        size="lg"
+        variant="icon"
+        @click="mobileMainNavigationOpened = true"
+      >
         <Bars3Icon class="h-6 w-6" aria-hidden="true" />
         <transition v-bind="TransitionOpacity()">
           <CommonBadge
@@ -95,8 +100,6 @@ const { withdrawalsAvailableForClaiming } = storeToRefs(useZkSyncWithdrawalsStor
 
 const mobileMainNavigationOpened = ref(false);
 const mobileAccountNavigationOpened = ref(false);
-
-// const { selectedColorMode, switchColorMode } = useColorMode();
 </script>
 
 <style lang="scss" scoped>

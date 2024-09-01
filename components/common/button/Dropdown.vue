@@ -6,15 +6,25 @@
     <slot />
     <div v-if="!noChevron || $slots['right-icon']" class="right-icon-container">
       <slot name="right-icon">
-        <ChevronDownIcon v-if="!noChevron" class="default-dropdown-icon" :class="{ toggled }" aria-hidden="true" />
+        <svg
+          v-if="!noChevron"
+          class="inline-block h-[0.85em] w-[0.85em]"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          :class="{ toggled }"
+          aria-hidden="true"
+        >
+          <path
+            fill="currentColor"
+            d="M.49 5.66c.65-.65 1.7-.65 2.35 0L12 14.82l9.16-9.16A1.66 1.66 0 0 1 23.51 8L13.17 18.34c-.64.65-1.7.65-2.34 0L.49 8.01a1.66 1.66 0 0 1 0-2.35Z"
+          />
+        </svg>
       </slot>
     </div>
   </CommonButton>
 </template>
 
 <script lang="ts" setup>
-import { ChevronDownIcon } from "@heroicons/vue/24/outline";
-
 defineProps({
   toggled: {
     type: Boolean,
@@ -33,28 +43,6 @@ defineProps({
 
   .left-icon-container {
     @apply h-6 w-6 flex-shrink-0;
-  }
-  .right-icon-container {
-    @apply ml-auto h-5 w-5 flex-shrink-0;
-
-    .default-dropdown-icon {
-      @apply transition;
-      &.toggled {
-        @apply rotate-180;
-      }
-    }
-  }
-}
-</style>
-
-<style lang="scss">
-.dropdown-button {
-  .left-icon-container,
-  .right-icon-container {
-    img,
-    svg {
-      @apply h-full w-full;
-    }
   }
 }
 </style>

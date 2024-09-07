@@ -3,7 +3,7 @@
     <HeaderHelpModal v-model:opened="helpModalOpened" />
     <MenuButton as="div">
       <div ref="addressEl">
-        <HeaderAccountDropdownButton :toggled="open" />
+        <HeaderAccountDropdownButton :toggled="open" size="lg" />
       </div>
     </MenuButton>
 

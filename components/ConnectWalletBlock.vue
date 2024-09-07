@@ -3,7 +3,7 @@
     <p class="text-center">
       <slot />
     </p>
-    <CommonButton variant="primary" class="mt-block-gap w-full" @click="onboardStore.openModal()">
+    <CommonButton size="lg" variant="primary" class="mt-block-gap w-full" @click="onboardStore.openModal()">
       Connect wallet
     </CommonButton>
   </CommonContentBlock>

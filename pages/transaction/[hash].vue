@@ -9,7 +9,7 @@
     <p class="mb-block-gap text-center">
       The transaction you are looking for is not found. It is possible you submitted it from another browser or device.
     </p>
-    <CommonButton as="RouterLink" :to="{ name: 'assets' }" class="mt-block-gap" variant="primary">
+    <CommonButton as="RouterLink" :to="{ name: 'assets' }" class="mt-block-gap" size="lg" variant="primary">
       Go to Assets page
     </CommonButton>
   </div>

@@ -1,7 +1,7 @@
 <template>
   <CommonModal v-model:opened="modalShown" title="Connecting error" @after-leave="clearError">
     <p class="leading-normal">{{ connectingWalletError }}</p>
-    <CommonButton class="mt-4 w-full" variant="primary" @click="modalShown = false">Proceed</CommonButton>
+    <CommonButton class="mt-4 w-full" size="lg" variant="primary" @click="modalShown = false">Proceed</CommonButton>
   </CommonModal>
 </template>
 

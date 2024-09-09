@@ -20,7 +20,7 @@
         >Privacy Policy</a
       >
     </CommonCheckboxWithText>
-    <CommonButton class="mt-8 w-full" variant="primary" :disabled="!warningChecked" @click="proceed()">
+    <CommonButton class="mt-8 w-full" size="lg" variant="primary" :disabled="!warningChecked" @click="proceed()">
       Proceed
     </CommonButton>
   </CommonModal>

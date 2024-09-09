@@ -4,7 +4,7 @@
     <div class="error-info-container">
       <h1 class="error-status-code">{{ error.statusCode }}</h1>
       <p class="error-message">{{ error.message }}</p>
-      <CommonButton as="RouterLink" :to="{ name: 'bridge' }" class="mt-4" variant="primary">
+      <CommonButton as="RouterLink" :to="{ name: 'bridge' }" class="mt-4" size="lg" variant="primary">
         Back to Bridge
       </CommonButton>
     </div>

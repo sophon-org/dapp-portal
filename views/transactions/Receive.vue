@@ -18,7 +18,7 @@
             <span>Your {{ eraNetwork.name }} address</span>
           </div>
           <div class="break-all sm:text-lg">{{ address }}</div>
-          <CommonButton variant="primary" class="mt-block-padding-1/2 w-full" @click="copy()">
+          <CommonButton size="lg" variant="primary" class="mt-block-padding-1/2 w-full" @click="copy()">
             <template v-if="copied">Copied!</template>
             <template v-else>
               <DocumentDuplicateIcon class="mr-1 h-6 w-6" aria-hidden="true" />

@@ -70,7 +70,9 @@
               Loading transfers error: {{ previousTransfersRequestError.message }}
             </CommonErrorBlock>
           </CommonCardWithLineButtons>
-          <CommonButton v-else ref="loadMoreEl" variant="primary" class="mx-auto mt-4">Load more</CommonButton>
+          <CommonButton v-else ref="loadMoreEl" size="lg" variant="primary" class="mx-auto mt-4"
+            >Load more</CommonButton
+          >
         </template>
       </div>
       <CommonCardWithLineButtons v-else-if="!hasOnlyRecentBridgeOperations">

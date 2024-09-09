@@ -5,6 +5,7 @@
     <CommonButton
       as="label"
       for="transaction-qr-address-input"
+      size="lg"
       variant="primary"
       class="mt-6 w-full"
       @click="qrCodeModalOpened = false"

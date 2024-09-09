@@ -108,7 +108,13 @@
 
         <TransactionEthereumTransactionFooter>
           <template #after-checks>
-            <CommonButton :disabled="continueButtonDisabled" class="w-full" variant="primary" @click="buttonContinue()">
+            <CommonButton
+              :disabled="continueButtonDisabled"
+              class="w-full"
+              size="lg"
+              variant="primary"
+              @click="buttonContinue()"
+            >
               <transition v-bind="TransitionPrimaryButtonText" mode="out-in">
                 <span v-if="finalizeTransactionStatus === 'processing'">Processing...</span>
                 <span v-else-if="finalizeTransactionStatus === 'waiting-for-signature'">Waiting for confirmation</span>

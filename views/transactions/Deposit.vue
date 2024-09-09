@@ -131,10 +131,16 @@
             website.
           </p>
         </CommonAlert>
-        <CommonButton type="submit" variant="primary" class="mt-block-gap w-full gap-1" @click="buttonContinue()">
+        <CommonButton
+          type="submit"
+          size="lg"
+          variant="primary"
+          class="mt-block-gap w-full gap-1"
+          @click="buttonContinue()"
+        >
           I understand, proceed to bridge
         </CommonButton>
-        <CommonButton size="sm" class="mx-auto mt-block-gap w-max" @click="disableWalletWarning()">
+        <CommonButton size="sm" variant="light" class="mx-auto mt-block-gap w-max" @click="disableWalletWarning()">
           Don't show again
         </CommonButton>
       </template>
@@ -298,6 +304,7 @@
                 <CommonButton
                   type="submit"
                   :disabled="continueButtonDisabled || setAllowanceInProgress"
+                  size="lg"
                   variant="primary"
                   class="w-full"
                   @click="setTokenAllowance()"
@@ -322,6 +329,7 @@
                 v-else
                 type="submit"
                 :disabled="continueButtonDisabled"
+                size="lg"
                 variant="primary"
                 class="w-full"
                 @click="buttonContinue()"
@@ -356,6 +364,7 @@
               <CommonButton
                 :disabled="continueButtonDisabled || transactionStatus !== 'not-started'"
                 class="w-full"
+                size="lg"
                 variant="primary"
                 @click="buttonContinue()"
               >

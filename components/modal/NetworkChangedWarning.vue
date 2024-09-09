@@ -20,7 +20,7 @@
       >
         Return to {{ lastSelectedNetwork?.name }}
       </CommonButtonTopLink>
-      <CommonButton variant="primary" class="w-full" @click="closeModal">
+      <CommonButton size="lg" variant="primary" class="w-full" @click="closeModal">
         Continue on {{ selectedNetwork.name }}
       </CommonButton>
     </div>

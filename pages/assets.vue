@@ -18,6 +18,7 @@
           <CommonTotalBalance :balance="balance" :loading="loading" :error="balanceError" />
           <CommonButtonGroup v-if="!noBalances">
             <CommonButton
+              size="lg"
               variant="primary"
               as="RouterLink"
               :to="{
@@ -30,6 +31,7 @@
               <template #default>Receive</template>
             </CommonButton>
             <CommonButton
+              size="lg"
               variant="primary"
               as="RouterLink"
               :to="{ name: eraNetwork.l1Network ? 'send-methods' : 'send' }"

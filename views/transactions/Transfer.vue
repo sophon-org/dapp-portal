@@ -132,13 +132,14 @@
           href="https://zksync.dappradar.com/ecosystem?category=defi_bridge"
           target="_blank"
           type="submit"
+          size="lg"
           variant="primary"
           class="mt-block-gap w-full gap-1"
         >
           See third-party bridges
           <ArrowTopRightOnSquareIcon class="h-6 w-6" aria-hidden="true" />
         </CommonButton>
-        <CommonButton size="sm" class="mx-auto mt-block-gap w-max" @click="buttonContinue()">
+        <CommonButton size="sm" variant="light" class="mx-auto mt-block-gap w-max" @click="buttonContinue()">
           I understand, proceed to withdrawal
         </CommonButton>
       </template>
@@ -233,6 +234,7 @@
               v-if="step === 'form'"
               type="submit"
               :disabled="continueButtonDisabled"
+              size="lg"
               variant="primary"
               class="w-full"
               @click="buttonContinue()"
@@ -258,6 +260,7 @@
               <CommonButton
                 :disabled="continueButtonDisabled || transactionStatus !== 'not-started'"
                 class="w-full"
+                size="lg"
                 variant="primary"
                 @click="buttonContinue()"
               >

@@ -2,12 +2,14 @@
   <CommonCardWithLineButtons
     class="bridge-from-ethereum-button"
     :class="{ 'animated-button': displayTotalTokens }"
+    size="lg"
     variant="primary"
   >
     <DestinationItem
       :icon-url="destinations.ethereum.iconUrl"
       as="RouterLink"
       :to="{ name: 'bridge' }"
+      size="lg"
       variant="primary"
     >
       <template #label>

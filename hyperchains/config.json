@@ -7,6 +7,11 @@
       "rpcUrl": "https://rpc.testnet.sophon.xyz",
       "blockExplorerUrl": "https://explorer.testnet.sophon.xyz",
       "blockExplorerApi": "https://block-explorer-api.testnet.sophon.xyz",
+      "nativeCurrency": {
+        "name": "Sophon",
+        "symbol": "SOPH",
+        "decimals": 18
+      },
       "l1Network": {
         "id": 11155111,
         "name": "Sepolia",
@@ -18,10 +23,10 @@
         },
         "rpcUrls": {
           "default": {
-            "http": ["https://rpc.sepolia.org"]
+            "http": ["https://ethereum-sepolia.rpc.subquery.network/public"]
           },
           "public": {
-            "http": ["https://rpc.sepolia.org"]
+            "http": ["https://ethereum-sepolia.rpc.subquery.network/public"]
           }
         }
       }

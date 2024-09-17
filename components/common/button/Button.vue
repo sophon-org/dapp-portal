@@ -54,11 +54,6 @@ defineProps({
     }
   }
 
-  &:disabled,
-  &[aria-disabled="true"] {
-    @apply bg-opacity-50;
-  }
-
   &.variant- {
     &default {
       &,
@@ -95,7 +90,7 @@ defineProps({
     }
 
     &error {
-      @apply bg-red-100/50 text-red-400;
+      @apply border-red-400 bg-red-100/50 text-red-400;
 
       &:enabled,
       &:is(a, label) {
@@ -109,6 +104,13 @@ defineProps({
       background-color: #fff;
       padding: 1em;
     }
+  }
+
+  &:disabled,
+  &[aria-disabled="true"] {
+    background-color: #dadce0 !important;
+    color: #a0a7ad;
+    pointer-events: none;
   }
 
   .icon-container {

@@ -44,7 +44,10 @@ defineProps({
       }
     }
     &neutral {
-      @apply border border-gray bg-gray bg-opacity-70 text-gray backdrop-blur-sm;
+      @apply border backdrop-blur-sm;
+      background-color: #fef8eb;
+      border-color: #ffe9b6;
+      color: #131313;
 
       .alert-body {
         .alert-link {
@@ -93,7 +96,7 @@ defineProps({
         }
       }
     }
-    &.error {
+    &error {
       @apply border border-red-100 bg-red-100 text-red-700;
 
       .alert-icon {

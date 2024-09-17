@@ -12,7 +12,7 @@ export const useDestinationsStore = defineStore("destinations", () => {
     era: {
       key: "era",
       label: eraNetwork.value.name,
-      iconUrl: "/img/era.svg",
+      iconUrl: "/img/sophon.svg",
     },
     ethereum: {
       key: "ethereum",

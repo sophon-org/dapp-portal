@@ -19,7 +19,7 @@ defineProps({
     default: "button",
   },
   variant: {
-    type: String as PropType<"default" | "primary" | "light" | "error" | "icon">,
+    type: String as PropType<"default" | "primary" | "light" | "white" | "error" | "icon">,
     default: "default",
   },
   size: {
@@ -60,7 +60,7 @@ defineProps({
       &:enabled,
       &:is(a, label) {
         &:not([aria-disabled="true"]) {
-          background-color: #fff;
+          background-color: var(--color-blue-lightest);
         }
       }
     }
@@ -85,6 +85,18 @@ defineProps({
       &:is(a, label) {
         &:not([aria-disabled="true"]) {
           background-color: var(--color-blue-lightest);
+        }
+      }
+    }
+
+    &white {
+      box-shadow: none;
+
+      &,
+      &:enabled,
+      &:is(a, label) {
+        &:not([aria-disabled="true"]) {
+          background-color: #fff;
         }
       }
     }

@@ -1,7 +1,7 @@
 <template>
   <Menu v-slot="{ open }" as="div" class="network-dropdown-container">
     <MenuButton as="template">
-      <CommonButtonDropdown class="!px-[1.25em]" :toggled="open" size="lg">
+      <CommonButtonDropdown class="!px-[1.25em]" :toggled="open" size="lg" variant="white">
         <template #left-icon>
           <IconsEra />
         </template>
@@ -14,6 +14,7 @@
         <MenuItem v-for="item in chainList.filter((e) => !e.hidden)" :key="item.key" v-slot="{ active }" as="template">
           <CommonButtonDropdown
             size="sm"
+            variant="white"
             no-chevron
             :active="{ active }"
             class="options-item"

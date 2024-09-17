@@ -8,14 +8,14 @@
     <div class="links-container">
       <a
         class="text-gray-2 no-underline transition-colors hover:text-black"
-        href="https://zksync.io/terms"
+        href="https://farm.sophon.xyz/terms.html"
         target="_blank"
       >
         Terms of Service
       </a>
       <a
         class="text-gray-2 no-underline transition-colors hover:text-black"
-        href="https://zksync.io/privacy"
+        href="https://farm.sophon.xyz/privacypolicy.html"
         target="_blank"
       >
         Privacy Policy

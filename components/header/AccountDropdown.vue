@@ -48,7 +48,7 @@
           <CommonButtonDropdown
             as="a"
             class="options-item"
-            href="https://www.rogilla.nl"
+            href="https://docs.sophon.xyz"
             no-chevron
             size="sm"
             variant="white"

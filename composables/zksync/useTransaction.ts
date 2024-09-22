@@ -5,6 +5,7 @@ import { isCustomNode } from "@/data/networks";
 
 import type { TokenAmount } from "@/types";
 import type { Provider, Signer } from "zksync-ethers";
+import { utils } from "zksync-ethers";
 
 type TransactionParams = {
   type: "transfer" | "withdrawal";
@@ -55,6 +56,10 @@ export default (getSigner: () => Promise<Signer | undefined>, getProvider: () =>
         token: transaction.tokenAddress,
         amount: transaction.amount,
         bridgeAddress,
+        paymasterParams: utils.getPaymasterParams("0x950e3Bb8C6bab20b56a70550EC037E22032A413e", {
+          type: "General",
+          innerInput: new Uint8Array(),
+        }),
         overrides: {
           gasPrice: fee.gasPrice,
           gasLimit: fee.gasLimit,

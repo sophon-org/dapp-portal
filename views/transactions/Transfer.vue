@@ -186,7 +186,7 @@
         <div class="mt-4 flex items-center gap-4">
           <transition v-bind="TransitionOpacity()">
             <TransactionFeeDetails
-              v-if="!feeError && (fee || feeLoading)"
+              v-if="0==1 && !feeError && (fee || feeLoading)"
               label="Fee:"
               :fee-token="feeToken"
               :fee-amount="fee"

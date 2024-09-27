@@ -9,10 +9,8 @@
     <div v-if="$slots.right" class="line-button-with-img-right">
       <slot name="right" />
     </div>
+
     <component :is="icon" v-if="icon" class="line-button-with-img-icon" aria-hidden="true" />
-    <!-- TODO:
-     How to implemtent various icons?
-     Not sure how to get around this in Vue -->
     <!-- <svg
       v-if="icon"
       class="inline-block h-[0.85em] w-[0.85em] -rotate-90"

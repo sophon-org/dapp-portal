@@ -31,11 +31,12 @@
       :failed="transaction.info.failed"
     />
 
-    <CommonButton as="RouterLink" :to="{ name: 'assets' }" class="mt-block-gap" variant="primary">
+    <CommonButton as="RouterLink" :to="{ name: 'assets' }" class="mt-block-gap" size="lg" variant="primary">
       Go to Assets page
     </CommonButton>
     <CommonButton
       size="sm"
+      variant="light"
       :as="makeAnotherTransaction ? undefined : 'RouterLink'"
       :to="{ name: 'send' }"
       class="mx-auto mt-block-gap w-max"

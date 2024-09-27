@@ -22,15 +22,17 @@ export default (
   const gasPrice = ref<BigNumberish | undefined>();
 
   const totalFee = computed(() => {
-    if (!gasLimit.value || !gasPrice.value) return undefined;
-    return calculateFee(gasLimit.value, gasPrice.value).toString();
+    return "0"; // fee check disabled
+    /*if (!gasLimit.value || !gasPrice.value) return undefined;
+    return calculateFee(gasLimit.value, gasPrice.value).toString();*/
   });
 
   const feeToken = computed(() => {
     return tokens.value?.[L2_BASE_TOKEN_ADDRESS];
   });
   const enoughBalanceToCoverFee = computed(() => {
-    if (!feeToken.value || inProgress.value) {
+    return true; // fee check disabled
+    /*if (!feeToken.value || inProgress.value) {
       return true;
     }
     const feeTokenBalance = balances.value.find((e) => e.address === feeToken.value!.address);
@@ -38,7 +40,7 @@ export default (
     if (totalFee.value && BigNumber.from(totalFee.value).gt(feeTokenBalance.amount)) {
       return false;
     }
-    return true;
+    return true;*/
   });
 
   const {

@@ -3,14 +3,21 @@
     <HeaderHelpModal v-model:opened="helpModalOpened" />
     <MenuButton as="div">
       <div ref="addressEl">
-        <HeaderAccountDropdownButton :toggled="open" />
+        <HeaderAccountDropdownButton :toggled="open" size="lg" variant="white" />
       </div>
     </MenuButton>
 
     <transition v-bind="TransitionAlertScaleInOutTransition">
       <MenuItems class="account-options-container">
         <MenuItem v-slot="{ active }" as="template">
-          <CommonButtonDropdown size="sm" no-chevron :active="active" class="options-item" @click="copy()">
+          <CommonButtonDropdown
+            size="sm"
+            variant="white"
+            no-chevron
+            :active="active"
+            class="options-item"
+            @click="copy()"
+          >
             <template #left-icon>
               <DocumentDuplicateIcon aria-hidden="true" />
             </template>
@@ -20,6 +27,7 @@
         <MenuItem v-if="selectedNetwork.blockExplorerUrl" v-slot="{ active }" as="template">
           <CommonButtonDropdown
             size="sm"
+            variant="white"
             no-chevron
             :active="active"
             as="a"
@@ -36,23 +44,26 @@
             </template>
           </CommonButtonDropdown>
         </MenuItem>
-        <MenuItem v-slot="{ active }" as="template">
+        <MenuItem as="template">
           <CommonButtonDropdown
-            size="sm"
-            no-chevron
-            :active="active"
+            as="a"
             class="options-item"
-            @click="helpModalOpened = true"
+            href="https://docs.sophon.xyz"
+            no-chevron
+            size="sm"
+            variant="white"
+            target="_blank"
           >
             <template #left-icon>
               <ExclamationCircleIcon aria-hidden="true" />
             </template>
-            <span>Help</span>
+            <span>Documentation</span>
           </CommonButtonDropdown>
         </MenuItem>
         <MenuItem v-slot="{ active }" as="template">
           <CommonButtonDropdown
             size="sm"
+            variant="white"
             no-chevron
             :active="active"
             class="options-item"

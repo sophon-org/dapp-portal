@@ -65,7 +65,7 @@ const inputted = computed({
 
 <style lang="scss" scoped>
 .search-input {
-  @apply flex w-full items-center gap-2 rounded-2xl border border-white p-block-padding-1/2 text-black transition-colors;
+  @apply flex w-full items-center gap-2 rounded-2xl border-2 border-blue-lightest p-block-padding-1/2 text-black transition-colors;
   &:has(.search-input-field:focus),
   &:hover {
     @apply border-gray;

@@ -127,18 +127,7 @@
             funds which requires paying another transaction fee on {{ eraNetwork.l1Network?.name }}.
           </p>
         </CommonAlert>
-        <CommonButton
-          as="a"
-          href="https://zksync.dappradar.com/ecosystem?category=defi_bridge"
-          target="_blank"
-          type="submit"
-          variant="primary"
-          class="mt-block-gap w-full gap-1"
-        >
-          See third-party bridges
-          <ArrowTopRightOnSquareIcon class="h-6 w-6" aria-hidden="true" />
-        </CommonButton>
-        <CommonButton size="sm" class="mx-auto mt-block-gap w-max" @click="buttonContinue()">
+        <CommonButton size="lg" variant="primary" class="mx-auto mt-block-gap w-full" @click="buttonContinue()">
           I understand, proceed to withdrawal
         </CommonButton>
       </template>
@@ -197,7 +186,7 @@
         <div class="mt-4 flex items-center gap-4">
           <transition v-bind="TransitionOpacity()">
             <TransactionFeeDetails
-              v-if="!feeError && (fee || feeLoading)"
+              v-if="0==1 && !feeError && (fee || feeLoading)"
               label="Fee:"
               :fee-token="feeToken"
               :fee-amount="fee"
@@ -233,6 +222,7 @@
               v-if="step === 'form'"
               type="submit"
               :disabled="continueButtonDisabled"
+              size="lg"
               variant="primary"
               class="w-full"
               @click="buttonContinue()"
@@ -258,6 +248,7 @@
               <CommonButton
                 :disabled="continueButtonDisabled || transactionStatus !== 'not-started'"
                 class="w-full"
+                size="lg"
                 variant="primary"
                 @click="buttonContinue()"
               >
@@ -279,7 +270,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ArrowTopRightOnSquareIcon, ExclamationTriangleIcon, InformationCircleIcon } from "@heroicons/vue/24/outline";
+import { ExclamationTriangleIcon, InformationCircleIcon } from "@heroicons/vue/24/outline";
 import { useRouteQuery } from "@vueuse/router";
 import { BigNumber } from "ethers";
 import { isAddress } from "ethers/lib/utils";

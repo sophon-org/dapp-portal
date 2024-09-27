@@ -12,15 +12,18 @@
 
     <CommonCheckboxWithText ref="checkbox" v-model="warningChecked" class="mt-3">
       I agree to the
-      <a href="https://zksync.io/terms" target="_blank" class="checkbox-link underline underline-offset-2"
+      <a href="https://farm.sophon.xyz/terms.html" target="_blank" class="checkbox-link underline underline-offset-2"
         >Terms of Service</a
       >
       and
-      <a href="https://zksync.io/privacy" target="_blank" class="checkbox-link underline underline-offset-2"
+      <a
+        href="https://farm.sophon.xyz/privacypolicy.html"
+        target="_blank"
+        class="checkbox-link underline underline-offset-2"
         >Privacy Policy</a
       >
     </CommonCheckboxWithText>
-    <CommonButton class="mt-8 w-full" variant="primary" :disabled="!warningChecked" @click="proceed()">
+    <CommonButton class="mt-8 w-full" size="lg" variant="primary" :disabled="!warningChecked" @click="proceed()">
       Proceed
     </CommonButton>
   </CommonModal>

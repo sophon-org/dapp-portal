@@ -29,6 +29,7 @@
           v-if="connectorName !== 'WalletConnect'"
           type="submit"
           :disabled="switchingNetworkInProgress"
+          size="lg"
           variant="primary"
           class="w-full"
           @click="onboardStore.setCorrectNetwork"
@@ -37,14 +38,14 @@
             Change wallet network to {{ l1Network.name }}
           </slot>
         </CommonButton>
-        <CommonButton v-else disabled variant="primary" class="w-full">
+        <CommonButton v-else disabled size="lg" variant="primary" class="w-full">
           <slot v-bind="{ l1Network, walletName }" name="change-network-manual">
             Change network manually to {{ l1Network.name }} in your {{ walletName }} wallet
           </slot>
         </CommonButton>
       </template>
       <template v-else>
-        <CommonButton disabled variant="primary" class="w-full">
+        <CommonButton disabled size="lg" variant="primary" class="w-full">
           L1 network is not available on {{ selectedNetwork.name }}
         </CommonButton>
       </template>

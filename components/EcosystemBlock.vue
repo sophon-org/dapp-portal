@@ -11,6 +11,7 @@
       <p class="text-left xs:text-center">Explore the wonders of zkSync ecosystem</p>
       <AnimationsEcosystemLogotypes />
       <CommonButton
+        size="lg"
         variant="primary"
         as="a"
         href="https://zksync.dappradar.com/ecosystem"

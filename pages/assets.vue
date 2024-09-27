@@ -18,6 +18,7 @@
           <CommonTotalBalance :balance="balance" :loading="loading" :error="balanceError" />
           <CommonButtonGroup v-if="!noBalances">
             <CommonButton
+              size="lg"
               variant="primary"
               as="RouterLink"
               :to="{
@@ -30,6 +31,7 @@
               <template #default>Receive</template>
             </CommonButton>
             <CommonButton
+              size="lg"
               variant="primary"
               as="RouterLink"
               :to="{ name: eraNetwork.l1Network ? 'send-methods' : 'send' }"
@@ -104,7 +106,7 @@
         </div>
       </template>
       <template v-else>
-        <TypographyCategoryLabel>Deposit more tokens to zkSync</TypographyCategoryLabel>
+        <TypographyCategoryLabel>Deposit more tokens to Sophon</TypographyCategoryLabel>
 
         <CommonCardWithLineButtons>
           <DestinationItem v-for="(item, index) in depositMethods" :key="index" v-bind="item.props">
@@ -174,20 +176,6 @@ const depositMethods = computed(() => {
   }
 
   const isMainnet = eraNetwork.value.l1Network?.id === mainnet.id;
-  const isTestnet = eraNetwork.value.l1Network && eraNetwork.value.l1Network.id !== mainnet.id;
-  if (isTestnet && eraNetwork.value.displaySettings?.showPartnerLinks) {
-    methods.push({
-      props: {
-        iconUrl: "/img/faucet.svg",
-        label: "Faucet",
-        description: "Receive testnet funds",
-        as: "a",
-        href: "https://docs.zksync.io/build/tooling/network-faucets.html",
-        target: "_blank",
-        icon: ArrowTopRightOnSquareIcon,
-      },
-    });
-  }
   methods.push({
     props: {
       label: "View your address",

@@ -1,5 +1,5 @@
 <template>
-  <CommonButton class="back-button">
+  <CommonButton class="back-button" variant="white">
     <ArrowLeftIcon class="back-button-icon" aria-hidden="true" />
   </CommonButton>
 </template>

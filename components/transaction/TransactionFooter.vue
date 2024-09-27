@@ -28,13 +28,14 @@
         v-if="connectorName !== 'WalletConnect'"
         type="submit"
         :disabled="switchingNetworkInProgress"
+        size="lg"
         variant="primary"
         class="w-full"
         @click="eraWalletStore.setCorrectNetwork"
       >
         Change wallet network to {{ eraNetwork.name }}
       </CommonButton>
-      <CommonButton v-else disabled variant="primary" class="w-full">
+      <CommonButton v-else disabled size="lg" variant="primary" class="w-full">
         Change network manually to {{ eraNetwork.name }} in your {{ walletName }} wallet
       </CommonButton>
     </div>

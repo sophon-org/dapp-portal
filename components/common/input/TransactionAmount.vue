@@ -34,7 +34,7 @@
         </transition>
       </div>
       <div class="mt-4 flex gap-2">
-        <div class="w-full">
+        <div class="h-[57px] w-full">
           <CommonInputLine
             id="transaction-amount-input"
             v-model.trim="inputted"

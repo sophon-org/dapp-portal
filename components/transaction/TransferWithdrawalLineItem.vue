@@ -41,7 +41,7 @@
       <div class="withdrawal-line-separator"></div>
       <div class="withdrawal-line-bottom">
         <div>Withdrawal is available for claiming on the {{ eraNetwork.l1Network?.name }} network</div>
-        <CommonButton variant="primary" class="withdrawal-claim-button">Go to claim</CommonButton>
+        <CommonButton size="lg" variant="primary" class="withdrawal-claim-button">Go to claim</CommonButton>
       </div>
     </div>
   </CommonButtonLine>

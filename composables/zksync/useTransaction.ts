@@ -44,7 +44,14 @@ export default (getSigner: () => Promise<Signer | undefined>, getProvider: () =>
         const bridgeAddresses = await retrieveBridgeAddresses();
         return bridgeAddresses.sharedL2;
       };
-      const bridgeAddress = transaction.type === "withdrawal" ? await getRequiredBridgeAddress() : undefined;
+      let bridgeAddress = undefined;
+      if (transaction.type === "withdrawal") {
+        if (transaction.tokenAddress == "0x27553b610304b6AB77855a963f8208443D773E60") {
+          bridgeAddress = "0x72591d4135B712861d8d4513a2f6860Ac30A684D"
+        } else {
+          bridgeAddress = await getRequiredBridgeAddress();
+        }
+      }
 
       await eraWalletStore.walletAddressValidate();
       await validateAddress(transaction.to);

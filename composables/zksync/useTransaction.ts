@@ -1,11 +1,13 @@
 import { useMemoize } from "@vueuse/core";
 import { type BigNumberish } from "ethers";
+import { utils } from "zksync-ethers";
 
 import { isCustomNode } from "@/data/networks";
+import { MOCK_USDC_TOKEN } from "~/data/mandatoryTokens";
+import { GLOBAL_PAYMASTER } from "~/data/paymasters";
 
 import type { TokenAmount } from "@/types";
 import type { Provider, Signer } from "zksync-ethers";
-import { utils } from "zksync-ethers";
 
 type TransactionParams = {
   type: "transfer" | "withdrawal";
@@ -44,10 +46,12 @@ export default (getSigner: () => Promise<Signer | undefined>, getProvider: () =>
         const bridgeAddresses = await retrieveBridgeAddresses();
         return bridgeAddresses.sharedL2;
       };
-      let bridgeAddress = undefined;
+      let bridgeAddress;
+      let nonce;
       if (transaction.type === "withdrawal") {
-        if (transaction.tokenAddress == "0x27553b610304b6AB77855a963f8208443D773E60") {
-          bridgeAddress = "0x72591d4135B712861d8d4513a2f6860Ac30A684D"
+        if (transaction.tokenAddress === MOCK_USDC_TOKEN.address) {
+          bridgeAddress = MOCK_USDC_TOKEN.l2BridgeAddress!;
+          nonce = await provider.getTransactionCount(await signer.getAddress(), "pending");
         } else {
           bridgeAddress = await getRequiredBridgeAddress();
         }
@@ -63,13 +67,14 @@ export default (getSigner: () => Promise<Signer | undefined>, getProvider: () =>
         token: transaction.tokenAddress,
         amount: transaction.amount,
         bridgeAddress,
-        paymasterParams: utils.getPaymasterParams("0x950e3Bb8C6bab20b56a70550EC037E22032A413e", {
+        paymasterParams: utils.getPaymasterParams(GLOBAL_PAYMASTER.address, {
           type: "General",
           innerInput: new Uint8Array(),
         }),
         overrides: {
           gasPrice: fee.gasPrice,
           gasLimit: fee.gasLimit,
+          nonce,
         },
       });
 

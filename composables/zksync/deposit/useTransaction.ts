@@ -1,3 +1,5 @@
+import { MOCK_USDC_TOKEN } from "~/data/mandatoryTokens";
+
 import type { DepositFeeValues } from "@/composables/zksync/deposit/useFee";
 import type { BigNumberish } from "ethers";
 import type { L1Signer } from "zksync-ethers";
@@ -40,7 +42,7 @@ export default (getL1Signer: () => Promise<L1Signer | undefined>) => {
 
       status.value = "waiting-for-signature";
       let depositResponse;
-      if (transaction.tokenAddress == "0xBF4FdF7BF4014EA78C0A07259FBc4315Cb10d94E") {
+      if (transaction.tokenAddress === MOCK_USDC_TOKEN.l1Address) {
         depositResponse = await wallet.deposit({
           to: transaction.to,
           token: transaction.tokenAddress,

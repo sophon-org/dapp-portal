@@ -1,5 +1,8 @@
-import { BigNumber } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { type Provider } from "zksync-ethers";
+import IERC20 from "zksync-ethers/abi/IERC20.json";
+
+import { MOCK_USDC_TOKEN } from "~/data/mandatoryTokens";
 
 import type { Token, TokenAmount } from "@/types";
 import type { BigNumberish } from "ethers";
@@ -14,17 +17,19 @@ export type FeeEstimationParams = {
 export default (
   getProvider: () => Provider,
   tokens: Ref<{ [tokenSymbol: string]: Token } | undefined>,
-  balances: Ref<TokenAmount[]>
+  balances: Ref<TokenAmount[]>,
+  totalComputeAmount: Ref<BigNumber>
 ) => {
   let params: FeeEstimationParams | undefined;
-
   const gasLimit = ref<BigNumberish | undefined>();
   const gasPrice = ref<BigNumberish | undefined>();
+  const approvalNeeded = ref(false);
+  const allowanceValue = ref<BigNumber | undefined>();
 
   const totalFee = computed(() => {
     return "0"; // fee check disabled
-    /*if (!gasLimit.value || !gasPrice.value) return undefined;
-    return calculateFee(gasLimit.value, gasPrice.value).toString();*/
+    /* if (!gasLimit.value || !gasPrice.value) return undefined;
+    return calculateFee(gasLimit.value, gasPrice.value).toString(); */
   });
 
   const feeToken = computed(() => {
@@ -32,7 +37,7 @@ export default (
   });
   const enoughBalanceToCoverFee = computed(() => {
     return true; // fee check disabled
-    /*if (!feeToken.value || inProgress.value) {
+    /* if (!feeToken.value || inProgress.value) {
       return true;
     }
     const feeTokenBalance = balances.value.find((e) => e.address === feeToken.value!.address);
@@ -40,8 +45,30 @@ export default (
     if (totalFee.value && BigNumber.from(totalFee.value).gt(feeTokenBalance.amount)) {
       return false;
     }
-    return true;*/
+    return true; */
   });
+
+  function checkFeeTokenBalance() {
+    if (params?.type === "withdrawal" && params.tokenAddress === MOCK_USDC_TOKEN.address) {
+      return totalComputeAmount.value.isZero() ? allowanceValue.value : totalComputeAmount.value;
+    } else {
+      return balances.value.find((e) => e.address === params!.tokenAddress)?.amount || "1";
+    }
+  }
+
+  async function checkApproval(tokenAddress: string, owner: string, spender: string): Promise<boolean> {
+    const provider = getProvider();
+    const tokenContract = new ethers.Contract(tokenAddress, IERC20, provider);
+    const allowance = await tokenContract.allowance(owner, spender);
+    allowanceValue.value = BigNumber.from(allowance);
+
+    if (allowanceValue.value.isZero()) return false;
+
+    const isApproved = BigNumber.from(allowance).gte(totalComputeAmount.value);
+
+    approvalNeeded.value = !isApproved;
+    return isApproved;
+  }
 
   const {
     inProgress,
@@ -52,8 +79,11 @@ export default (
     async () => {
       if (!params) throw new Error("Params are not available");
 
+      // Check if approval is needed before estimating gas
+      if (approvalNeeded.value) return;
+
       const provider = getProvider();
-      const tokenBalance = balances.value.find((e) => e.address === params!.tokenAddress)?.amount || "1";
+      const tokenBalance = checkFeeTokenBalance();
       const [price, limit] = await Promise.all([
         retry(() => provider.getGasPrice()),
         retry(() => {
@@ -62,6 +92,9 @@ export default (
             to: params!.to,
             token: params!.tokenAddress,
             amount: tokenBalance,
+            ...(params!.tokenAddress === MOCK_USDC_TOKEN.address
+              ? { bridgeAddress: MOCK_USDC_TOKEN.l2BridgeAddress! }
+              : {}),
           });
         }),
       ]);
@@ -83,6 +116,11 @@ export default (
     error,
     estimateFee: async (estimationParams: FeeEstimationParams) => {
       params = estimationParams;
+      if (params.tokenAddress === MOCK_USDC_TOKEN.address && params.type === "withdrawal") {
+        const isApproved = await checkApproval(params.tokenAddress, params.from, MOCK_USDC_TOKEN.l2BridgeAddress!);
+
+        if (!isApproved) return;
+      }
       await cacheEstimateFee(params);
     },
     resetFee: () => {

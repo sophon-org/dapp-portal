@@ -1,5 +1,6 @@
 import { useMemoize } from "@vueuse/core";
 import { type BigNumberish } from "ethers";
+import { utils } from "zksync-ethers";
 
 import { isCustomNode } from "@/data/networks";
 

@@ -23,10 +23,10 @@
         },
         "rpcUrls": {
           "default": {
-            "http": ["https://ethereum-sepolia.rpc.subquery.network/public"]
+            "http": ["https://ethereum.rpc.subquery.network/public"]
           },
           "public": {
-            "http": ["https://ethereum-sepolia.rpc.subquery.network/public"]
+            "http": ["https://ethereum.rpc.subquery.network/public"]
           }
         }
       }

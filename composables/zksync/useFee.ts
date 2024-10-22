@@ -1,4 +1,4 @@
-import { BigNumber } from "ethers";
+// import { BigNumber } from "ethers";
 import { type Provider } from "zksync-ethers";
 
 import type { Token, TokenAmount } from "@/types";
@@ -23,8 +23,8 @@ export default (
 
   const totalFee = computed(() => {
     return "0"; // fee check disabled
-    /*if (!gasLimit.value || !gasPrice.value) return undefined;
-    return calculateFee(gasLimit.value, gasPrice.value).toString();*/
+    /* if (!gasLimit.value || !gasPrice.value) return undefined;
+    return calculateFee(gasLimit.value, gasPrice.value).toString(); */
   });
 
   const feeToken = computed(() => {
@@ -32,7 +32,7 @@ export default (
   });
   const enoughBalanceToCoverFee = computed(() => {
     return true; // fee check disabled
-    /*if (!feeToken.value || inProgress.value) {
+    /* if (!feeToken.value || inProgress.value) {
       return true;
     }
     const feeTokenBalance = balances.value.find((e) => e.address === feeToken.value!.address);
@@ -40,7 +40,7 @@ export default (
     if (totalFee.value && BigNumber.from(totalFee.value).gt(feeTokenBalance.amount)) {
       return false;
     }
-    return true;*/
+    return true; */
   });
 
   const {

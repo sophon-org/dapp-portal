@@ -39,27 +39,27 @@ export default (getL1Signer: () => Promise<L1Signer | undefined>) => {
       }
 
       status.value = "waiting-for-signature";
-      let depositResponse;
-      if (transaction.tokenAddress == "0xBF4FdF7BF4014EA78C0A07259FBc4315Cb10d94E") {
-        depositResponse = await wallet.deposit({
-          to: transaction.to,
-          token: transaction.tokenAddress,
-          amount: transaction.amount,
-          l2GasLimit: fee.l2GasLimit,
-          approveBaseERC20: false,
-          bridgeAddress: "0x3f842b5FaD08Bac49D0517C975d393f5f466Fd3b",
-          overrides,
-        });
-      } else {
-        depositResponse = await wallet.deposit({
-          to: transaction.to,
-          token: transaction.tokenAddress,
-          amount: transaction.amount,
-          l2GasLimit: fee.l2GasLimit,
-          approveBaseERC20: false,
-          overrides,
-        });
-      }
+      // let depositResponse;
+      // if (transaction.tokenAddress === "0xBF4FdF7BF4014EA78C0A07259FBc4315Cb10d94E") {
+      //   depositResponse = await wallet.deposit({
+      //     to: transaction.to,
+      //     token: transaction.tokenAddress,
+      //     amount: transaction.amount,
+      //     l2GasLimit: fee.l2GasLimit,
+      //     approveBaseERC20: false,
+      //     bridgeAddress: "0x3f842b5FaD08Bac49D0517C975d393f5f466Fd3b",
+      //     overrides,
+      //   });
+      // } else {
+      const depositResponse = await wallet.deposit({
+        to: transaction.to,
+        token: transaction.tokenAddress,
+        amount: transaction.amount,
+        l2GasLimit: fee.l2GasLimit,
+        approveBaseERC20: false,
+        overrides,
+      });
+      // }
 
       ethTransactionHash.value = depositResponse.hash;
       status.value = "done";

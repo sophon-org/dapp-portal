@@ -1,6 +1,48 @@
 [
   {
     "network": {
+      "id": 50104,
+      "key": "sophon",
+      "name": "Sophon",
+      "rpcUrl": "https://rpc.sophon.xyz",
+      "blockExplorerUrl": "https://explorer.sophon.xyz",
+      "blockExplorerApi": "https://api-explorer.sophon.xyz",
+      "nativeCurrency": {
+        "name": "Sophon",
+        "symbol": "SOPH",
+        "decimals": 18
+      },
+      "l1Network": {
+        "id": 1,
+        "name": "Ethereum",
+        "network": "Ethereum",
+        "nativeCurrency": {
+          "name": "Ether",
+          "symbol": "ETH",
+          "decimals": 18
+        },
+        "rpcUrls": {
+          "default": {
+            "http": ["https://ethereum-sepolia.rpc.subquery.network/public"]
+          },
+          "public": {
+            "http": ["https://ethereum-sepolia.rpc.subquery.network/public"]
+          }
+        }
+      }
+    },
+    "tokens": [
+      {
+        "address": "0x000000000000000000000000000000000000800A",
+        "l1Address": "0x6B7774CB12ed7573a7586E7D0e62a2A563dDd3f0",
+        "symbol": "SOPH",
+        "decimals": 18,
+        "iconUrl": "/img/sophon.svg"
+      }
+    ]
+  },
+  {
+    "network": {
       "id": 531050104,
       "key": "sophon-testnet",
       "name": "Sophon testnet",

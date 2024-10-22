@@ -2,7 +2,8 @@ import { BigNumber, ethers } from "ethers";
 import { type Provider } from "zksync-ethers";
 import IERC20 from "zksync-ethers/abi/IERC20.json";
 
-import { MOCK_USDC_TOKEN } from "~/data/mandatoryTokens";
+import { MAINNET } from "~/data/mainnet";
+import { TESTNET } from "~/data/testnet";
 
 import type { Token, TokenAmount } from "@/types";
 import type { BigNumberish } from "ethers";
@@ -25,6 +26,8 @@ export default (
   const gasPrice = ref<BigNumberish | undefined>();
   const approvalNeeded = ref(false);
   const allowanceValue = ref<BigNumber | undefined>();
+  const { selectedNetwork } = storeToRefs(useNetworkStore());
+  const NETWORK_CONFIG = selectedNetwork.value.key === "mainnet" ? MAINNET : TESTNET;
 
   const totalFee = computed(() => {
     return "0"; // fee check disabled
@@ -49,7 +52,7 @@ export default (
   });
 
   function checkFeeTokenBalance() {
-    if (params?.type === "withdrawal" && params.tokenAddress === MOCK_USDC_TOKEN.address) {
+    if (params?.type === "withdrawal" && params.tokenAddress === NETWORK_CONFIG.CUSTOM_USDC_TOKEN.address) {
       return totalComputeAmount.value.isZero() ? allowanceValue.value : totalComputeAmount.value;
     } else {
       return balances.value.find((e) => e.address === params!.tokenAddress)?.amount || "1";
@@ -92,8 +95,8 @@ export default (
             to: params!.to,
             token: params!.tokenAddress,
             amount: tokenBalance,
-            ...(params!.tokenAddress === MOCK_USDC_TOKEN.address
-              ? { bridgeAddress: MOCK_USDC_TOKEN.l2BridgeAddress! }
+            ...(params!.tokenAddress === NETWORK_CONFIG.CUSTOM_USDC_TOKEN.address
+              ? { bridgeAddress: NETWORK_CONFIG.CUSTOM_USDC_TOKEN.l2BridgeAddress! }
               : {}),
           });
         }),
@@ -116,8 +119,12 @@ export default (
     error,
     estimateFee: async (estimationParams: FeeEstimationParams) => {
       params = estimationParams;
-      if (params.tokenAddress === MOCK_USDC_TOKEN.address && params.type === "withdrawal") {
-        const isApproved = await checkApproval(params.tokenAddress, params.from, MOCK_USDC_TOKEN.l2BridgeAddress!);
+      if (params.tokenAddress === NETWORK_CONFIG.CUSTOM_USDC_TOKEN.address && params.type === "withdrawal") {
+        const isApproved = await checkApproval(
+          params.tokenAddress,
+          params.from,
+          NETWORK_CONFIG.CUSTOM_USDC_TOKEN.l2BridgeAddress!
+        );
 
         if (!isApproved) return;
       }

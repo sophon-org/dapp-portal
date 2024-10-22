@@ -1,4 +1,5 @@
-import { MOCK_USDC_TOKEN } from "~/data/mandatoryTokens";
+import { MAINNET } from "~/data/mainnet";
+import { TESTNET } from "~/data/testnet";
 
 import type { DepositFeeValues } from "@/composables/zksync/deposit/useFee";
 import type { BigNumberish } from "ethers";
@@ -9,6 +10,8 @@ export default (getL1Signer: () => Promise<L1Signer | undefined>) => {
   const error = ref<Error | undefined>();
   const ethTransactionHash = ref<string | undefined>();
   const eraWalletStore = useZkSyncWalletStore();
+  const { selectedNetwork } = storeToRefs(useNetworkStore());
+  const NETWORK_CONFIG = selectedNetwork.value.key === "mainnet" ? MAINNET : TESTNET;
 
   const { validateAddress } = useScreening();
 
@@ -42,7 +45,7 @@ export default (getL1Signer: () => Promise<L1Signer | undefined>) => {
 
       status.value = "waiting-for-signature";
       let depositResponse;
-      if (transaction.tokenAddress === MOCK_USDC_TOKEN.l1Address) {
+      if (transaction.tokenAddress === NETWORK_CONFIG.CUSTOM_USDC_TOKEN.l1Address) {
         depositResponse = await wallet.deposit({
           to: transaction.to,
           token: transaction.tokenAddress,

@@ -3,8 +3,8 @@ import { utils } from "zksync-ethers";
 import { type Provider } from "zksync-ethers";
 import IERC20 from "zksync-ethers/abi/IERC20.json";
 
-import { MOCK_USDC_TOKEN } from "~/data/mandatoryTokens";
-import { GLOBAL_PAYMASTER } from "~/data/paymasters";
+import { MAINNET } from "~/data/mainnet";
+import { TESTNET } from "~/data/testnet";
 
 import type { Hash } from "~/types";
 
@@ -16,6 +16,8 @@ export default (
 ) => {
   const { getSigner } = useZkSyncWalletStore();
   const approvalNeeded = ref(false);
+  const { selectedNetwork } = storeToRefs(useNetworkStore());
+  const NETWORK_CONFIG = selectedNetwork.value.key === "mainnet" ? MAINNET : TESTNET;
   let approvalAmount: BigNumberish | undefined;
 
   const fetchAllowance = async (owner: string, spender: string): Promise<BigNumber> => {
@@ -33,7 +35,9 @@ export default (
     error,
     execute: getAllowance,
     reset,
-  } = usePromise(() => fetchAllowance(accountAddress.value!, MOCK_USDC_TOKEN.l2BridgeAddress!), { cache: false });
+  } = usePromise(() => fetchAllowance(accountAddress.value!, NETWORK_CONFIG.CUSTOM_USDC_TOKEN.l2BridgeAddress!), {
+    cache: false,
+  });
 
   const setAllowanceStatus = ref<"not-started" | "processing" | "waiting-for-signature" | "sending" | "done">(
     "not-started"
@@ -53,8 +57,8 @@ export default (
         if (!accountAddress.value) throw new Error("Account address is not available");
 
         let contractAddress;
-        if (tokenAddress.value === MOCK_USDC_TOKEN.address) {
-          contractAddress = MOCK_USDC_TOKEN.l2BridgeAddress;
+        if (tokenAddress.value === NETWORK_CONFIG.CUSTOM_USDC_TOKEN.address) {
+          contractAddress = NETWORK_CONFIG.CUSTOM_USDC_TOKEN.l2BridgeAddress;
         } else {
           contractAddress = await getContractAddress();
         }
@@ -68,7 +72,7 @@ export default (
         setAllowanceStatus.value = "sending";
         const tx = await tokenContract.approve(contractAddress, approvalAmount!.toString(), {
           customData: {
-            paymasterParams: utils.getPaymasterParams(GLOBAL_PAYMASTER.address, {
+            paymasterParams: utils.getPaymasterParams(NETWORK_CONFIG.GLOBAL_PAYMASTER.address, {
               type: "General",
               innerInput: new Uint8Array(),
             }),
@@ -90,7 +94,7 @@ export default (
   );
 
   const requestAllowance = async () => {
-    if (accountAddress.value && tokenAddress.value && tokenAddress.value === MOCK_USDC_TOKEN.address) {
+    if (accountAddress.value && tokenAddress.value && tokenAddress.value === NETWORK_CONFIG.CUSTOM_USDC_TOKEN.address) {
       await getAllowance();
     } else {
       reset();

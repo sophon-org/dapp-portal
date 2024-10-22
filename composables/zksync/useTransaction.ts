@@ -3,8 +3,8 @@ import { type BigNumberish } from "ethers";
 import { utils } from "zksync-ethers";
 
 import { isCustomNode } from "@/data/networks";
-import { MOCK_USDC_TOKEN } from "~/data/mandatoryTokens";
-import { GLOBAL_PAYMASTER } from "~/data/paymasters";
+import { MAINNET } from "~/data/mainnet";
+import { TESTNET } from "~/data/testnet";
 
 import type { TokenAmount } from "@/types";
 import type { Provider, Signer } from "zksync-ethers";
@@ -25,6 +25,8 @@ export default (getSigner: () => Promise<Signer | undefined>, getProvider: () =>
   const error = ref<Error | undefined>();
   const transactionHash = ref<string | undefined>();
   const eraWalletStore = useZkSyncWalletStore();
+  const { selectedNetwork } = storeToRefs(useNetworkStore());
+  const NETWORK_CONFIG = selectedNetwork.value.key === "mainnet" ? MAINNET : TESTNET;
 
   const retrieveBridgeAddresses = useMemoize(() => getProvider().getDefaultBridgeAddresses());
   const { validateAddress } = useScreening();
@@ -49,8 +51,8 @@ export default (getSigner: () => Promise<Signer | undefined>, getProvider: () =>
       let bridgeAddress;
       let nonce;
       if (transaction.type === "withdrawal") {
-        if (transaction.tokenAddress === MOCK_USDC_TOKEN.address) {
-          bridgeAddress = MOCK_USDC_TOKEN.l2BridgeAddress!;
+        if (transaction.tokenAddress === NETWORK_CONFIG.CUSTOM_USDC_TOKEN.address) {
+          bridgeAddress = NETWORK_CONFIG.CUSTOM_USDC_TOKEN.l2BridgeAddress!;
           nonce = await provider.getTransactionCount(await signer.getAddress(), "pending");
         } else {
           bridgeAddress = await getRequiredBridgeAddress();
@@ -67,7 +69,7 @@ export default (getSigner: () => Promise<Signer | undefined>, getProvider: () =>
         token: transaction.tokenAddress,
         amount: transaction.amount,
         bridgeAddress,
-        paymasterParams: utils.getPaymasterParams(GLOBAL_PAYMASTER.address, {
+        paymasterParams: utils.getPaymasterParams(NETWORK_CONFIG.GLOBAL_PAYMASTER.address, {
           type: "General",
           innerInput: new Uint8Array(),
         }),

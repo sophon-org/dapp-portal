@@ -333,7 +333,8 @@ import { isCustomNode } from "@/data/networks";
 import TransferSubmitted from "@/views/transactions/TransferSubmitted.vue";
 import WithdrawalSubmitted from "@/views/transactions/WithdrawalSubmitted.vue";
 import useWithdrawalAllowance from "~/composables/transaction/useWithdrawalAllowance";
-import { MOCK_USDC_TOKEN } from "~/data/mandatoryTokens";
+import { MAINNET } from "~/data/mainnet";
+import { TESTNET } from "~/data/testnet";
 
 import type { FeeEstimationParams } from "@/composables/zksync/useFee";
 import type { Token, TokenAmount } from "@/types";
@@ -358,6 +359,8 @@ const { eraNetwork } = storeToRefs(providerStore);
 const { destinations } = storeToRefs(useDestinationsStore());
 const { tokens, tokensRequestInProgress, tokensRequestError } = storeToRefs(tokensStore);
 const { balance, balanceInProgress, balanceError } = storeToRefs(walletStore);
+const { selectedNetwork } = storeToRefs(useNetworkStore());
+const NETWORK_CONFIG = selectedNetwork.value.key === "mainnet" ? MAINNET : TESTNET;
 const refetchingAllowance = ref(false);
 
 const toNetworkModalOpened = ref(false);
@@ -460,7 +463,7 @@ const {
   providerStore.requestProvider,
   computed(() => account.value.address),
   computed(() => selectedToken.value?.address),
-  async () => await MOCK_USDC_TOKEN.address
+  async () => await NETWORK_CONFIG.CUSTOM_USDC_TOKEN.address
 );
 
 const enoughAllowance = computed(() => {

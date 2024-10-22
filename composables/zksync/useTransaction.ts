@@ -6,6 +6,7 @@ import { isCustomNode } from "@/data/networks";
 
 import type { TokenAmount } from "@/types";
 import type { Provider, Signer } from "zksync-ethers";
+import { utils } from "zksync-ethers";
 
 type TransactionParams = {
   type: "transfer" | "withdrawal";

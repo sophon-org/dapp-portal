@@ -60,7 +60,6 @@ export default (getL1Signer: () => Promise<L1Signer | undefined>) => {
         overrides,
       });
       // }
-
       ethTransactionHash.value = depositResponse.hash;
       status.value = "done";
       return depositResponse;

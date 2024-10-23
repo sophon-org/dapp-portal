@@ -19,8 +19,8 @@ const ETH_TOKEN: Token = {
 const CUSTOM_USDC_TOKEN: Token = {
   address: "0x27553b610304b6AB77855a963f8208443D773E60",
   l1Address: "0xBF4FdF7BF4014EA78C0A07259FBc4315Cb10d94E",
-  symbol: "MockUSDC",
-  name: "Mock USD coin",
+  symbol: "CustomUSDC",
+  name: "Custom USD coin",
   decimals: 6,
   iconUrl: "/img/usdc.svg",
   l1BridgeAddress: "0x3f842b5FaD08Bac49D0517C975d393f5f466Fd3b",

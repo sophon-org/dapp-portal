@@ -17,7 +17,7 @@ export default (
   const { getSigner } = useZkSyncWalletStore();
   const approvalNeeded = ref(false);
   const { selectedNetwork } = storeToRefs(useNetworkStore());
-  const NETWORK_CONFIG = selectedNetwork.value.key === "mainnet" ? MAINNET : TESTNET;
+  const NETWORK_CONFIG = selectedNetwork.value.key === "sophon-mainnet" ? MAINNET : TESTNET;
   let approvalAmount: BigNumberish | undefined;
 
   const fetchAllowance = async (owner: string, spender: string): Promise<BigNumber> => {

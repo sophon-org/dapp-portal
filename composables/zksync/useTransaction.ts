@@ -26,7 +26,7 @@ export default (getSigner: () => Promise<Signer | undefined>, getProvider: () =>
   const transactionHash = ref<string | undefined>();
   const eraWalletStore = useZkSyncWalletStore();
   const { selectedNetwork } = storeToRefs(useNetworkStore());
-  const NETWORK_CONFIG = selectedNetwork.value.key === "mainnet" ? MAINNET : TESTNET;
+  const NETWORK_CONFIG = selectedNetwork.value.key === "sophon-mainnet" ? MAINNET : TESTNET;
 
   const retrieveBridgeAddresses = useMemoize(() => getProvider().getDefaultBridgeAddresses());
   const { validateAddress } = useScreening();

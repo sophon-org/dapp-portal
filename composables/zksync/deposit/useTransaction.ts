@@ -11,7 +11,7 @@ export default (getL1Signer: () => Promise<L1Signer | undefined>) => {
   const ethTransactionHash = ref<string | undefined>();
   const eraWalletStore = useZkSyncWalletStore();
   const { selectedNetwork } = storeToRefs(useNetworkStore());
-  const NETWORK_CONFIG = selectedNetwork.value.key === "mainnet" ? MAINNET : TESTNET;
+  const NETWORK_CONFIG = selectedNetwork.value.key === "sophon-mainnet" ? MAINNET : TESTNET;
 
   const { validateAddress } = useScreening();
 

@@ -27,7 +27,7 @@ export default (
   const approvalNeeded = ref(false);
   const allowanceValue = ref<BigNumber | undefined>();
   const { selectedNetwork } = storeToRefs(useNetworkStore());
-  const NETWORK_CONFIG = selectedNetwork.value.key === "mainnet" ? MAINNET : TESTNET;
+  const NETWORK_CONFIG = selectedNetwork.value.key === "sophon-mainnet" ? MAINNET : TESTNET;
 
   const totalFee = computed(() => {
     return "0"; // fee check disabled

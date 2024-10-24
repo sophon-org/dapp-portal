@@ -639,8 +639,6 @@ const continueButtonDisabled = computed(() => {
     return true;
   }
   if (feeLoading.value || !fee.value) return true;
-  if (enoughAllowance.value && refetchingAllowance.value) return true;
-  if (!enoughAllowance.value) return false;
 
   return false;
 });

@@ -54,6 +54,7 @@
           :balances="availableBalances"
           :max-amount="maxAmount"
           :loading="tokensRequestInProgress || balanceInProgress"
+          :approve-required="!enoughAllowance && (!tokenCustomBridge || !tokenCustomBridge.bridgingDisabled)"
         >
           <template v-if="type === 'withdrawal' && account.address" #token-dropdown-bottom>
             <CommonAlert class="sticky bottom-0 mt-6" variant="neutral" :icon="InformationCircleIcon">
@@ -106,6 +107,23 @@
           class="mt-6"
           :custom-bridge-token="tokenCustomBridge"
         />
+        <CommonHeightTransition v-if="step === 'form'" :opened="!enoughAllowance && !continueButtonDisabled">
+          <DestinationItem v-if="!enoughAllowance" as="div" class="p-8 sm:mt-block-gap" size="lg">
+            <template #label> Approve {{ selectedToken?.symbol }} allowance </template>
+            <template #underline>
+              Before depositing you need to give our bridge permission to spend specified amount of
+              {{ selectedToken?.symbol }}.
+              <CommonButtonLabel variant="light" as="a" :href="TOKEN_ALLOWANCE" target="_blank">
+                Learn more
+              </CommonButtonLabel>
+            </template>
+            <template #image>
+              <div class="aspect-square h-full w-full rounded-full bg-warning-400 p-3 text-black">
+                <LockClosedIcon aria-hidden="true" />
+              </div>
+            </template>
+          </DestinationItem>
+        </CommonHeightTransition>
       </template>
       <template v-else-if="step === 'withdrawal-finalization-warning'">
         <CommonAlert variant="warning" :icon="ExclamationTriangleIcon" class="mb-block-padding-1/2 sm:mb-block-gap">
@@ -186,7 +204,7 @@
         <div class="mt-4 flex items-center gap-4">
           <transition v-bind="TransitionOpacity()">
             <TransactionFeeDetails
-              v-if="0==1 && !feeError && (fee || feeLoading)"
+              v-if="0 == 1 && !feeError && (fee || feeLoading)"
               label="Fee:"
               :fee-token="feeToken"
               :fee-amount="fee"
@@ -214,21 +232,54 @@
             </p>
             <NuxtLink :to="{ name: 'receive-methods' }" class="alert-link">Receive funds</NuxtLink>
           </CommonAlert>
+          <CommonErrorBlock v-else-if="allowanceRequestError" class="mt-2" @try-again="requestAllowance">
+            Checking allowance error: {{ allowanceRequestError.message }}
+          </CommonErrorBlock>
+          <CommonErrorBlock v-else-if="setAllowanceError" class="mt-2" @try-again="setTokenAllowance">
+            Allowance approval error: {{ setAllowanceError.message }}
+          </CommonErrorBlock>
         </transition>
 
         <TransactionFooter>
           <template #after-checks>
-            <CommonButton
-              v-if="step === 'form'"
-              type="submit"
-              :disabled="continueButtonDisabled"
-              size="lg"
-              variant="primary"
-              class="w-full"
-              @click="buttonContinue()"
-            >
-              Continue
-            </CommonButton>
+            <template v-if="step === 'form'">
+              <template v-if="!enoughAllowance && !continueButtonDisabled">
+                <CommonButton
+                  type="submit"
+                  :disabled="continueButtonDisabled || setAllowanceInProgress"
+                  size="lg"
+                  variant="primary"
+                  class="w-full"
+                  @click="setTokenAllowance()"
+                >
+                  <transition v-bind="TransitionPrimaryButtonText" mode="out-in">
+                    <span v-if="setAllowanceStatus === 'processing'">Processing...</span>
+                    <span v-else-if="setAllowanceStatus === 'waiting-for-signature'"
+                      >Waiting for allowance approval confirmation</span
+                    >
+                    <span v-else-if="setAllowanceStatus === 'sending'" class="flex items-center">
+                      <CommonSpinner class="mr-2 h-6 w-6" />
+                      Approving allowance...
+                    </span>
+                    <span v-else>Approve {{ selectedToken?.symbol }} allowance</span>
+                  </transition>
+                </CommonButton>
+                <TransactionButtonUnderlineConfirmTransaction
+                  :opened="setAllowanceStatus === 'waiting-for-signature'"
+                />
+              </template>
+              <CommonButton
+                v-else
+                type="submit"
+                :disabled="continueButtonDisabled"
+                size="lg"
+                variant="primary"
+                class="w-full"
+                @click="buttonContinue()"
+              >
+                Continue
+              </CommonButton>
+            </template>
             <template v-else-if="step === 'confirm'">
               <transition v-bind="TransitionAlertScaleInOutTransition">
                 <div v-if="!enoughBalanceForTransaction" class="mb-4">
@@ -270,7 +321,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ExclamationTriangleIcon, InformationCircleIcon } from "@heroicons/vue/24/outline";
+import { ExclamationTriangleIcon, InformationCircleIcon, LockClosedIcon } from "@heroicons/vue/24/outline";
 import { useRouteQuery } from "@vueuse/router";
 import { BigNumber } from "ethers";
 import { isAddress } from "ethers/lib/utils";
@@ -281,6 +332,9 @@ import { customBridgeTokens } from "@/data/customBridgeTokens";
 import { isCustomNode } from "@/data/networks";
 import TransferSubmitted from "@/views/transactions/TransferSubmitted.vue";
 import WithdrawalSubmitted from "@/views/transactions/WithdrawalSubmitted.vue";
+import useWithdrawalAllowance from "~/composables/transaction/useWithdrawalAllowance";
+import { MAINNET } from "~/data/mainnet";
+import { TESTNET } from "~/data/testnet";
 
 import type { FeeEstimationParams } from "@/composables/zksync/useFee";
 import type { Token, TokenAmount } from "@/types";
@@ -305,6 +359,9 @@ const { eraNetwork } = storeToRefs(providerStore);
 const { destinations } = storeToRefs(useDestinationsStore());
 const { tokens, tokensRequestInProgress, tokensRequestError } = storeToRefs(tokensStore);
 const { balance, balanceInProgress, balanceError } = storeToRefs(walletStore);
+const { selectedNetwork } = storeToRefs(useNetworkStore());
+const NETWORK_CONFIG = selectedNetwork.value.key === "sophon-mainnet" ? MAINNET : TESTNET;
+const refetchingAllowance = ref(false);
 
 const toNetworkModalOpened = ref(false);
 const toNetworkSelected = (networkKey?: string) => {
@@ -382,6 +439,51 @@ const unsubscribe = onboardStore.subscribeOnAccountChange(() => {
   step.value = "form";
 });
 
+const totalComputeAmount = computed(() => {
+  try {
+    if (!amount.value || !selectedToken.value) {
+      return BigNumber.from("0");
+    }
+    return decimalToBigNumber(amount.value, selectedToken.value.decimals);
+  } catch (error) {
+    return BigNumber.from("0");
+  }
+});
+
+const {
+  result: allowance,
+  error: allowanceRequestError,
+  requestAllowance,
+
+  setAllowanceStatus,
+  setAllowanceInProgress,
+  setAllowanceError,
+  setAllowance,
+} = useWithdrawalAllowance(
+  providerStore.requestProvider,
+  computed(() => account.value.address),
+  computed(() => selectedToken.value?.address),
+  async () => await NETWORK_CONFIG.CUSTOM_USDC_TOKEN.address
+);
+
+const enoughAllowance = computed(() => {
+  if (!allowance.value || !selectedToken.value || transaction.value?.type === "transfer") {
+    return true;
+  }
+  return !allowance.value.isZero() && allowance.value.gte(totalComputeAmount.value);
+});
+
+const setTokenAllowance = async () => {
+  refetchingAllowance.value = true;
+  try {
+    await setAllowance(totalComputeAmount.value);
+    await new Promise((resolve) => setTimeout(resolve, 2000)); // Wait for balances to be updated on API side
+    await fetchBalances(true);
+  } finally {
+    refetchingAllowance.value = false;
+  }
+};
+
 const {
   gasLimit,
   gasPrice,
@@ -392,7 +494,7 @@ const {
   enoughBalanceToCoverFee,
   estimateFee,
   resetFee,
-} = useFee(providerStore.requestProvider, tokens, balance);
+} = useFee(providerStore.requestProvider, tokens, balance, totalComputeAmount);
 
 const queryAddress = useRouteQuery<string | undefined>("address", undefined, {
   transform: String,
@@ -432,16 +534,7 @@ const maxAmount = computed(() => {
   }
   return tokenBalance.value.toString();
 });
-const totalComputeAmount = computed(() => {
-  try {
-    if (!amount.value || !selectedToken.value) {
-      return BigNumber.from("0");
-    }
-    return decimalToBigNumber(amount.value, selectedToken.value.decimals);
-  } catch (error) {
-    return BigNumber.from("0");
-  }
-});
+
 const enoughBalanceForTransaction = computed(() => {
   if (!fee.value || !selectedToken.value || !tokenBalance.value) {
     return true;
@@ -509,7 +602,7 @@ const estimate = async () => {
   });
 };
 watch(
-  [() => selectedToken.value?.address, () => tokenBalance.value?.toString()],
+  [() => selectedToken.value?.address, () => tokenBalance.value?.toString(), () => enoughAllowance.value],
   () => {
     resetFee();
     estimate();
@@ -546,6 +639,7 @@ const continueButtonDisabled = computed(() => {
     return true;
   }
   if (feeLoading.value || !fee.value) return true;
+
   return false;
 });
 const buttonContinue = () => {

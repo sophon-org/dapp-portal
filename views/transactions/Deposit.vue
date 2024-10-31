@@ -515,9 +515,21 @@ const setAmountToCurrentAllowance = () => {
   amount.value = parseTokenAmount(allowance.value, selectedToken.value.decimals);
 };
 const setTokenAllowance = async () => {
-  await setAllowance(totalComputeAmount.value);
-  await new Promise((resolve) => setTimeout(resolve, 2000)); // Wait for balances to be updated on API side
-  await fetchBalances(true);
+  try {
+    await setAllowance(totalComputeAmount.value);
+    // Wait for balances and blockchain state to update
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+    // Reset all relevant states
+    await Promise.all([
+      fetchBalances(true),
+      requestAllowance(), // Re-fetch allowance state
+      resetFee(), // Reset fee state
+    ]);
+    await estimate();
+  } catch (error) {
+    console.error("Error setting token allowance:", error);
+    throw error;
+  }
 };
 
 const unsubscribe = onboardStore.subscribeOnAccountChange(() => {
@@ -625,6 +637,18 @@ watch(
     estimate();
   },
   { immediate: true }
+);
+
+// Add a watcher to re-estimate fees when allowance changes
+watch(
+  [allowance, setAllowanceStatus, () => selectedToken.value?.address],
+  async ([newAllowance, newTokenAddress], [oldAllowance, oldTokenAddress]) => {
+    if (setAllowanceStatus.value !== "done") return;
+    if (newAllowance && oldAllowance && !newAllowance.eq(oldAllowance) && newTokenAddress === oldTokenAddress) {
+      await resetFee();
+      await estimate();
+    }
+  }
 );
 
 const autoUpdatingFee = computed(() => !feeError.value && fee.value && !feeLoading.value);

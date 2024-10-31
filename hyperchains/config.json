@@ -1,6 +1,48 @@
 [
   {
     "network": {
+      "id": 50104,
+      "key": "sophon",
+      "name": "Sophon",
+      "rpcUrl": "https://rpc.sophon.xyz",
+      "blockExplorerUrl": "https://explorer.sophon.xyz",
+      "blockExplorerApi": "https://api-explorer.sophon.xyz",
+      "nativeCurrency": {
+        "name": "Sophon",
+        "symbol": "SOPH",
+        "decimals": 18
+      },
+      "l1Network": {
+        "id": 1,
+        "name": "Ethereum",
+        "network": "Ethereum",
+        "nativeCurrency": {
+          "name": "Ether",
+          "symbol": "ETH",
+          "decimals": 18
+        },
+        "rpcUrls": {
+          "default": {
+            "http": ["https://cloudflare-eth.com"]
+          },
+          "public": {
+            "http": ["https://cloudflare-eth.com"]
+          }
+        }
+      }
+    },
+    "tokens": [
+      {
+        "address": "0x000000000000000000000000000000000000800A",
+        "l1Address": "0x6B7774CB12ed7573a7586E7D0e62a2A563dDd3f0",
+        "symbol": "SOPH",
+        "decimals": 18,
+        "iconUrl": "/img/sophon.svg"
+      }
+    ]
+  },
+  {
+    "network": {
       "id": 531050104,
       "key": "sophon-testnet",
       "name": "Sophon testnet",
@@ -45,6 +87,13 @@
         "symbol": "ETH",
         "decimals": 18,
         "iconUrl": "/img/eth.svg"
+      },
+      {
+        "l1Address": "0x94a9D9AC8a22534E3FaCa9F4e7F2E2cf85d5E4C8",
+        "symbol": "USDC",
+        "name": "USD coin",
+        "decimals": 6,
+        "iconUrl": "/img/usdc.svg"
       },
       {
         "address": "0x27553b610304b6AB77855a963f8208443D773E60",

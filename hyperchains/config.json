@@ -51,7 +51,7 @@
         "l1Address": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
         "symbol": "USDT",
         "decimals": 6,
-        "iconUrl": "/img/usdc.svg"
+        "iconUrl": "/img/usdt.svg"
       }
     ]
   },

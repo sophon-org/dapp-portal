@@ -1,6 +1,69 @@
 [
   {
     "network": {
+      "id": 50104,
+      "key": "sophon",
+      "name": "Sophon",
+      "rpcUrl": "https://rpc.sophon.xyz",
+      "blockExplorerUrl": "https://explorer.sophon.xyz",
+      "blockExplorerApi": "https://api-explorer.sophon.xyz",
+      "nativeCurrency": {
+        "name": "Sophon",
+        "symbol": "SOPH",
+        "decimals": 18
+      },
+      "l1Network": {
+        "id": 1,
+        "name": "Ethereum",
+        "network": "Ethereum",
+        "nativeCurrency": {
+          "name": "Ether",
+          "symbol": "ETH",
+          "decimals": 18
+        },
+        "rpcUrls": {
+          "default": {
+            "http": ["https://cloudflare-eth.com"]
+          },
+          "public": {
+            "http": ["https://cloudflare-eth.com"]
+          }
+        }
+      }
+    },
+    "tokens": [
+      {
+        "address": "0x000000000000000000000000000000000000800A",
+        "l1Address": "0x6B7774CB12ed7573a7586E7D0e62a2A563dDd3f0",
+        "symbol": "SOPH",
+        "decimals": 18,
+        "iconUrl": "/img/sophon.svg"
+      },
+      {
+        "address": "0x72af9F169B619D85A47Dfa8fefbCD39dE55c567D",
+        "l1Address": "0x0000000000000000000000000000000000000000",
+        "symbol": "ETH",
+        "decimals": 18,
+        "iconUrl": "/img/eth.svg"
+      },
+      {
+        "address": "0x6386dA73545ae4E2B2E0393688fA8B65Bb9a7169",
+        "l1Address": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+        "symbol": "USDT",
+        "decimals": 6,
+        "iconUrl": "/img/usdt.svg"
+      },
+      {
+        "address": "0x6386dA73545ae4E2B2E0393688fA8B65Bb9a7169",
+        "l1Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+        "symbol": "USDC",
+        "decimals": 6,
+        "iconUrl": "/img/usdc.svg"
+      }
+    ]
+  },
+  {
+    "network": {
       "id": 531050104,
       "key": "sophon-testnet",
       "name": "Sophon testnet",
@@ -47,16 +110,10 @@
         "iconUrl": "/img/eth.svg"
       },
       {
-        "l1Address": "0x94a9D9AC8a22534E3FaCa9F4e7F2E2cf85d5E4C8",
-        "symbol": "USDC",
-        "name": "USD coin",
-        "decimals": 6,
-        "iconUrl": "/img/usdc.svg"
-      },
-      {
+        "address": "0x27553b610304b6AB77855a963f8208443D773E60",
         "l1Address": "0xBF4FdF7BF4014EA78C0A07259FBc4315Cb10d94E",
-        "symbol": "MockUSDC",
-        "name": "Mock USD coin",
+        "symbol": "USDC",
+        "name": "USDC",
         "decimals": 6,
         "iconUrl": "/img/usdc.svg"
       }

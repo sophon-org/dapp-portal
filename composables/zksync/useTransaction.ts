@@ -1,11 +1,13 @@
 import { useMemoize } from "@vueuse/core";
 import { type BigNumberish } from "ethers";
+import { utils } from "zksync-ethers";
 
 import { isCustomNode } from "@/data/networks";
+import { MAINNET } from "~/data/mainnet";
+import { TESTNET } from "~/data/testnet";
 
 import type { TokenAmount } from "@/types";
 import type { Provider, Signer } from "zksync-ethers";
-import { utils } from "zksync-ethers";
 
 type TransactionParams = {
   type: "transfer" | "withdrawal";
@@ -23,6 +25,8 @@ export default (getSigner: () => Promise<Signer | undefined>, getProvider: () =>
   const error = ref<Error | undefined>();
   const transactionHash = ref<string | undefined>();
   const eraWalletStore = useZkSyncWalletStore();
+  const { selectedNetwork } = storeToRefs(useNetworkStore());
+  const NETWORK_CONFIG = selectedNetwork.value.key === "sophon-mainnet" ? MAINNET : TESTNET;
 
   const retrieveBridgeAddresses = useMemoize(() => getProvider().getDefaultBridgeAddresses());
   const { validateAddress } = useScreening();
@@ -44,7 +48,16 @@ export default (getSigner: () => Promise<Signer | undefined>, getProvider: () =>
         const bridgeAddresses = await retrieveBridgeAddresses();
         return bridgeAddresses.sharedL2;
       };
-      const bridgeAddress = transaction.type === "withdrawal" ? await getRequiredBridgeAddress() : undefined;
+      let bridgeAddress;
+      let nonce;
+      if (transaction.type === "withdrawal") {
+        if (transaction.tokenAddress === NETWORK_CONFIG.CUSTOM_USDC_TOKEN.address) {
+          bridgeAddress = NETWORK_CONFIG.CUSTOM_USDC_TOKEN.l2BridgeAddress!;
+          nonce = await provider.getTransactionCount(await signer.getAddress(), "pending");
+        } else {
+          bridgeAddress = await getRequiredBridgeAddress();
+        }
+      }
 
       await eraWalletStore.walletAddressValidate();
       await validateAddress(transaction.to);
@@ -56,13 +69,14 @@ export default (getSigner: () => Promise<Signer | undefined>, getProvider: () =>
         token: transaction.tokenAddress,
         amount: transaction.amount,
         bridgeAddress,
-        paymasterParams: utils.getPaymasterParams("0x950e3Bb8C6bab20b56a70550EC037E22032A413e", {
+        paymasterParams: utils.getPaymasterParams(NETWORK_CONFIG.L2_GLOBAL_PAYMASTER.address, {
           type: "General",
           innerInput: new Uint8Array(),
         }),
         overrides: {
           gasPrice: fee.gasPrice,
           gasLimit: fee.gasLimit,
+          nonce,
         },
       });
 

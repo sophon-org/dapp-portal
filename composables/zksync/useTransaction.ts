@@ -69,7 +69,7 @@ export default (getSigner: () => Promise<Signer | undefined>, getProvider: () =>
         token: transaction.tokenAddress,
         amount: transaction.amount,
         bridgeAddress,
-        paymasterParams: utils.getPaymasterParams(NETWORK_CONFIG.GLOBAL_PAYMASTER.address, {
+        paymasterParams: utils.getPaymasterParams(NETWORK_CONFIG.L2_GLOBAL_PAYMASTER.address, {
           type: "General",
           innerInput: new Uint8Array(),
         }),

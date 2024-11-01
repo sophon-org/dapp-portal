@@ -402,6 +402,8 @@ import useTransaction from "@/composables/zksync/deposit/useTransaction";
 import { customBridgeTokens } from "@/data/customBridgeTokens";
 import { isCustomNode } from "@/data/networks";
 import DepositSubmitted from "@/views/transactions/DepositSubmitted.vue";
+import { MAINNET } from "~/data/mainnet";
+import { TESTNET } from "~/data/testnet";
 
 import type { Token, TokenAmount } from "@/types";
 import type { BigNumberish } from "ethers";
@@ -417,7 +419,8 @@ const eraWalletStore = useZkSyncWalletStore();
 const { account, isConnected, walletNotSupported, walletWarningDisabled } = storeToRefs(onboardStore);
 const { eraNetwork } = storeToRefs(providerStore);
 const { destinations } = storeToRefs(useDestinationsStore());
-const { l1BlockExplorerUrl } = storeToRefs(useNetworkStore());
+const { l1BlockExplorerUrl, selectedNetwork } = storeToRefs(useNetworkStore());
+const NETWORK_CONFIG = selectedNetwork.value.key === "sophon-mainnet" ? MAINNET : TESTNET;
 const { l1Tokens, baseToken, tokensRequestInProgress, tokensRequestError } = storeToRefs(tokensStore);
 const { balance, balanceInProgress, balanceError } = storeToRefs(zkSyncEthereumBalance);
 
@@ -500,7 +503,7 @@ const {
 } = useAllowance(
   computed(() => account.value.address),
   computed(() => selectedToken.value?.address),
-  async () => await "0xC97F5f2FDE4fe6e220069F8D3718bE4FaC7C00f0"
+  async () => await NETWORK_CONFIG.L1_GLOBAL_PAYMASTER.address
 );
 const enoughAllowance = computed(() => {
   if (!allowance.value || !selectedToken.value) {

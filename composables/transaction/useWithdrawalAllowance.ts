@@ -72,7 +72,7 @@ export default (
         setAllowanceStatus.value = "sending";
         const tx = await tokenContract.approve(contractAddress, approvalAmount!.toString(), {
           customData: {
-            paymasterParams: utils.getPaymasterParams(NETWORK_CONFIG.GLOBAL_PAYMASTER.address, {
+            paymasterParams: utils.getPaymasterParams(NETWORK_CONFIG.L2_GLOBAL_PAYMASTER.address, {
               type: "General",
               innerInput: new Uint8Array(),
             }),

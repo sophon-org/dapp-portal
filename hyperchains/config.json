@@ -52,13 +52,6 @@
         "symbol": "USDT",
         "decimals": 6,
         "iconUrl": "/img/usdt.svg"
-      },
-      {
-        "address": "0x6386dA73545ae4E2B2E0393688fA8B65Bb9a7169",
-        "l1Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-        "symbol": "USDC",
-        "decimals": 6,
-        "iconUrl": "/img/usdc.svg"
       }
     ]
   },

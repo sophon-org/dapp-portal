@@ -5,7 +5,7 @@
 
     <div class="logo-container">
       <NuxtLink class="flex items-center gap-2 text-black no-underline" :to="{ name: 'bridge' }">
-        <img src="/img/logo-sophon-testnet.svg" />
+        <img :src="logoImage" />
       </NuxtLink>
     </div>
 
@@ -87,6 +87,8 @@
 <script lang="ts" setup>
 import { Bars3Icon } from "@heroicons/vue/24/outline";
 
+import { isMainnet } from "~/data/networks";
+
 const route = useRoute();
 
 const routes = {
@@ -97,6 +99,14 @@ const routes = {
 const onboardStore = useOnboardStore();
 const { isConnected } = storeToRefs(onboardStore);
 const { withdrawalsAvailableForClaiming } = storeToRefs(useZkSyncWithdrawalsStore());
+const { selectedNetwork } = storeToRefs(useNetworkStore());
+
+const logoImage = computed(() => {
+  if (isMainnet(selectedNetwork.value.id)) {
+    return "/img/logo-sophon.svg";
+  }
+  return "/img/logo-sophon-testnet.svg";
+});
 
 const mobileMainNavigationOpened = ref(false);
 const mobileAccountNavigationOpened = ref(false);

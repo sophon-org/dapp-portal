@@ -138,3 +138,4 @@ const determineChainList = (): ZkSyncNetwork[] => {
 export const isCustomNode = !!nodeType;
 export const chainList: ZkSyncNetwork[] = determineChainList();
 export const defaultNetwork = chainList[0];
+export const isMainnet = (networkId: number) => networkId === 50104;

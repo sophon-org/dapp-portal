@@ -408,6 +408,8 @@ import { TESTNET } from "~/data/testnet";
 import type { Token, TokenAmount } from "@/types";
 import type { BigNumberish } from "ethers";
 
+// TODO(@consvic): Remove this after some time
+const FILTERED_TOKENS = ["SOPH"];
 const route = useRoute();
 const router = useRouter();
 
@@ -442,7 +444,7 @@ const destination = computed(() => destinations.value.era);
 
 const availableTokens = computed<Token[]>(() => {
   if (balance.value) return balance.value;
-  return Object.values(l1Tokens.value ?? []);
+  return Object.values(l1Tokens.value ?? []).filter((e) => !FILTERED_TOKENS.includes(e.symbol));
 });
 const availableBalances = computed<TokenAmount[]>(() => {
   return balance.value ?? [];
@@ -530,6 +532,7 @@ const setTokenAllowance = async () => {
     ]);
     await estimate();
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("Error setting token allowance:", error);
     throw error;
   }

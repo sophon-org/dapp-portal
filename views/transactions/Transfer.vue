@@ -340,6 +340,9 @@ import type { FeeEstimationParams } from "@/composables/zksync/useFee";
 import type { Token, TokenAmount } from "@/types";
 import type { BigNumberish } from "ethers";
 
+// TODO(@consvic): Remove this after some time
+const FILTERED_TOKENS = ["SOPH"];
+
 const props = defineProps({
   type: {
     type: String as PropType<FeeEstimationParams["type"]>,
@@ -382,7 +385,7 @@ const destination = computed(() => (props.type === "transfer" ? destinations.val
 const availableTokens = computed(() => {
   if (!tokens.value) return [];
   if (props.type === "withdrawal") {
-    return Object.values(tokens.value).filter((e) => e.l1Address);
+    return Object.values(tokens.value).filter((e) => e.l1Address && !FILTERED_TOKENS.includes(e.symbol));
   }
   return Object.values(tokens.value);
 });

@@ -163,6 +163,8 @@ import { ExclamationTriangleIcon } from "@heroicons/vue/24/outline";
 
 import useWithdrawalFinalization from "@/composables/zksync/useWithdrawalFinalization";
 import { isCustomNode } from "@/data/networks";
+import { MAINNET } from "~/data/mainnet";
+import { TESTNET } from "~/data/testnet";
 
 const props = defineProps({
   transaction: {
@@ -178,10 +180,15 @@ const props = defineProps({
 const onboardStore = useOnboardStore();
 const transactionStatusStore = useZkSyncTransactionStatusStore();
 const { eraNetwork, blockExplorerUrl } = storeToRefs(useZkSyncProviderStore());
-const { l1BlockExplorerUrl } = storeToRefs(useNetworkStore());
+const { l1BlockExplorerUrl, selectedNetwork } = storeToRefs(useNetworkStore());
 const { connectorName, isCorrectNetworkSet } = storeToRefs(onboardStore);
+const NETWORK_CONFIG = selectedNetwork.value.key === "sophon-mainnet" ? MAINNET : TESTNET;
 
-const isCustomBridgeToken = computed(() => !props.transaction.token.l1Address);
+const isCustomBridgeToken = computed(
+  () =>
+    !props.transaction.token.l1Address &&
+    props.transaction.token.l1BridgeAddress !== NETWORK_CONFIG.CUSTOM_USDC_TOKEN.l1BridgeAddress
+);
 const withdrawalManualFinalizationRequired = computed(() => {
   return !props.transaction.info.completed;
 });

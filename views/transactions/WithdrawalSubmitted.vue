@@ -186,8 +186,7 @@ const NETWORK_CONFIG = selectedNetwork.value.key === "sophon-mainnet" ? MAINNET 
 
 const isCustomBridgeToken = computed(
   () =>
-    !props.transaction.token.l1Address &&
-    props.transaction.token.l1BridgeAddress !== NETWORK_CONFIG.CUSTOM_USDC_TOKEN.l1BridgeAddress
+    !props.transaction.token.l1Address && props.transaction.token.address !== NETWORK_CONFIG.CUSTOM_USDC_TOKEN.address
 );
 const withdrawalManualFinalizationRequired = computed(() => {
   return !props.transaction.info.completed;

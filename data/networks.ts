@@ -137,5 +137,16 @@ const determineChainList = (): ZkSyncNetwork[] => {
 };
 export const isCustomNode = !!nodeType;
 export const chainList: ZkSyncNetwork[] = determineChainList();
+/**
+ * @deprecated use getDefaultNetworkByHost instead
+ */
 export const defaultNetwork = chainList[0];
+export const getDefaultNetworkByHost = (hostname: string) => {
+  if (hostname.includes("portal.testnet") || hostname.includes("localhost")) {
+    // safe check in case we only have one network
+    if (!chainList[1]) return chainList[0];
+    return chainList[1];
+  }
+  return chainList[0];
+};
 export const isMainnet = (networkId: number) => networkId === 50104;

@@ -6,6 +6,7 @@
       :loading="loading"
       :tokens="tokens"
       :balances="balances"
+      @additional-token-found="handleAdditionalToken"
     >
       <template v-if="$slots['token-dropdown-bottom']" #body-bottom>
         <slot name="token-dropdown-bottom" />
@@ -144,7 +145,16 @@ const emit = defineEmits<{
   (eventName: "update:error", error?: string): void;
   (eventName: "update:modelValue", amount: string): void;
   (eventName: "update:tokenAddress", tokenAddress?: string): void;
+  (eventName: "additional-token-found", token: TokenAmount): void;
 }>();
+
+const additionalToken = ref<TokenAmount | null>(null); // Local state for additional token
+
+// Function to handle the additional token event
+const handleAdditionalToken = (token: TokenAmount) => {
+  additionalToken.value = token;
+  emit("additional-token-found", token); // Re-emit the event
+};
 
 const selectedTokenAddress = computed({
   get: () => props.tokenAddress,

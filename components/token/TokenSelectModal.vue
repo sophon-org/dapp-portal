@@ -13,7 +13,7 @@
         </template>
       </CommonInputSearch>
       <div class="-mx-block-padding-1/2 h-full overflow-auto px-block-padding-1/2">
-        <template v-if="loading">
+        <template v-if="loading || fetchAdditionalTokenInProgress">
           <div class="-mx-block-padding-1/2">
             <TokenBalanceLoader v-for="index in 2" :key="index" variant="light" />
           </div>
@@ -67,6 +67,9 @@
 <script lang="ts" setup>
 import { Combobox } from "@headlessui/vue";
 import { MagnifyingGlassIcon } from "@heroicons/vue/24/outline";
+import { isAddress } from "viem";
+
+import useFetchAdditionalToken from "~/composables/useFetchAdditionalToken";
 
 import type { Token, TokenAmount } from "@/types";
 
@@ -103,11 +106,14 @@ const emit = defineEmits<{
   (eventName: "update:opened", value: boolean): void;
   (eventName: "update:tokenAddress", tokenAddress?: string): void;
   (eventName: "try-again"): void;
+  (eventName: "additional-token-found", token: TokenAmount): void;
 }>();
 
 const { isConnected } = storeToRefs(useOnboardStore());
+const { fetchAdditionalToken, fetchAdditionalTokenInProgress } = useFetchAdditionalToken();
 
 const search = ref("");
+const additionalToken = ref<TokenAmount>();
 const hasBalances = computed(() => props.balances.length > 0);
 const filterTokens = (tokens: Token[]) => {
   const lowercaseSearch = search.value.toLowerCase();
@@ -149,6 +155,21 @@ const isModalOpened = computed({
 const closeModal = () => {
   isModalOpened.value = false;
 };
+
+watch(search, async (newSearch) => {
+  if (newSearch && displayedBalances.value.length === 0 && isAddress(newSearch)) {
+    try {
+      const balanceData = await fetchAdditionalToken(newSearch);
+      if (balanceData) {
+        additionalToken.value = balanceData;
+        emit("additional-token-found", additionalToken.value);
+      }
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error("Error fetching external tokens:", error);
+    }
+  }
+});
 </script>
 
 <style lang="scss">

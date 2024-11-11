@@ -443,11 +443,11 @@ const step = ref<"form" | "wallet-warning" | "confirm" | "submitted">("form");
 const destination = computed(() => destinations.value.era);
 
 const availableTokens = computed<Token[]>(() => {
-  if (balance.value) return balance.value;
+  if (balance.value) return balance.value.filter((e) => !FILTERED_TOKENS.includes(e.symbol));
   return Object.values(l1Tokens.value ?? []).filter((e) => !FILTERED_TOKENS.includes(e.symbol));
 });
 const availableBalances = computed<TokenAmount[]>(() => {
-  return balance.value ?? [];
+  return balance.value?.filter((e) => !FILTERED_TOKENS.includes(e.symbol)) ?? [];
 });
 const routeTokenAddress = computed(() => {
   if (!route.query.token || Array.isArray(route.query.token) || !isAddress(route.query.token)) {

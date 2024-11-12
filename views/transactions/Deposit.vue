@@ -442,24 +442,24 @@ const fromNetworkSelected = (networkKey?: string) => {
 
 const step = ref<"form" | "wallet-warning" | "confirm" | "submitted">("form");
 const destination = computed(() => destinations.value.era);
-const additionalToken = ref<TokenAmount | null>(null); // Local state for additional token
-const balanceWithAdditionalToken = computed(() => {
-  if (additionalToken.value) {
-    return [...(balance.value ?? []), additionalToken.value];
+const additionalTokens = ref<TokenAmount[]>([]);
+const balanceWithAdditionalTokens = computed(() => {
+  if (additionalTokens.value) {
+    return [...(balance.value ?? []), ...additionalTokens.value];
   }
   return balance.value ?? [];
 });
 
 const handleAdditionalToken = (token: TokenAmount) => {
-  additionalToken.value = token;
+  additionalTokens.value = [...additionalTokens.value, token];
 };
 
 const availableTokens = computed<Token[]>(() => {
-  if (balanceWithAdditionalToken.value) return balanceWithAdditionalToken.value;
+  if (balanceWithAdditionalTokens.value) return balanceWithAdditionalTokens.value;
   return Object.values(l1Tokens.value ?? []).filter((e) => !FILTERED_TOKENS.includes(e.symbol));
 });
 const availableBalances = computed<TokenAmount[]>(() => {
-  return balanceWithAdditionalToken.value ?? [];
+  return balanceWithAdditionalTokens.value ?? [];
 });
 const routeTokenAddress = computed(() => {
   if (!route.query.token || Array.isArray(route.query.token) || !isAddress(route.query.token)) {
@@ -498,7 +498,7 @@ const amountInputTokenAddress = computed({
   },
 });
 const tokenBalance = computed<BigNumberish | undefined>(() => {
-  return balanceWithAdditionalToken.value?.find((e) => e.address === selectedToken.value?.address)?.amount;
+  return balanceWithAdditionalTokens.value?.find((e) => e.address === selectedToken.value?.address)?.amount;
 });
 
 const {
@@ -564,7 +564,7 @@ const {
   enoughBalanceToCoverFee,
   estimateFee,
   resetFee,
-} = useFee(availableTokens, balanceWithAdditionalToken);
+} = useFee(availableTokens, balanceWithAdditionalTokens);
 
 const queryAddress = useRouteQuery<string | undefined>("address", undefined, {
   transform: String,

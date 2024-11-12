@@ -37,6 +37,7 @@ export default () => {
 
   const fetchAdditionalToken = async (tokenAddress: string) => {
     if (tokenAddress) {
+      resetFetchAdditionalToken();
       additionalTokenAddress.value = tokenAddress;
       const balanceData = await requestAdditionalToken();
       return balanceData;

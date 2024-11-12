@@ -23,6 +23,11 @@
             {{ error.message }}
           </CommonErrorBlock>
         </template>
+        <template v-else-if="fetchAdditionalTokenError">
+          <CommonErrorBlock class="m-2" @try-again="emit('try-again')">
+            {{ fetchAdditionalTokenError.message }}
+          </CommonErrorBlock>
+        </template>
         <template v-else-if="!hasBalances && (!search || displayedTokens.length)">
           <CommonLineButtonsGroup class="category" :gap="false" :margin-y="false">
             <TokenLine
@@ -110,7 +115,7 @@ const emit = defineEmits<{
 }>();
 
 const { isConnected } = storeToRefs(useOnboardStore());
-const { fetchAdditionalToken, fetchAdditionalTokenInProgress } = useFetchAdditionalToken();
+const { fetchAdditionalToken, fetchAdditionalTokenInProgress, fetchAdditionalTokenError } = useFetchAdditionalToken();
 
 const search = ref("");
 const additionalToken = ref<TokenAmount>();
@@ -157,17 +162,11 @@ const closeModal = () => {
 };
 
 watch(search, async (newSearch) => {
-  if (newSearch && displayedBalances.value.length === 0 && isAddress(newSearch)) {
-    try {
-      const balanceData = await fetchAdditionalToken(newSearch);
-      if (balanceData) {
-        additionalToken.value = balanceData;
-        emit("additional-token-found", additionalToken.value);
-      }
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error("Error fetching external tokens:", error);
-    }
+  if (!newSearch || displayedBalances.value.length !== 0 || !isAddress(newSearch)) return;
+  const balanceData = await fetchAdditionalToken(newSearch);
+  if (balanceData) {
+    additionalToken.value = balanceData;
+    emit("additional-token-found", additionalToken.value);
   }
 });
 </script>

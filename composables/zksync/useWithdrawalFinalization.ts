@@ -3,6 +3,9 @@ import { BigNumber, type BigNumberish } from "ethers";
 import { Wallet } from "zksync-ethers";
 import IL1SharedBridge from "zksync-ethers/abi/IL1SharedBridge.json";
 
+import { MAINNET } from "~/data/mainnet";
+import { TESTNET } from "~/data/testnet";
+
 import type { Hash } from "@/types";
 
 export default (transactionInfo: ComputedRef<TransactionInfo>) => {
@@ -66,10 +69,21 @@ export default (transactionInfo: ComputedRef<TransactionInfo>) => {
     };
   };
 
+  const getBridgeAddress = async () => {
+    const { token, to } = transactionInfo.value;
+    const tokenAddress = token.address;
+    const l2Network = to.destination.label === "Sepolia" ? TESTNET : MAINNET;
+    const tokenInfo = l2Network.TOKENS.find((token) => token.address === tokenAddress);
+    if (tokenInfo?.l1BridgeAddress) {
+      return tokenInfo.l1BridgeAddress;
+    }
+    return (await retrieveBridgeAddresses()).sharedL1;
+  };
+
   const getTransactionParams = async () => {
     finalizeWithdrawalParams.value = await getFinalizationParams();
     return {
-      address: (await retrieveBridgeAddresses()).sharedL1 as Hash,
+      address: (await getBridgeAddress()) as Hash,
       abi: IL1SharedBridge,
       account: onboardStore.account.address!,
       functionName: "finalizeWithdrawal",

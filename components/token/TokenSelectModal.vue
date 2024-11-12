@@ -72,6 +72,7 @@
 <script lang="ts" setup>
 import { Combobox } from "@headlessui/vue";
 import { MagnifyingGlassIcon } from "@heroicons/vue/24/outline";
+import { useStorage } from "@vueuse/core";
 import { isAddress } from "viem";
 
 import useFetchAdditionalToken from "~/composables/useFetchAdditionalToken";
@@ -119,6 +120,7 @@ const { fetchAdditionalToken, fetchAdditionalTokenInProgress, fetchAdditionalTok
 
 const search = ref("");
 const additionalToken = ref<TokenAmount>();
+const additionalTokenAddresses = useStorage<string[]>("additionalTokenAddresses", []);
 const hasBalances = computed(() => props.balances.length > 0);
 const filterTokens = (tokens: Token[]) => {
   const lowercaseSearch = search.value.toLowerCase();
@@ -127,6 +129,10 @@ const filterTokens = (tokens: Token[]) => {
       .filter((e) => typeof e === "string")
       .some((value) => value!.toLowerCase().includes(lowercaseSearch))
   );
+};
+const handleStoreAdditionalToken = (tokenAddress: string) => {
+  if (additionalTokenAddresses.value.includes(tokenAddress)) return;
+  additionalTokenAddresses.value.push(tokenAddress);
 };
 const displayedTokens = computed(() => filterTokens(props.tokens));
 const displayedBalances = computed(() => filterTokens(props.balances) as TokenAmount[]);
@@ -167,6 +173,7 @@ watch(search, async (newSearch) => {
   if (balanceData) {
     additionalToken.value = balanceData;
     emit("additional-token-found", additionalToken.value);
+    handleStoreAdditionalToken(newSearch);
   }
 });
 </script>

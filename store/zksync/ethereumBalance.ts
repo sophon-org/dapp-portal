@@ -1,10 +1,11 @@
+import { useStorage } from "@vueuse/core";
 import { getBalance } from "@wagmi/core";
 import { utils } from "zksync-ethers";
 
 import { l1Networks } from "@/data/networks";
 import { wagmiConfig } from "@/data/wagmi";
 
-import type { Hash, TokenAmount } from "@/types";
+import type { Hash, Token, TokenAmount } from "@/types";
 
 export const useZkSyncEthereumBalanceStore = defineStore("zkSyncEthereumBalances", () => {
   const portalRuntimeConfig = usePortalRuntimeConfig();
@@ -16,6 +17,7 @@ export const useZkSyncEthereumBalanceStore = defineStore("zkSyncEthereumBalances
   const { account } = storeToRefs(onboardStore);
   const { balance: ethereumBalance } = storeToRefs(ethereumBalancesStore);
   const { l1Tokens } = storeToRefs(tokensStore);
+  const additionalTokenAddresses = useStorage<string[]>("additionalTokenAddresses", []);
 
   const getBalancesFromApi = async (): Promise<TokenAmount[]> => {
     await Promise.all([ethereumBalancesStore.requestBalance(), tokensStore.requestTokens()]);
@@ -51,16 +53,26 @@ export const useZkSyncEthereumBalanceStore = defineStore("zkSyncEthereumBalances
     if (!l1Tokens.value) throw new Error("Tokens are not available");
     if (!account.value.address) throw new Error("Account is not available");
 
+    const baseTokens = Object.values(l1Tokens.value ?? []);
+    const additionalTokens =
+      additionalTokenAddresses.value.length > 0
+        ? additionalTokenAddresses.value.map((address) => ({ address } as Token))
+        : [];
+
+    const allTokens = [...baseTokens, ...additionalTokens];
+
     return await Promise.all(
-      Object.values(l1Tokens.value ?? []).map(async (token) => {
-        const amount = await getBalance(wagmiConfig, {
+      allTokens.map(async (token) => {
+        const balance = await getBalance(wagmiConfig, {
           address: account.value.address!,
           chainId: l1Network.value!.id,
           token: token.address === utils.ETH_ADDRESS ? undefined : (token.address! as Hash),
         });
         return {
           ...token,
-          amount: amount.value.toString(),
+          symbol: token.symbol ?? balance.symbol,
+          decimals: token.decimals ?? balance.decimals,
+          amount: balance.value.toString(),
         };
       })
     );

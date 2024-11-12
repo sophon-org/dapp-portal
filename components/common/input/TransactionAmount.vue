@@ -148,12 +148,11 @@ const emit = defineEmits<{
   (eventName: "additional-token-found", token: TokenAmount): void;
 }>();
 
-const additionalToken = ref<TokenAmount | null>(null); // Local state for additional token
+const additionalToken = ref<TokenAmount | null>(null);
 
-// Function to handle the additional token event
 const handleAdditionalToken = (token: TokenAmount) => {
   additionalToken.value = token;
-  emit("additional-token-found", token); // Re-emit the event
+  emit("additional-token-found", token);
 };
 
 const selectedTokenAddress = computed({

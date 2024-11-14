@@ -56,6 +56,7 @@
           :approve-required="!enoughAllowance && (!tokenCustomBridge || !tokenCustomBridge.bridgingDisabled)"
           :loading="tokensRequestInProgress || balanceInProgress"
           class="mb-block-padding-1/2 sm:mb-block-gap"
+          @additional-token-found="handleAdditionalToken"
         >
           <template #dropdown>
             <CommonButtonDropdown
@@ -441,13 +442,25 @@ const fromNetworkSelected = (networkKey?: string) => {
 
 const step = ref<"form" | "wallet-warning" | "confirm" | "submitted">("form");
 const destination = computed(() => destinations.value.era);
+const additionalTokens = ref<TokenAmount[]>([]);
+const balanceWithAdditionalTokens = computed(() => {
+  if (additionalTokens.value) {
+    return [...(balance.value ?? []), ...additionalTokens.value];
+  }
+  return balance.value ?? [];
+});
+
+const handleAdditionalToken = (token: TokenAmount) => {
+  additionalTokens.value = [...additionalTokens.value, token];
+};
 
 const availableTokens = computed<Token[]>(() => {
-  if (balance.value) return balance.value.filter((e) => !FILTERED_TOKENS.includes(e.symbol));
+  if (balanceWithAdditionalTokens.value)
+    return balanceWithAdditionalTokens.value.filter((e) => !FILTERED_TOKENS.includes(e.symbol));
   return Object.values(l1Tokens.value ?? []).filter((e) => !FILTERED_TOKENS.includes(e.symbol));
 });
 const availableBalances = computed<TokenAmount[]>(() => {
-  return balance.value?.filter((e) => !FILTERED_TOKENS.includes(e.symbol)) ?? [];
+  return balanceWithAdditionalTokens.value?.filter((e) => !FILTERED_TOKENS.includes(e.symbol)) ?? [];
 });
 const routeTokenAddress = computed(() => {
   if (!route.query.token || Array.isArray(route.query.token) || !isAddress(route.query.token)) {
@@ -486,7 +499,7 @@ const amountInputTokenAddress = computed({
   },
 });
 const tokenBalance = computed<BigNumberish | undefined>(() => {
-  return balance.value?.find((e) => e.address === selectedToken.value?.address)?.amount;
+  return balanceWithAdditionalTokens.value?.find((e) => e.address === selectedToken.value?.address)?.amount;
 });
 
 const {
@@ -552,7 +565,7 @@ const {
   enoughBalanceToCoverFee,
   estimateFee,
   resetFee,
-} = useFee(availableTokens, balance);
+} = useFee(availableTokens, balanceWithAdditionalTokens);
 
 const queryAddress = useRouteQuery<string | undefined>("address", undefined, {
   transform: String,

@@ -56,6 +56,7 @@
           :approve-required="!enoughAllowance && (!tokenCustomBridge || !tokenCustomBridge.bridgingDisabled)"
           :loading="tokensRequestInProgress || balanceInProgress"
           class="mb-block-padding-1/2 sm:mb-block-gap"
+          @additional-token-found="handleAdditionalToken"
         >
           <template #dropdown>
             <CommonButtonDropdown
@@ -402,10 +403,14 @@ import useTransaction from "@/composables/zksync/deposit/useTransaction";
 import { customBridgeTokens } from "@/data/customBridgeTokens";
 import { isCustomNode } from "@/data/networks";
 import DepositSubmitted from "@/views/transactions/DepositSubmitted.vue";
+import { MAINNET } from "~/data/mainnet";
+import { TESTNET } from "~/data/testnet";
 
 import type { Token, TokenAmount } from "@/types";
 import type { BigNumberish } from "ethers";
 
+// TODO(@consvic): Remove this after some time
+const FILTERED_TOKENS = ["SOPH"];
 const route = useRoute();
 const router = useRouter();
 
@@ -417,7 +422,8 @@ const eraWalletStore = useZkSyncWalletStore();
 const { account, isConnected, walletNotSupported, walletWarningDisabled } = storeToRefs(onboardStore);
 const { eraNetwork } = storeToRefs(providerStore);
 const { destinations } = storeToRefs(useDestinationsStore());
-const { l1BlockExplorerUrl } = storeToRefs(useNetworkStore());
+const { l1BlockExplorerUrl, selectedNetwork } = storeToRefs(useNetworkStore());
+const NETWORK_CONFIG = selectedNetwork.value.key === "sophon-mainnet" ? MAINNET : TESTNET;
 const { l1Tokens, baseToken, tokensRequestInProgress, tokensRequestError } = storeToRefs(tokensStore);
 const { balance, balanceInProgress, balanceError } = storeToRefs(zkSyncEthereumBalance);
 
@@ -436,13 +442,25 @@ const fromNetworkSelected = (networkKey?: string) => {
 
 const step = ref<"form" | "wallet-warning" | "confirm" | "submitted">("form");
 const destination = computed(() => destinations.value.era);
+const additionalTokens = ref<TokenAmount[]>([]);
+const balanceWithAdditionalTokens = computed(() => {
+  if (additionalTokens.value) {
+    return [...(balance.value ?? []), ...additionalTokens.value];
+  }
+  return balance.value ?? [];
+});
+
+const handleAdditionalToken = (token: TokenAmount) => {
+  additionalTokens.value = [...additionalTokens.value, token];
+};
 
 const availableTokens = computed<Token[]>(() => {
-  if (balance.value) return balance.value;
-  return Object.values(l1Tokens.value ?? []);
+  if (balanceWithAdditionalTokens.value)
+    return balanceWithAdditionalTokens.value.filter((e) => !FILTERED_TOKENS.includes(e.symbol));
+  return Object.values(l1Tokens.value ?? []).filter((e) => !FILTERED_TOKENS.includes(e.symbol));
 });
 const availableBalances = computed<TokenAmount[]>(() => {
-  return balance.value ?? [];
+  return balanceWithAdditionalTokens.value?.filter((e) => !FILTERED_TOKENS.includes(e.symbol)) ?? [];
 });
 const routeTokenAddress = computed(() => {
   if (!route.query.token || Array.isArray(route.query.token) || !isAddress(route.query.token)) {
@@ -481,7 +499,7 @@ const amountInputTokenAddress = computed({
   },
 });
 const tokenBalance = computed<BigNumberish | undefined>(() => {
-  return balance.value?.find((e) => e.address === selectedToken.value?.address)?.amount;
+  return balanceWithAdditionalTokens.value?.find((e) => e.address === selectedToken.value?.address)?.amount;
 });
 
 const {
@@ -500,7 +518,7 @@ const {
 } = useAllowance(
   computed(() => account.value.address),
   computed(() => selectedToken.value?.address),
-  async () => await "0x11Cb5B7C32F69947Ef2D712E1a26F0B5d2d4f418"
+  async () => await NETWORK_CONFIG.L1_GLOBAL_PAYMASTER.address
 );
 const enoughAllowance = computed(() => {
   if (!allowance.value || !selectedToken.value) {
@@ -515,9 +533,22 @@ const setAmountToCurrentAllowance = () => {
   amount.value = parseTokenAmount(allowance.value, selectedToken.value.decimals);
 };
 const setTokenAllowance = async () => {
-  await setAllowance(totalComputeAmount.value);
-  await new Promise((resolve) => setTimeout(resolve, 2000)); // Wait for balances to be updated on API side
-  await fetchBalances(true);
+  try {
+    await setAllowance(totalComputeAmount.value);
+    // Wait for balances and blockchain state to update
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+    // Reset all relevant states
+    await Promise.all([
+      fetchBalances(true),
+      requestAllowance(), // Re-fetch allowance state
+      resetFee(), // Reset fee state
+    ]);
+    await estimate();
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error("Error setting token allowance:", error);
+    throw error;
+  }
 };
 
 const unsubscribe = onboardStore.subscribeOnAccountChange(() => {
@@ -534,7 +565,7 @@ const {
   enoughBalanceToCoverFee,
   estimateFee,
   resetFee,
-} = useFee(availableTokens, balance);
+} = useFee(availableTokens, balanceWithAdditionalTokens);
 
 const queryAddress = useRouteQuery<string | undefined>("address", undefined, {
   transform: String,
@@ -625,6 +656,18 @@ watch(
     estimate();
   },
   { immediate: true }
+);
+
+// Add a watcher to re-estimate fees when allowance changes
+watch(
+  [allowance, setAllowanceStatus, () => selectedToken.value?.address],
+  async ([newAllowance, newTokenAddress], [oldAllowance, oldTokenAddress]) => {
+    if (setAllowanceStatus.value !== "done") return;
+    if (newAllowance && oldAllowance && !newAllowance.eq(oldAllowance) && newTokenAddress === oldTokenAddress) {
+      await resetFee();
+      await estimate();
+    }
+  }
 );
 
 const autoUpdatingFee = computed(() => !feeError.value && fee.value && !feeLoading.value);

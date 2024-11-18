@@ -30,7 +30,7 @@
           &nbsp;
           <span class="font-medium">{{ feeToken.symbol }}</span>
           &nbsp;
-          <TokenImage class="h-5 w-5" v-bind="feeToken" />
+          <TokenImage v-if="feeToken.symbol" class="h-5 w-5" v-bind="feeToken" />
         </component>
         <template v-else>Unknown fee</template>
       </div>

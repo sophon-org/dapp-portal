@@ -12,8 +12,14 @@ export type Token = {
   iconUrl?: string;
   price?: TokenPrice;
   isETH?: boolean;
+  l1BridgeAddress?: string;
+  l2BridgeAddress?: string;
 };
 export type TokenAmount = Token & { amount: BigNumberish };
+
+export type Paymaster = {
+  address: string;
+};
 
 export declare namespace Api {
   namespace Response {

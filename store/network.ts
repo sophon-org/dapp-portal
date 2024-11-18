@@ -1,6 +1,6 @@
 import { useStorage } from "@vueuse/core";
 
-import { chainList, defaultNetwork } from "@/data/networks";
+import { chainList, getDefaultNetworkByHost } from "@/data/networks";
 
 import type { L1Network, ZkSyncNetwork } from "@/data/networks";
 
@@ -8,11 +8,13 @@ export const useNetworkStore = defineStore("network", () => {
   const networkUsesLocalStorage = useStorage<boolean>("networkUsesLocalStorage", false);
   const selectedNetworkKey = useStorage<string>(
     "selectedNetwork",
-    defaultNetwork.key,
+    getDefaultNetworkByHost(window.location.hostname).key,
     networkUsesLocalStorage.value ? window.localStorage : window.sessionStorage
   );
   const selectedNetwork = computed<ZkSyncNetwork>(() => {
-    return chainList.find((e) => e.key === selectedNetworkKey.value) ?? defaultNetwork;
+    return (
+      chainList.find((e) => e.key === selectedNetworkKey.value) ?? getDefaultNetworkByHost(window.location.hostname)
+    );
   });
 
   const l1Network = computed<L1Network | undefined>(() => selectedNetwork.value.l1Network);

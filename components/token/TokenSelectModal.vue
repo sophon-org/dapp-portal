@@ -13,7 +13,7 @@
         </template>
       </CommonInputSearch>
       <div class="-mx-block-padding-1/2 h-full overflow-auto px-block-padding-1/2">
-        <template v-if="loading">
+        <template v-if="loading || fetchAdditionalTokenInProgress">
           <div class="-mx-block-padding-1/2">
             <TokenBalanceLoader v-for="index in 2" :key="index" variant="light" />
           </div>
@@ -21,6 +21,11 @@
         <template v-else-if="error">
           <CommonErrorBlock class="m-2" @try-again="emit('try-again')">
             {{ error.message }}
+          </CommonErrorBlock>
+        </template>
+        <template v-else-if="fetchAdditionalTokenError">
+          <CommonErrorBlock class="m-2" @try-again="emit('try-again')">
+            {{ fetchAdditionalTokenError.message }}
           </CommonErrorBlock>
         </template>
         <template v-else-if="!hasBalances && (!search || displayedTokens.length)">
@@ -67,6 +72,10 @@
 <script lang="ts" setup>
 import { Combobox } from "@headlessui/vue";
 import { MagnifyingGlassIcon } from "@heroicons/vue/24/outline";
+import { useStorage } from "@vueuse/core";
+import { isAddress } from "viem";
+
+import useFetchAdditionalToken from "~/composables/useFetchAdditionalToken";
 
 import type { Token, TokenAmount } from "@/types";
 
@@ -103,11 +112,15 @@ const emit = defineEmits<{
   (eventName: "update:opened", value: boolean): void;
   (eventName: "update:tokenAddress", tokenAddress?: string): void;
   (eventName: "try-again"): void;
+  (eventName: "additional-token-found", token: TokenAmount): void;
 }>();
 
 const { isConnected } = storeToRefs(useOnboardStore());
+const { fetchAdditionalToken, fetchAdditionalTokenInProgress, fetchAdditionalTokenError } = useFetchAdditionalToken();
 
 const search = ref("");
+const additionalToken = ref<TokenAmount>();
+const additionalTokenAddresses = useStorage<string[]>("additionalTokenAddresses", []);
 const hasBalances = computed(() => props.balances.length > 0);
 const filterTokens = (tokens: Token[]) => {
   const lowercaseSearch = search.value.toLowerCase();
@@ -116,6 +129,10 @@ const filterTokens = (tokens: Token[]) => {
       .filter((e) => typeof e === "string")
       .some((value) => value!.toLowerCase().includes(lowercaseSearch))
   );
+};
+const handleStoreAdditionalToken = (tokenAddress: string) => {
+  if (additionalTokenAddresses.value.includes(tokenAddress)) return;
+  additionalTokenAddresses.value.push(tokenAddress);
 };
 const displayedTokens = computed(() => filterTokens(props.tokens));
 const displayedBalances = computed(() => filterTokens(props.balances) as TokenAmount[]);
@@ -149,6 +166,16 @@ const isModalOpened = computed({
 const closeModal = () => {
   isModalOpened.value = false;
 };
+
+watch(search, async (newSearch) => {
+  if (!newSearch || displayedBalances.value.length !== 0 || !isAddress(newSearch)) return;
+  const balanceData = await fetchAdditionalToken(newSearch);
+  if (balanceData) {
+    additionalToken.value = balanceData;
+    emit("additional-token-found", additionalToken.value);
+    handleStoreAdditionalToken(newSearch);
+  }
+});
 </script>
 
 <style lang="scss">

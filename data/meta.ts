@@ -1,17 +1,17 @@
 export const portal = {
-  title: "Sophon Testnet | Portal",
+  title: "Sophon | Portal",
   description: "",
   previewImg: {
-    src: "/og-image.jpg",
+    src: "/og-image.png",
     alt: "Sophon Portal",
   },
 };
 
 export const bridge = {
-  title: "Sophon Testnet | Bridge",
+  title: "Sophon | Bridge",
   description: "",
   previewImg: {
-    src: "/og-image.jpg",
+    src: "/og-image.png",
     alt: "Sophon Bridge",
   },
 };

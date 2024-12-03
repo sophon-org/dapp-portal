@@ -401,7 +401,7 @@ import useEcosystemBanner from "@/composables/zksync/deposit/useEcosystemBanner"
 import useFee from "@/composables/zksync/deposit/useFee";
 import useTransaction from "@/composables/zksync/deposit/useTransaction";
 import { customBridgeTokens } from "@/data/customBridgeTokens";
-import { isCustomNode } from "@/data/networks";
+import { isCustomNode, isMainnet } from "@/data/networks";
 import DepositSubmitted from "@/views/transactions/DepositSubmitted.vue";
 import { MAINNET } from "~/data/mainnet";
 import { TESTNET } from "~/data/testnet";
@@ -410,7 +410,9 @@ import type { Token, TokenAmount } from "@/types";
 import type { BigNumberish } from "ethers";
 
 // TODO(@consvic): Remove this after some time
-const FILTERED_TOKENS = ["SOPH"];
+const FILTERED_TOKENS = computed(() => {
+  return isMainnet(selectedNetwork.value.id) ? ["SOPH"] : [];
+});
 const route = useRoute();
 const router = useRouter();
 
@@ -456,11 +458,11 @@ const handleAdditionalToken = (token: TokenAmount) => {
 
 const availableTokens = computed<Token[]>(() => {
   if (balanceWithAdditionalTokens.value)
-    return balanceWithAdditionalTokens.value.filter((e) => !FILTERED_TOKENS.includes(e.symbol));
-  return Object.values(l1Tokens.value ?? []).filter((e) => !FILTERED_TOKENS.includes(e.symbol));
+    return balanceWithAdditionalTokens.value.filter((e) => !FILTERED_TOKENS.value.includes(e.symbol));
+  return Object.values(l1Tokens.value ?? []).filter((e) => !FILTERED_TOKENS.value.includes(e.symbol));
 });
 const availableBalances = computed<TokenAmount[]>(() => {
-  return balanceWithAdditionalTokens.value?.filter((e) => !FILTERED_TOKENS.includes(e.symbol)) ?? [];
+  return balanceWithAdditionalTokens.value?.filter((e) => !FILTERED_TOKENS.value.includes(e.symbol)) ?? [];
 });
 const routeTokenAddress = computed(() => {
   if (!route.query.token || Array.isArray(route.query.token) || !isAddress(route.query.token)) {

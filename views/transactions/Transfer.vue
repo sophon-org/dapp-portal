@@ -329,7 +329,7 @@ import { isAddress } from "ethers/lib/utils";
 import useFee from "@/composables/zksync/useFee";
 import useTransaction, { isWithdrawalManualFinalizationRequired } from "@/composables/zksync/useTransaction";
 import { customBridgeTokens } from "@/data/customBridgeTokens";
-import { isCustomNode } from "@/data/networks";
+import { isCustomNode, isMainnet } from "@/data/networks";
 import TransferSubmitted from "@/views/transactions/TransferSubmitted.vue";
 import WithdrawalSubmitted from "@/views/transactions/WithdrawalSubmitted.vue";
 import useWithdrawalAllowance from "~/composables/transaction/useWithdrawalAllowance";
@@ -341,7 +341,9 @@ import type { Token, TokenAmount } from "@/types";
 import type { BigNumberish } from "ethers";
 
 // TODO(@consvic): Remove this after some time
-const FILTERED_TOKENS = ["SOPH"];
+const FILTERED_TOKENS = computed(() => {
+  return isMainnet(selectedNetwork.value.id) ? [] : ["SOPH"];
+});
 
 const props = defineProps({
   type: {
@@ -385,14 +387,14 @@ const destination = computed(() => (props.type === "transfer" ? destinations.val
 const availableTokens = computed(() => {
   if (!tokens.value) return [];
   if (props.type === "withdrawal") {
-    return Object.values(tokens.value).filter((e) => e.l1Address && !FILTERED_TOKENS.includes(e.symbol));
+    return Object.values(tokens.value).filter((e) => e.l1Address && !FILTERED_TOKENS.value.includes(e.symbol));
   }
   return Object.values(tokens.value);
 });
 const availableBalances = computed(() => {
   if (props.type === "withdrawal") {
     if (!tokens.value) return [];
-    return balance.value.filter((e) => e.l1Address && !FILTERED_TOKENS.includes(e.symbol));
+    return balance.value.filter((e) => e.l1Address && !FILTERED_TOKENS.value.includes(e.symbol));
   }
   return balance.value;
 });

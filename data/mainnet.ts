@@ -1,14 +1,14 @@
 import type { Paymaster, Token } from "~/types";
 
 const CUSTOM_USDC_TOKEN: Token = {
-  address: "0x6386dA73545ae4E2B2E0393688fA8B65Bb9a7169",
+  address: "0x9Aa0F72392B5784Ad86c6f3E899bCc053D00Db4F",
   l1Address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
   symbol: "USDC",
   name: "USDC",
   decimals: 6,
   iconUrl: "/img/usdc.svg",
-  l1BridgeAddress: "0x3f842b5FaD08Bac49D0517C975d393f5f466Fd3b",
-  l2BridgeAddress: "0x72591d4135B712861d8d4513a2f6860Ac30A684D",
+  l1BridgeAddress: "0x2bCE548a1B3113C7f886cb211a9086e748aa41ba",
+  l2BridgeAddress: "0xabac09b9de2e4b8dff2062eb1d30d3e4b19a8444",
 };
 
 const L1_GLOBAL_PAYMASTER: Paymaster = {

@@ -71,6 +71,9 @@ export default (getL1Signer: () => Promise<L1Signer | undefined>) => {
       }
 
       // Prepare deposit parameters
+      console.log("transaction.tokenAddress", transaction.tokenAddress);
+      console.log("NETWORK_CONFIG.CUSTOM_USDC_TOKEN.l1Address", NETWORK_CONFIG.CUSTOM_USDC_TOKEN.l1Address);
+      console.log("transaction.tokenAddress === NETWORK_CONFIG.CUSTOM_USDC_TOKEN.l1Address", transaction.tokenAddress === NETWORK_CONFIG.CUSTOM_USDC_TOKEN.l1Address);
       const depositParams = {
         to: transaction.to,
         token: transaction.tokenAddress,
@@ -80,7 +83,7 @@ export default (getL1Signer: () => Promise<L1Signer | undefined>) => {
         overrides,
         bridgeAddress:
           transaction.tokenAddress === NETWORK_CONFIG.CUSTOM_USDC_TOKEN.l1Address
-            ? ("0x3f842b5FaD08Bac49D0517C975d393f5f466Fd3b" as Address)
+            ? (NETWORK_CONFIG.CUSTOM_USDC_TOKEN.l1BridgeAddress as Address)
             : undefined,
       } satisfies DepositParams;
 

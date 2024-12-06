@@ -71,6 +71,9 @@ export default (getL1Signer: () => Promise<L1Signer | undefined>) => {
       }
 
       // Prepare deposit parameters
+      console.log("transaction.tokenAddress", transaction.tokenAddress);
+      console.log("NETWORK_CONFIG.CUSTOM_USDC_TOKEN.l1Address", NETWORK_CONFIG.CUSTOM_USDC_TOKEN.l1Address);
+      console.log("transaction.tokenAddress === NETWORK_CONFIG.CUSTOM_USDC_TOKEN.l1Address", transaction.tokenAddress === NETWORK_CONFIG.CUSTOM_USDC_TOKEN.l1Address);
       const depositParams = {
         to: transaction.to,
         token: transaction.tokenAddress,

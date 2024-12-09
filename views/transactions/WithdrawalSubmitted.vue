@@ -182,7 +182,7 @@ const transactionStatusStore = useZkSyncTransactionStatusStore();
 const { eraNetwork, blockExplorerUrl } = storeToRefs(useZkSyncProviderStore());
 const { l1BlockExplorerUrl, selectedNetwork } = storeToRefs(useNetworkStore());
 const { connectorName, isCorrectNetworkSet } = storeToRefs(onboardStore);
-const NETWORK_CONFIG = selectedNetwork.value.key === "sophon-mainnet" ? MAINNET : TESTNET;
+const NETWORK_CONFIG = selectedNetwork.value.key === "sophon" ? MAINNET : TESTNET;
 
 const isCustomBridgeToken = computed(
   () =>

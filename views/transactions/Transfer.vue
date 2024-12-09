@@ -365,7 +365,7 @@ const { destinations } = storeToRefs(useDestinationsStore());
 const { tokens, tokensRequestInProgress, tokensRequestError } = storeToRefs(tokensStore);
 const { balance, balanceInProgress, balanceError } = storeToRefs(walletStore);
 const { selectedNetwork } = storeToRefs(useNetworkStore());
-const NETWORK_CONFIG = selectedNetwork.value.key === "sophon-mainnet" ? MAINNET : TESTNET;
+const NETWORK_CONFIG = selectedNetwork.value.key === "sophon" ? MAINNET : TESTNET;
 const refetchingAllowance = ref(false);
 
 const toNetworkModalOpened = ref(false);

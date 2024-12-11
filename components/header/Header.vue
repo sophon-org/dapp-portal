@@ -12,6 +12,28 @@
     <div class="links-container hidden items-center gap-10 lg:flex">
       <NuxtLink
         class="link-item flex items-center gap-1 text-lg font-medium text-gray-2"
+        :to="{ name: 'home' }"
+        :class="{ 'router-link-exact-active': routes.home.includes(route.name?.toString() || '') }"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="26"
+          height="26"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M20 9v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9" />
+          <path d="M9 22V12h6v10M2 10.6L12 2l10 8.6" />
+        </svg>
+
+        Home
+      </NuxtLink>
+      <NuxtLink
+        class="link-item flex items-center gap-1 text-lg font-medium text-gray-2"
         :to="{ name: 'bridge' }"
         :class="{ 'router-link-exact-active': routes.bridge.includes(route.name?.toString() || '') }"
       >
@@ -94,6 +116,7 @@ const route = useRoute();
 const routes = {
   bridge: ["bridge", "bridge-withdraw"],
   assets: ["assets", "balances", "receive-methods", "receive", "send-methods", "send"],
+  home: ["home"],
 };
 
 const onboardStore = useOnboardStore();

@@ -38,6 +38,9 @@
       Getting balances error: {{ balanceError.message }}
     </CommonErrorBlock>
     <form v-else @submit.prevent="">
+      <CommonAlert v-if="isTokenBlacklisted" variant="error" :icon="ExclamationTriangleIcon" class="mb-4">
+        <p>This token has been blacklisted and cannot be bridged. Please select a different token.</p>
+      </CommonAlert>
       <template v-if="step === 'form'">
         <TransactionWithdrawalsAvailableForClaimAlert />
         <EcosystemBlock
@@ -409,6 +412,11 @@ import { TESTNET } from "~/data/testnet";
 import type { Token, TokenAmount } from "@/types";
 import type { BigNumberish } from "ethers";
 
+// TODO(@consvic): Add noon token to the blacklist
+const BLACKLISTED_TOKENS = computed(() => {
+  return isMainnet(selectedNetwork.value.id) ? ["0xbe0ed4138121ecfc5c0e56b40517da27e6c5226b"] : [];
+});
+
 // TODO(@consvic): Remove this after some time
 const FILTERED_TOKENS = computed(() => {
   return isMainnet(selectedNetwork.value.id) ? ["SOPH"] : [];
@@ -689,7 +697,13 @@ watch(
   { immediate: true }
 );
 
+const isTokenBlacklisted = computed(() => {
+  if (!selectedToken.value?.address) return false;
+  return BLACKLISTED_TOKENS.value.includes(selectedToken.value.address.toLowerCase());
+});
+
 const continueButtonDisabled = computed(() => {
+  if (isTokenBlacklisted.value) return true;
   if (
     !transaction.value ||
     !enoughBalanceToCoverFee.value ||

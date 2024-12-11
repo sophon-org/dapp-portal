@@ -28,7 +28,9 @@
         />
         <div class="flex items-start justify-between">
           <p class="max-w-[205px] text-sm leading-[18px] text-[#6E6E73]">{{ card.description }}</p>
-          <img v-if="!card.isComingSoon" src="/img/icon-arrow-right.svg" />
+          <a v-if="!card.isComingSoon" :href="card.link" target="_blank">
+            <img src="/img/icon-arrow-right.svg" />
+          </a>
           <img v-else src="/img/icon-lock.svg" />
         </div>
         <div
@@ -56,6 +58,7 @@ export default {
           title: "Safe",
           description: "Secure your assets by using the most adopted multisignature solution.",
           isComingSoon: false,
+          link: "https://sophon.xyz",
         },
         {
           id: 2,
@@ -63,6 +66,7 @@ export default {
           title: "Safe",
           description: "Secure your assets by using the most adopted multisignature solution.",
           isComingSoon: false,
+          link: "https://sophon.xyz",
         },
         {
           id: 3,
@@ -77,6 +81,7 @@ export default {
           title: "Safe",
           description: "Secure your assets by using the most adopted multisignature solution.",
           isComingSoon: false,
+          link: "https://sophon.xyz",
         },
         {
           id: 5,
@@ -84,6 +89,7 @@ export default {
           title: "Safe",
           description: "Secure your assets by using the most adopted multisignature solution.",
           isComingSoon: false,
+          link: "https://sophon.xyz",
         },
         {
           id: 6,

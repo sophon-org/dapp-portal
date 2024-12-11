@@ -10,7 +10,7 @@
       <div
         v-for="card in cards"
         :key="card.id"
-        class="w-[317px] rounded-[24px] bg-white p-5 drop-shadow-[0_0_30px_rgba(0,0,0,0.20)]"
+        class="relative w-[317px] rounded-[24px] bg-white px-5 pb-8 pt-5 drop-shadow-[0_0_30px_rgba(0,0,0,0.20)]"
       >
         <div class="flex items-center justify-between">
           <div class="flex flex-col gap-3">
@@ -28,7 +28,14 @@
         />
         <div class="flex items-start justify-between">
           <p class="max-w-[205px] text-sm leading-[18px] text-[#6E6E73]">{{ card.description }}</p>
-          <img src="/img/icon-arrow-right.svg" />
+          <img v-if="!card.isComingSoon" src="/img/icon-arrow-right.svg" />
+          <img v-else src="/img/icon-lock.svg" />
+        </div>
+        <div
+          v-if="card.isComingSoon"
+          class="absolute bottom-0 left-1/2 -translate-x-1/2 transform rounded-t-lg bg-[#0171E3] px-7 text-sm font-normal text-white"
+        >
+          Coming soon
         </div>
       </div>
       <div class="flex h-[173px] w-[317px] items-center justify-center rounded-[24px] bg-transparent">
@@ -48,48 +55,56 @@ export default {
           category: "Security",
           title: "Safe",
           description: "Secure your assets by using the most adopted multisignature solution.",
+          isComingSoon: false,
         },
         {
           id: 2,
           category: "Security",
           title: "Safe",
           description: "Secure your assets by using the most adopted multisignature solution.",
+          isComingSoon: false,
         },
         {
           id: 3,
           category: "Security",
           title: "Safe",
           description: "Secure your assets by using the most adopted multisignature solution.",
+          isComingSoon: false,
         },
         {
           id: 4,
           category: "Security",
           title: "Safe",
           description: "Secure your assets by using the most adopted multisignature solution.",
+          isComingSoon: false,
         },
         {
           id: 5,
           category: "Security",
           title: "Safe",
           description: "Secure your assets by using the most adopted multisignature solution.",
+          isComingSoon: false,
         },
         {
           id: 6,
           category: "Security",
           title: "Safe",
           description: "Secure your assets by using the most adopted multisignature solution.",
+          isComingSoon: true,
         },
         {
           id: 7,
           category: "Security",
           title: "Safe",
           description: "Secure your assets by using the most adopted multisignature solution.",
+          isComingSoon: true,
         },
         {
           id: 8,
           category: "Security",
           title: "Safe",
           description: "Secure your assets by using the most adopted multisignature solution.",
+          isComingSoon: true,
         },
       ],
     };

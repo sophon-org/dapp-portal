@@ -11,7 +11,7 @@
         v-for="card in cards"
         :key="card.id"
         :class="[
-          'relative w-[317px] rounded-[24px] bg-white px-5 pb-8 pt-5 drop-shadow-[0_0_30px_rgba(0,0,0,0.20)]',
+          'relative w-[317px] rounded-[24px] bg-white px-5 pb-8 pt-5 shadow-[0_0_30px_rgba(0,0,0,0.20)] transition-all duration-300 ease-in-out hover:shadow-[0_0_40px_rgba(0,0,0,0.25)]',
           { 'cursor-pointer': !card.isComingSoon, 'cursor-not-allowed': card.isComingSoon },
         ]"
         @click="handleCardClick(card)"

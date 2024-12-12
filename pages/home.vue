@@ -10,14 +10,18 @@
       <div
         v-for="card in cards"
         :key="card.id"
-        class="relative w-[317px] rounded-[24px] bg-white px-5 pb-8 pt-5 drop-shadow-[0_0_30px_rgba(0,0,0,0.20)]"
+        :class="[
+          'relative w-[317px] rounded-[24px] bg-white px-5 pb-8 pt-5 drop-shadow-[0_0_30px_rgba(0,0,0,0.20)]',
+          { 'cursor-pointer': !card.isComingSoon, 'cursor-not-allowed': card.isComingSoon },
+        ]"
+        @click="handleCardClick(card)"
       >
         <div class="flex items-center justify-between">
           <div class="flex flex-col gap-3">
             <h4 class="text-[10px] font-normal uppercase text-[#0171E3]">{{ card.category }}</h4>
             <h3 class="text-4xl font-semibold">{{ card.title }}</h3>
           </div>
-          <img src="/img/placeholder.svg" />
+          <img :src="card.icon" />
         </div>
         <div
           :style="{
@@ -40,7 +44,7 @@
           Coming soon
         </div>
       </div>
-      <div class="flex h-[173px] w-[317px] items-center justify-center rounded-[24px] bg-transparent">
+      <div class="flex h-[192px] w-[317px] items-center justify-center rounded-[24px] bg-transparent">
         <p class="text-center text-sm font-normal text-[#6E6E73]">and more to come!</p>
       </div>
     </div>
@@ -51,69 +55,14 @@
 export default {
   data() {
     return {
-      cards: [
-        {
-          id: 1,
-          category: "Security",
-          title: "Safe",
-          description: "Secure your assets by using the most adopted multisignature solution.",
-          isComingSoon: false,
-          link: "https://sophon.xyz",
-        },
-        {
-          id: 2,
-          category: "Security",
-          title: "Safe",
-          description: "Secure your assets by using the most adopted multisignature solution.",
-          isComingSoon: false,
-          link: "https://sophon.xyz",
-        },
-        {
-          id: 3,
-          category: "Security",
-          title: "Safe",
-          description: "Secure your assets by using the most adopted multisignature solution.",
-          isComingSoon: false,
-        },
-        {
-          id: 4,
-          category: "Security",
-          title: "Safe",
-          description: "Secure your assets by using the most adopted multisignature solution.",
-          isComingSoon: false,
-          link: "https://sophon.xyz",
-        },
-        {
-          id: 5,
-          category: "Security",
-          title: "Safe",
-          description: "Secure your assets by using the most adopted multisignature solution.",
-          isComingSoon: false,
-          link: "https://sophon.xyz",
-        },
-        {
-          id: 6,
-          category: "Security",
-          title: "Safe",
-          description: "Secure your assets by using the most adopted multisignature solution.",
-          isComingSoon: true,
-        },
-        {
-          id: 7,
-          category: "Security",
-          title: "Safe",
-          description: "Secure your assets by using the most adopted multisignature solution.",
-          isComingSoon: true,
-        },
-        {
-          id: 8,
-          category: "Security",
-          title: "Safe",
-          description: "Secure your assets by using the most adopted multisignature solution.",
-          isComingSoon: true,
-        },
-      ],
+      cards,
     };
+  },
+  methods: {
+    handleCardClick(card) {
+      if (card.isComingSoon) return;
+      window.open(card.link, "_blank");
+    },
   },
 };
 </script>

@@ -414,15 +414,7 @@ import type { BigNumberish } from "ethers";
 
 // TODO(@consvic): Add noon token to the blacklist
 const BLACKLISTED_TOKENS: globalThis.ComputedRef<BlacklistedToken[]> = computed(() => {
-  return isMainnet(selectedNetwork.value.id)
-    ? [
-        {
-          address: "0xbe0ed4138121ecfc5c0e56b40517da27e6c5226b",
-          name: "ATH",
-          reason: "Cannot bridge L0 tokens for now...",
-        },
-      ]
-    : [];
+  return isMainnet(selectedNetwork.value.id) ? MAINNET.BLACKLISTED_TOKENS : [];
 });
 
 // TODO(@consvic): Remove this after some time

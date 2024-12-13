@@ -24,6 +24,13 @@ const MAINNET = {
   L1_GLOBAL_PAYMASTER,
   L2_GLOBAL_PAYMASTER,
   TOKENS: [CUSTOM_USDC_TOKEN],
+  BLACKLISTED_TOKENS: [
+    {
+      address: "0xbe0ed4138121ecfc5c0e56b40517da27e6c5226b",
+      name: "ATH",
+      reason: "Cannot bridge L0 tokens for now...",
+    },
+  ],
 };
 
 export { MAINNET };

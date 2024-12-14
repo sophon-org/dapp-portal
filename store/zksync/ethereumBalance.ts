@@ -61,19 +61,51 @@ export const useZkSyncEthereumBalanceStore = defineStore("zkSyncEthereumBalances
 
     const allTokens = [...baseTokens, ...additionalTokens];
 
+    const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+    const getBalanceWithRetry = async (
+      config: typeof wagmiConfig,
+      params: Parameters<typeof getBalance>[1],
+      retries = 3,
+      backoff = 1000
+    ) => {
+      for (let i = 0; i < retries; i++) {
+        try {
+          return await getBalance(config, params);
+        } catch (error) {
+          if (i === retries - 1) throw error;
+          await delay(backoff);
+          backoff *= 2;
+        }
+      }
+    };
+
     return await Promise.all(
       allTokens.map(async (token) => {
-        const balance = await getBalance(wagmiConfig, {
-          address: account.value.address!,
-          chainId: l1Network.value!.id,
-          token: token.address === utils.ETH_ADDRESS ? undefined : (token.address! as Hash),
-        });
-        return {
-          ...token,
-          symbol: token.symbol ?? balance.symbol,
-          decimals: token.decimals ?? balance.decimals,
-          amount: balance.value.toString(),
-        };
+        try {
+          const balance = await getBalanceWithRetry(wagmiConfig, {
+            address: account.value.address!,
+            chainId: l1Network.value!.id,
+            token: token.address === utils.ETH_ADDRESS ? undefined : (token.address! as Hash),
+          });
+
+          if (!balance) {
+            throw new Error(`Balance for token ${token.symbol} is undefined`);
+          }
+
+          return {
+            ...token,
+            symbol: token.symbol ?? balance.symbol,
+            decimals: token.decimals ?? balance.decimals,
+            amount: balance.value.toString(),
+          };
+        } catch (error) {
+          // eslint-disable-next-line no-console
+          console.error(`Failed to fetch ${token.symbol} balance after retries:`, error);
+          return {
+            ...token,
+            amount: "0",
+          };
+        }
       })
     );
   };

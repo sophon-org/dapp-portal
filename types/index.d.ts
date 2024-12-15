@@ -15,6 +15,12 @@ export type Token = {
   l1BridgeAddress?: string;
   l2BridgeAddress?: string;
 };
+
+export type BlacklistedToken = {
+  address: string;
+  name: string;
+  reason: string | null;
+};
 export type TokenAmount = Token & { amount: BigNumberish };
 
 export type Paymaster = {

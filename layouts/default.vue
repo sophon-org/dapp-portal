@@ -7,7 +7,19 @@
 
     <Header />
     <main
-      class="app-layout-main flex min-h-0 w-full min-w-0 max-w-[700px] flex-col justify-self-center p-2 md:px-0 md:py-4"
+      :class="[
+        'app-layout-main',
+        'flex',
+        'min-h-0',
+        'w-full',
+        'min-w-0',
+        'flex-col',
+        'justify-self-center',
+        'p-2',
+        'md:px-0',
+        'md:py-4',
+        { 'max-w-[700px]': !isHomePage },
+      ]"
     >
       <NuxtPage />
     </main>
@@ -16,7 +28,11 @@
 </template>
 
 <script lang="ts" setup>
+import { useRoute } from "vue-router";
+
+const route = useRoute();
 const { isConnectingWallet } = storeToRefs(useOnboardStore());
+const isHomePage = computed(() => route.name === "home");
 </script>
 
 <style lang="scss" scoped>

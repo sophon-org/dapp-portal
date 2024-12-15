@@ -7,8 +7,8 @@ const CUSTOM_USDC_TOKEN: Token = {
   name: "USDC",
   decimals: 6,
   iconUrl: "/img/usdc.svg",
-  l1BridgeAddress: "0x2bCE548a1B3113C7f886cb211a9086e748aa41ba",
-  l2BridgeAddress: "0xabac09b9de2e4b8dff2062eb1d30d3e4b19a8444",
+  l1BridgeAddress: "0xf553E6D903AA43420ED7e3bc2313bE9286A8F987",
+  l2BridgeAddress: "0x0f44bac3ec514be912aa4359017593b35e868d74",
 };
 
 const L1_GLOBAL_PAYMASTER: Paymaster = {

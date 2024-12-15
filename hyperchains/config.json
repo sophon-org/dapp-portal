@@ -23,10 +23,10 @@
         },
         "rpcUrls": {
           "default": {
-            "http": ["https://cloudflare-eth.com"]
+            "http": ["https://eth-mainnet.g.alchemy.com/v2/aWaUjYiknNQrFwU8r8agl-R9bye7XX2u"]
           },
           "public": {
-            "http": ["https://cloudflare-eth.com"]
+            "http": ["https://eth-mainnet.g.alchemy.com/v2/aWaUjYiknNQrFwU8r8agl-R9bye7XX2u"]
           }
         }
       }
@@ -86,10 +86,10 @@
         },
         "rpcUrls": {
           "default": {
-            "http": ["https://rpc.sepolia.org"]
+            "http": ["https://eth-sepolia.g.alchemy.com/v2/aWaUjYiknNQrFwU8r8agl-R9bye7XX2u"]
           },
           "public": {
-            "http": ["https://rpc.sepolia.org"]
+            "http": ["https://eth-sepolia.g.alchemy.com/v2/aWaUjYiknNQrFwU8r8agl-R9bye7XX2u"]
           }
         }
       }

@@ -107,14 +107,7 @@
           <p>
             Make sure the destination address supports {{ eraNetwork.name }} network, especially if it is a smart
             account or contract. Otherwise, this can result in
-            <span class="font-medium text-red-600">loss of funds</span>. See the list of supported wallets on the
-            <a
-              class="underline underline-offset-2"
-              href="https://zksync.dappradar.com/ecosystem?category=non_dapps_wallets"
-              target="_blank"
-              >Ecosystem</a
-            >
-            website.
+            <span class="font-medium text-red-600">loss of funds</span>.
           </p>
         </CommonAlert>
         <CommonButton

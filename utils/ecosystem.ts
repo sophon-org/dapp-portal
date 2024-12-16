@@ -94,6 +94,7 @@ export const cards = [
     isComingSoon: false,
     link: "https://t.me/animix_game_bot",
     icon: "/img/home/animix.svg",
+    iconStyling: "bg-white",
   },
   {
     id: 11,
@@ -177,6 +178,7 @@ export const cards = [
     description:
       "An extraction-roguelike strategy game featuring web3-centric game mechanics and an emphasis on F2P accessibility across mobile and web",
     isComingSoon: true,
-    icon: null,
+    icon: "/img/home/brutal.png",
+    iconStyling: "bg-white",
   },
 ];

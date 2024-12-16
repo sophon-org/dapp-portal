@@ -4,7 +4,7 @@
     <HeaderMobileAccountNavigation v-model:opened="mobileAccountNavigationOpened" />
 
     <div class="logo-container">
-      <NuxtLink class="flex items-center gap-2 text-black no-underline" :to="{ name: 'bridge' }">
+      <NuxtLink class="flex items-center gap-2 text-black no-underline" :to="{ name: 'home' }">
         <img :src="logoImage" />
       </NuxtLink>
     </div>

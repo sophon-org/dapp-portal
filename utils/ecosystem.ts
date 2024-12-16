@@ -100,8 +100,8 @@ export const cards = [
     category: "Wallet",
     title: "Safe",
     description: "The leading and widely used multisig",
-    isComingSoon: true,
-    // link: "https://safe.sophon.xyz",
+    isComingSoon: false,
+    link: "https://safe.sophon.xyz",
     icon: "/img/home/safe.svg",
   },
   {
@@ -174,7 +174,8 @@ export const cards = [
     id: 19,
     category: "Gaming",
     title: "Brutal Knights",
-    description: "", // TODO(@consvic): add description
+    description:
+      "An extraction-roguelike TBS game featuring innovative web3-centric gameplay mechanics, providing a fresh and captivating crossplay-enabled gaming experience",
     isComingSoon: true,
     icon: null,
   },

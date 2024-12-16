@@ -75,24 +75,6 @@
             </CommonButtonDropdown>
           </template>
         </CommonInputTransactionAmount>
-        <CommonHeightTransition :opened="!!tokenCustomBridge && !tokenCustomBridge.bridgingDisabled">
-          <div class="mb-block-padding-1/2 sm:mb-block-gap">
-            <CommonAlert variant="warning" size="sm">
-              <p>
-                Bridged {{ tokenCustomBridge?.symbol }} ({{ tokenCustomBridge?.bridgedSymbol }}) will work but is
-                different from native {{ tokenCustomBridge?.symbol }}.
-              </p>
-              <a
-                v-if="tokenCustomBridge?.learnMoreUrl"
-                class="underline underline-offset-2"
-                target="_blank"
-                :href="tokenCustomBridge.learnMoreUrl"
-              >
-                Learn more
-              </a>
-            </CommonAlert>
-          </div>
-        </CommonHeightTransition>
         <CommonInputTransactionAddress
           v-model="address"
           label="To"

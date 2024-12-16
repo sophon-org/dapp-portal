@@ -175,8 +175,7 @@ export const cards = [
     id: 19,
     category: "Gaming",
     title: "Brutal Knights",
-    description:
-      "An extraction-roguelike strategy game featuring web3-centric game mechanics and an emphasis on F2P accessibility across mobile and web",
+    description: "An extraction-roguelike strategy game with web3-centric mechanics and emphasis on F2P",
     isComingSoon: true,
     icon: "/img/home/brutal.png",
     iconStyling: "bg-white",

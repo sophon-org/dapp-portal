@@ -25,7 +25,7 @@
           <img
             v-if="card.icon"
             :src="card.icon"
-            :class="['h-[57px] w-[57px] rounded-lg bg-black object-contain', card.iconStyling]"
+            :class="['h-[57px] w-[57px] self-start rounded-lg bg-black object-contain', card.iconStyling]"
           />
         </div>
         <div
@@ -47,7 +47,7 @@
           Coming soon
         </div>
       </a>
-      <div class="flex h-[192px] w-[317px] items-center justify-center rounded-[24px] bg-transparent">
+      <div class="height-full flex w-[317px] items-center justify-center rounded-[24px] bg-transparent">
         <p class="text-center text-sm font-normal text-[#6E6E73]">and more to come!</p>
       </div>
     </div>

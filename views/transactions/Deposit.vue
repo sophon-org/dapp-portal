@@ -75,24 +75,6 @@
             </CommonButtonDropdown>
           </template>
         </CommonInputTransactionAmount>
-        <CommonHeightTransition :opened="!!tokenCustomBridge && !tokenCustomBridge.bridgingDisabled">
-          <div class="mb-block-padding-1/2 sm:mb-block-gap">
-            <CommonAlert variant="warning" size="sm">
-              <p>
-                Bridged {{ tokenCustomBridge?.symbol }} ({{ tokenCustomBridge?.bridgedSymbol }}) will work but is
-                different from native {{ tokenCustomBridge?.symbol }}.
-              </p>
-              <a
-                v-if="tokenCustomBridge?.learnMoreUrl"
-                class="underline underline-offset-2"
-                target="_blank"
-                :href="tokenCustomBridge.learnMoreUrl"
-              >
-                Learn more
-              </a>
-            </CommonAlert>
-          </div>
-        </CommonHeightTransition>
         <CommonInputTransactionAddress
           v-model="address"
           label="To"
@@ -123,16 +105,9 @@
       <template v-else-if="step === 'wallet-warning'">
         <CommonAlert variant="warning" :icon="ExclamationTriangleIcon" class="mb-block-padding-1/2 sm:mb-block-gap">
           <p>
-            Make sure your wallet supports {{ eraNetwork.name }} network before adding funds to your account. Otherwise,
-            this can result in <span class="font-medium text-red-600">loss of funds</span>. See the list of supported
-            wallets on the
-            <a
-              class="underline underline-offset-2"
-              href="https://zksync.dappradar.com/ecosystem?category=non_dapps_wallets"
-              target="_blank"
-              >Ecosystem</a
-            >
-            website.
+            Make sure the destination address supports {{ eraNetwork.name }} network, especially if it is a smart
+            account or contract. Otherwise, this can result in
+            <span class="font-medium text-red-600">loss of funds</span>.
           </p>
         </CommonAlert>
         <CommonButton

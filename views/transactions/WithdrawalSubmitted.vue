@@ -137,9 +137,7 @@
             />
           </template>
           <template #change-network-auto>Change wallet network to claim</template>
-          <template #change-network-manual="{ walletName }">
-            Change network manually in your {{ walletName }} wallet to claim
-          </template>
+          <template #change-network-manual> Change network manually in your wallet to claim </template>
         </TransactionEthereumTransactionFooter>
       </div>
     </CommonHeightTransition>

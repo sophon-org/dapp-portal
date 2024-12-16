@@ -40,7 +40,7 @@
         </CommonButton>
         <CommonButton v-else disabled size="lg" variant="primary" class="w-full">
           <slot v-bind="{ l1Network, walletName }" name="change-network-manual">
-            Change network manually to {{ l1Network.name }} in your {{ walletName }} wallet
+            Change network manually to {{ l1Network.name }} in your wallet
           </slot>
         </CommonButton>
       </template>

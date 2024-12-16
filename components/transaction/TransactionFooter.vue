@@ -36,7 +36,7 @@
         Change wallet network to {{ eraNetwork.name }}
       </CommonButton>
       <CommonButton v-else disabled size="lg" variant="primary" class="w-full">
-        Change network manually to {{ eraNetwork.name }} in your {{ walletName }} wallet
+        Change network manually to {{ eraNetwork.name }} in your wallet
       </CommonButton>
     </div>
     <div v-else-if="buttonStep === 'continue'" class="transaction-footer-row flex w-full flex-col items-center">
@@ -51,7 +51,7 @@
 const onboardStore = useOnboardStore();
 const eraWalletStore = useZkSyncWalletStore();
 
-const { account, isConnectingWallet, connectorName, walletName } = storeToRefs(onboardStore);
+const { account, isConnectingWallet, connectorName } = storeToRefs(onboardStore);
 const { isCorrectNetworkSet, switchingNetworkInProgress, switchingNetworkError } = storeToRefs(eraWalletStore);
 const { eraNetwork } = storeToRefs(useZkSyncProviderStore());
 

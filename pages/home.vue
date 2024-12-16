@@ -16,12 +16,16 @@
         ]"
         @click="handleCardClick(card)"
       >
-        <div class="flex items-center justify-between">
+        <div :class="['flex items-center', card.icon ? 'justify-between' : '']">
           <div class="flex flex-col gap-3">
             <h4 class="text-[10px] font-normal uppercase text-[#0171E3]">{{ card.category }}</h4>
             <h3 class="text-4xl font-semibold">{{ card.title }}</h3>
           </div>
-          <img :src="card.icon" />
+          <img
+            v-if="card.icon"
+            :src="card.icon"
+            :class="['h-[57px] w-[57px] rounded-lg bg-black object-contain', card.iconStyling]"
+          />
         </div>
         <div
           :style="{

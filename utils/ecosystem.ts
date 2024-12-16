@@ -175,7 +175,7 @@ export const cards = [
     category: "Gaming",
     title: "Brutal Knights",
     description:
-      "An extraction-roguelike TBS game featuring innovative web3-centric gameplay mechanics, providing a fresh and captivating crossplay-enabled gaming experience",
+      "An extraction-roguelike strategy game featuring web3-centric game mechanics and an emphasis on F2P accessibility across mobile and web",
     isComingSoon: true,
     icon: null,
   },

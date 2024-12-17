@@ -9,6 +9,7 @@ export type DepositFeeValues = {
   maxFeePerGas?: BigNumber;
   maxPriorityFeePerGas?: BigNumber;
   gasPrice?: BigNumber;
+  baseFee?: BigNumber;
   baseCost?: BigNumber;
   l1GasLimit: BigNumber;
   l2GasLimit?: BigNumber;
@@ -60,12 +61,21 @@ export default (tokens: Ref<Token[]>, balances: Ref<TokenAmount[] | undefined>) 
     const signer = getL1VoidSigner();
     if (!signer) throw new Error("Signer is not available");
 
-    return await retry(() =>
-      signer.getFullRequiredDepositFee({
-        token: utils.ETH_ADDRESS,
-        to: params.to,
-      })
-    );
+    const provider = getPublicClient();
+    const [depositFee, block] = await Promise.all([
+      retry(() =>
+        signer.getFullRequiredDepositFee({
+          token: utils.ETH_ADDRESS,
+          to: params.to,
+        })
+      ),
+      retry(() => provider.getBlock({ blockTag: "latest" })),
+    ]);
+
+    return {
+      ...depositFee,
+      baseFee: block?.baseFeePerGas ? BigNumber.from(block.baseFeePerGas) : undefined,
+    };
   };
   const getERC20TransactionFee = () => {
     return {
@@ -120,7 +130,7 @@ export default (tokens: Ref<Token[]>, balances: Ref<TokenAmount[] | undefined>) 
   const cacheEstimateFee = useTimedCache<void, [typeof params]>(() => {
     resetEstimateFee();
     return executeEstimateFee();
-  }, 1000 * 8);
+  }, 1000 * 3);
 
   return {
     fee,

@@ -61,7 +61,7 @@ export default (getL1Signer: () => Promise<L1Signer | undefined>) => {
       const overrides = {
         gasPrice: fee.gasPrice,
         gasLimit: transaction.tokenAddress === utils.ETH_ADDRESS ? fee.l1GasLimit : undefined,
-        maxFeePerGas: fee.maxFeePerGas,
+        maxFeePerGas: fee.maxFeePerGas || (fee.baseFee ? fee.baseFee.add(fee.maxPriorityFeePerGas || 0) : undefined),
         maxPriorityFeePerGas: fee.maxPriorityFeePerGas,
       };
 

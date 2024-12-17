@@ -1,4 +1,4 @@
-import { BigNumber } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { parseEther } from "ethers/lib/utils";
 import { utils } from "zksync-ethers";
 
@@ -15,9 +15,9 @@ export type DepositFeeValues = {
 };
 
 export default (tokens: Ref<Token[]>, balances: Ref<TokenAmount[] | undefined>) => {
-  const { getPublicClient } = useOnboardStore();
   const { getL1VoidSigner } = useZkSyncWalletStore();
   const { requestProvider } = useZkSyncProviderStore();
+  const onboardStore = useOnboardStore();
 
   let params = {
     to: undefined as string | undefined,
@@ -73,7 +73,8 @@ export default (tokens: Ref<Token[]>, balances: Ref<TokenAmount[] | undefined>) 
     };
   };
   const getGasPrice = async () => {
-    return BigNumber.from(await retry(() => getPublicClient().getGasPrice()))
+    const web3Provider = new ethers.providers.Web3Provider((await onboardStore.getWallet()) as any, "any");
+    return BigNumber.from(await retry(() => web3Provider.getGasPrice()))
       .mul(110)
       .div(100);
   };

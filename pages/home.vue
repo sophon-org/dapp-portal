@@ -7,15 +7,15 @@
     </div>
 
     <div class="grid grid-cols-1 gap-[18px] md:grid-cols-2 lg:grid-cols-3">
-      <a
+      <NuxtLink
         v-for="card in cards"
         :key="card.id"
         :class="[
           'relative w-[317px] rounded-[24px] bg-white px-5 pb-8 pt-5 shadow-[0_0_30px_rgba(0,0,0,0.20)] transition-all duration-300 ease-in-out hover:scale-[1.02] hover:shadow-[0_0_40px_rgba(0,0,0,0.25)]',
           { 'cursor-pointer': !card.isComingSoon, 'cursor-not-allowed': card.isComingSoon },
         ]"
-        :href="card.link"
-        target="_blank"
+        :to="card.link"
+        :target="card.isInternal ? '_self' : '_blank'"
       >
         <div :class="['flex items-center', card.icon ? 'justify-between' : '']">
           <div class="flex flex-col gap-3">
@@ -46,7 +46,7 @@
         >
           Coming soon
         </div>
-      </a>
+      </NuxtLink>
       <div class="height-full flex w-[317px] items-center justify-center rounded-[24px] bg-transparent">
         <p class="text-center text-sm font-normal text-[#6E6E73]">and more to come!</p>
       </div>

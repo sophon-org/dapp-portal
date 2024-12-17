@@ -5,9 +5,10 @@ export const cards = [
     title: "Bridge",
     description: "Bridge tokens to and from Ethereum with Sophon's official bridge",
     isComingSoon: false,
-    link: "https://portal.sophon.xyz/bridge",
+    link: "/bridge",
     icon: "/img/home/portal.svg",
     iconStyling: "bg-white",
+    isInternal: true,
   },
   {
     id: 2,

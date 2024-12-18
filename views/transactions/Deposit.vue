@@ -573,7 +573,7 @@ const maxAmount = computed(() => {
   if (!selectedToken.value || !tokenBalance.value) {
     return undefined;
   }
-  if (feeToken.value?.address === selectedToken.value.address) {
+  if (feeToken.value?.address === selectedToken.value.address && account.value.chainId === l1Network?.value?.id) {
     if (BigNumber.from(tokenBalance.value).isZero()) {
       return "0";
     }

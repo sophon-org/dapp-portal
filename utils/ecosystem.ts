@@ -127,6 +127,16 @@ export const cards = [
   },
   {
     id: 14,
+    category: "AI",
+    title: "NOVA",
+    description: "The AI Agent for AI Agents. Powered by Anomaly",
+    isComingSoon: false,
+    link: "https://terminal.poweredbynova.ai/",
+    icon: "/img/home/nova.jpg",
+    iconStyling: "p-1",
+  },
+  {
+    id: 15,
     category: "DePIN",
     title: "Aethir",
     description: "On-demand GPU computing",
@@ -136,7 +146,7 @@ export const cards = [
     iconStyling: "bg-white",
   },
   {
-    id: 15,
+    id: 16,
     category: "Explorer",
     title: "Explorer",
     description: "Browse through Sophon's transactions, blocks, tokens, and more",
@@ -146,7 +156,7 @@ export const cards = [
     iconStyling: "bg-white",
   },
   {
-    id: 16,
+    id: 17,
     category: "Dev",
     title: "Dev Tooling",
     description: "Discover our rich ecosystem for developer",
@@ -154,8 +164,9 @@ export const cards = [
     link: "https://docs.sophon.xyz/build/partners/overview",
     icon: "/img/home/docs.svg",
   },
+
   {
-    id: 17,
+    id: 18,
     category: "Betting",
     title: "Rivalry",
     description: "The ultimate iGaming betting platform made by gamers for gamers",
@@ -163,15 +174,7 @@ export const cards = [
     icon: "/img/home/rivalry.svg",
     iconStyling: "p-1",
   },
-  {
-    id: 18,
-    category: "AI",
-    title: "NOVA",
-    description: "The AI Agent for AI Agents. Powered by Anomaly",
-    isComingSoon: true,
-    icon: "/img/home/nova.jpg",
-    iconStyling: "p-1",
-  },
+
   {
     id: 19,
     category: "DeFi",

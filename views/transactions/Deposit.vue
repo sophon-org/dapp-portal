@@ -173,7 +173,7 @@
         </div>
         <transition v-bind="TransitionAlertScaleInOutTransition" mode="out-in">
           <CommonAlert
-            v-if="recommendedBalance && feeToken"
+            v-if="recommendedBalance && feeToken && account.chainId === l1Network?.id"
             class="mt-4"
             variant="error"
             :icon="ExclamationTriangleIcon"
@@ -194,7 +194,7 @@
             <NuxtLink :to="{ name: 'receive-methods' }" class="alert-link">Receive funds</NuxtLink>
           </CommonAlert>
           <CommonAlert
-            v-else-if="!enoughBalanceToCoverFee"
+            v-else-if="!enoughBalanceToCoverFee && account.chainId === l1Network?.id"
             class="mt-4"
             variant="error"
             :icon="ExclamationTriangleIcon"

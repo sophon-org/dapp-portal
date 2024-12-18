@@ -155,7 +155,7 @@
         <div class="mt-4 flex items-center gap-4">
           <transition v-bind="TransitionOpacity()">
             <TransactionFeeDetails
-              v-if="!feeError && (fee || feeLoading)"
+              v-if="!feeError && (fee || feeLoading) && account.chainId === l1Network?.id"
               label="Fee:"
               :fee-token="feeToken"
               :fee-amount="fee"
@@ -173,7 +173,7 @@
         </div>
         <transition v-bind="TransitionAlertScaleInOutTransition" mode="out-in">
           <CommonAlert
-            v-if="recommendedBalance && feeToken"
+            v-if="recommendedBalance && feeToken && account.chainId === l1Network?.id"
             class="mt-4"
             variant="error"
             :icon="ExclamationTriangleIcon"
@@ -194,7 +194,7 @@
             <NuxtLink :to="{ name: 'receive-methods' }" class="alert-link">Receive funds</NuxtLink>
           </CommonAlert>
           <CommonAlert
-            v-else-if="!enoughBalanceToCoverFee"
+            v-else-if="!enoughBalanceToCoverFee && account.chainId === l1Network?.id"
             class="mt-4"
             variant="error"
             :icon="ExclamationTriangleIcon"
@@ -407,7 +407,7 @@ const eraWalletStore = useZkSyncWalletStore();
 const { account, isConnected, walletNotSupported, walletWarningDisabled } = storeToRefs(onboardStore);
 const { eraNetwork } = storeToRefs(providerStore);
 const { destinations } = storeToRefs(useDestinationsStore());
-const { l1BlockExplorerUrl, selectedNetwork } = storeToRefs(useNetworkStore());
+const { l1BlockExplorerUrl, selectedNetwork, l1Network } = storeToRefs(useNetworkStore());
 const NETWORK_CONFIG = selectedNetwork.value.key === "sophon" ? MAINNET : TESTNET;
 const { l1Tokens, baseToken, tokensRequestInProgress, tokensRequestError } = storeToRefs(tokensStore);
 const { balance, balanceInProgress, balanceError } = storeToRefs(zkSyncEthereumBalance);
@@ -573,7 +573,7 @@ const maxAmount = computed(() => {
   if (!selectedToken.value || !tokenBalance.value) {
     return undefined;
   }
-  if (feeToken.value?.address === selectedToken.value.address) {
+  if (feeToken.value?.address === selectedToken.value.address && account.value.chainId === l1Network?.value?.id) {
     if (BigNumber.from(tokenBalance.value).isZero()) {
       return "0";
     }

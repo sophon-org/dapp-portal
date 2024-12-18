@@ -155,7 +155,7 @@
         <div class="mt-4 flex items-center gap-4">
           <transition v-bind="TransitionOpacity()">
             <TransactionFeeDetails
-              v-if="!feeError && (fee || feeLoading)"
+              v-if="!feeError && (fee || feeLoading) && account.chainId === l1Network?.id"
               label="Fee:"
               :fee-token="feeToken"
               :fee-amount="fee"
@@ -407,7 +407,7 @@ const eraWalletStore = useZkSyncWalletStore();
 const { account, isConnected, walletNotSupported, walletWarningDisabled } = storeToRefs(onboardStore);
 const { eraNetwork } = storeToRefs(providerStore);
 const { destinations } = storeToRefs(useDestinationsStore());
-const { l1BlockExplorerUrl, selectedNetwork } = storeToRefs(useNetworkStore());
+const { l1BlockExplorerUrl, selectedNetwork, l1Network } = storeToRefs(useNetworkStore());
 const NETWORK_CONFIG = selectedNetwork.value.key === "sophon" ? MAINNET : TESTNET;
 const { l1Tokens, baseToken, tokensRequestInProgress, tokensRequestError } = storeToRefs(tokensStore);
 const { balance, balanceInProgress, balanceError } = storeToRefs(zkSyncEthereumBalance);

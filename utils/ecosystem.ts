@@ -32,6 +32,15 @@ export const cards = [
   },
   {
     id: 4,
+    category: "Gaming",
+    title: "(((+)))",
+    description: "Your mastery here may echo through the void.",
+    isComingSoon: false,
+    link: "https://play.sophon.xyz",
+    icon: "/img/home/play.png",
+  },
+  {
+    id: 5,
     category: "Guardian",
     title: "Guardian",
     description: "The Sophon Guardian dashboard to manage nodes and rewards",
@@ -40,7 +49,7 @@ export const cards = [
     icon: "/img/home/guardian.svg",
   },
   {
-    id: 5,
+    id: 6,
     category: "Ticketing",
     title: "Open",
     description:
@@ -51,7 +60,7 @@ export const cards = [
     icon: "/img/home/open.svg",
   },
   {
-    id: 6,
+    id: 7,
     category: "Gaming",
     title: "Gamp",
     description: "Compete with a mad squad of Gampers on major titles",
@@ -60,7 +69,7 @@ export const cards = [
     icon: "/img/home/gamp.svg",
   },
   {
-    id: 7,
+    id: 8,
     category: "Gaming",
     title: "Lé Poker",
     description: "Free, fair poker tournaments",
@@ -69,7 +78,7 @@ export const cards = [
     icon: "/img/home/lepoker.jpg",
   },
   {
-    id: 8,
+    id: 9,
     category: "Gaming",
     title: "Petopia",
     description: "Action packed battle arena game",
@@ -78,7 +87,7 @@ export const cards = [
     icon: "/img/home/petopia.png",
   },
   {
-    id: 9,
+    id: 10,
     category: "Gaming",
     title: "Pioneers of new world",
     description: "Turn-based strategy game inspired by Settlers of Catan",
@@ -88,7 +97,7 @@ export const cards = [
     iconStyling: "bg-white",
   },
   {
-    id: 10,
+    id: 11,
     category: "Gaming",
     title: "Animix",
     description: "Mix DNA to create fantastical pets in this fun creature collection and battle game!",
@@ -98,7 +107,7 @@ export const cards = [
     iconStyling: "bg-white",
   },
   {
-    id: 11,
+    id: 12,
     category: "Wallet",
     title: "Safe",
     description: "The leading and widely used multisig",
@@ -107,7 +116,7 @@ export const cards = [
     icon: "/img/home/safe.svg",
   },
   {
-    id: 12,
+    id: 13,
     category: "Bridge",
     title: "Layerswap",
     description: "Fast and reliable cross-chain crypto transfers",
@@ -117,7 +126,7 @@ export const cards = [
     icon: "/img/home/layerswap.svg",
   },
   {
-    id: 13,
+    id: 14,
     category: "DePIN",
     title: "Aethir",
     description: "On-demand GPU computing",
@@ -127,7 +136,7 @@ export const cards = [
     iconStyling: "bg-white",
   },
   {
-    id: 14,
+    id: 15,
     category: "Explorer",
     title: "Explorer",
     description: "Browse through Sophon's transactions, blocks, tokens, and more",
@@ -137,7 +146,7 @@ export const cards = [
     iconStyling: "bg-white",
   },
   {
-    id: 15,
+    id: 16,
     category: "Dev",
     title: "Dev Tooling",
     description: "Discover our rich ecosystem for developer",
@@ -146,7 +155,7 @@ export const cards = [
     icon: "/img/home/docs.svg",
   },
   {
-    id: 16,
+    id: 17,
     category: "Betting",
     title: "Rivalry",
     description: "The ultimate iGaming betting platform made by gamers for gamers",
@@ -155,7 +164,7 @@ export const cards = [
     iconStyling: "p-1",
   },
   {
-    id: 17,
+    id: 18,
     category: "AI",
     title: "NOVA",
     description: "The AI Agent for AI Agents. Powered by Anomaly",
@@ -164,7 +173,7 @@ export const cards = [
     iconStyling: "p-1",
   },
   {
-    id: 18,
+    id: 19,
     category: "DeFi",
     title: "NooN",
     description: "The most intelligent and fair yield generating stablecoin",
@@ -173,7 +182,7 @@ export const cards = [
     iconStyling: "bg-white",
   },
   {
-    id: 19,
+    id: 20,
     category: "Gaming",
     title: "Brutal Knights",
     description: "An extraction-roguelike strategy game with web3-centric mechanics and emphasis on F2P",

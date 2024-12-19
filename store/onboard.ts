@@ -12,7 +12,7 @@ import { createWeb3Modal } from "@web3modal/wagmi";
 
 import { wagmiConfig } from "@/data/wagmi";
 import { confirmedSupportedWallets, disabledWallets } from "@/data/wallets";
-
+import networks from "@/hyperchains/config.json";
 export const useOnboardStore = defineStore("onboard", () => {
   const portalRuntimeConfig = usePortalRuntimeConfig();
   const { selectedColorMode } = useColorMode();
@@ -104,14 +104,55 @@ export const useOnboardStore = defineStore("onboard", () => {
     const walletNetworkId = account.value.chain?.id;
     return walletNetworkId === l1Network.value?.id;
   });
+
+  const getNetworkConfigByChainId = (chainId: number) => {
+    return networks.find((config) => config.network.id === chainId)?.network;
+  };
+
   const switchNetworkById = async (chainId: number, networkName?: string) => {
-    try {
-      return await switchChain(wagmiConfig, { chainId });
-    } catch (err) {
-      if (err instanceof Error && err.message.includes("does not support programmatic chain switching")) {
-        throw new Error(`Please switch network manually to "${networkName}" in your ${walletName.value} wallet`);
+    const { connector } = getAccount(wagmiConfig);
+    const provider = await connector?.getProvider?.();
+    if (!provider) throw new Error("Provider is not available");
+
+    if ((provider as any).isRainbow) {
+      try {
+        await switchChain(wagmiConfig, { chainId });
+      } catch (err) {
+        if (err instanceof Error && err.message.includes("Chain Id not supported")) {
+          const networkConfig = getNetworkConfigByChainId(chainId);
+          if (!networkConfig) throw new Error(`Network configuration for chainId ${chainId} not found`);
+
+          const hexChainId = `0x${chainId.toString(16)}`;
+
+          const networkParams = {
+            chainId: hexChainId,
+            chainName: networkConfig.name,
+            nativeCurrency: {
+              name: networkConfig.nativeCurrency.name,
+              symbol: networkConfig.nativeCurrency.symbol,
+              decimals: networkConfig.nativeCurrency.decimals,
+            },
+            rpcUrls: [networkConfig.rpcUrl],
+            blockExplorerUrls: [networkConfig.blockExplorerUrl],
+          };
+          await (provider as any).request({
+            method: "wallet_addEthereumChain",
+            params: [networkParams],
+          });
+          // After adding, attempt to switch again
+          return await switchChain(wagmiConfig, { chainId });
+        }
+        throw err;
       }
-      throw err;
+    } else {
+      try {
+        return await switchChain(wagmiConfig, { chainId });
+      } catch (err) {
+        if (err instanceof Error && err.message.includes("does not support programmatic chain switching")) {
+          throw new Error(`Please switch network manually to "${networkName}" in your ${walletName.value} wallet`);
+        }
+        throw err;
+      }
     }
   };
   const {

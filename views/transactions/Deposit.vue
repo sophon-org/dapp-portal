@@ -150,7 +150,7 @@
       <template
         v-if="(!tokenCustomBridge || !tokenCustomBridge?.bridgingDisabled) && (step === 'form' || step === 'confirm')"
       >
-        <CommonErrorBlock v-if="feeError" class="mt-2" @try-again="estimate">
+        <CommonErrorBlock v-if="feeError && account.chainId === l1Network?.id" class="mt-2" @try-again="estimate">
           Fee estimation error: {{ feeError.message }}
         </CommonErrorBlock>
         <div class="mt-4 flex items-center gap-4">

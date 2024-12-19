@@ -58,6 +58,7 @@
           :max-amount="maxAmount"
           :approve-required="!enoughAllowance && (!tokenCustomBridge || !tokenCustomBridge.bridgingDisabled)"
           :loading="tokensRequestInProgress || balanceInProgress"
+          :is-correct-network="account.chainId === l1Network?.id"
           class="mb-block-padding-1/2 sm:mb-block-gap"
           @additional-token-found="handleAdditionalToken"
         >
@@ -649,6 +650,17 @@ watch(
   async ([newAllowance, newTokenAddress], [oldAllowance, oldTokenAddress]) => {
     if (setAllowanceStatus.value !== "done") return;
     if (newAllowance && oldAllowance && !newAllowance.eq(oldAllowance) && newTokenAddress === oldTokenAddress) {
+      await resetFee();
+      await estimate();
+    }
+  }
+);
+
+// Add a watcher to re-estimate fees when account's chainId changes
+watch(
+  () => account.value.chainId,
+  async (newChainId, oldChainId) => {
+    if (newChainId !== oldChainId) {
       await resetFee();
       await estimate();
     }

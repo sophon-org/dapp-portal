@@ -58,6 +58,7 @@
           :max-amount="maxAmount"
           :approve-required="!enoughAllowance && (!tokenCustomBridge || !tokenCustomBridge.bridgingDisabled)"
           :loading="tokensRequestInProgress || balanceInProgress"
+          :is-correct-network="account.chainId === l1Network?.id"
           class="mb-block-padding-1/2 sm:mb-block-gap"
           @additional-token-found="handleAdditionalToken"
         >

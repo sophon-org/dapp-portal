@@ -18,10 +18,12 @@ export default (tokens: Ref<Token[]>, balances: Ref<TokenAmount[] | undefined>) 
   const { getL1VoidSigner } = useZkSyncWalletStore();
   const { requestProvider } = useZkSyncProviderStore();
   const onboardStore = useOnboardStore();
+  const { account } = storeToRefs(onboardStore);
 
   let params = {
     to: undefined as string | undefined,
     tokenAddress: undefined as string | undefined,
+    accountChainId: undefined as number | undefined,
   };
 
   const fee = ref<DepositFeeValues | undefined>();
@@ -133,6 +135,7 @@ export default (tokens: Ref<Token[]>, balances: Ref<TokenAmount[] | undefined>) 
       params = {
         to,
         tokenAddress,
+        accountChainId: account.value.chainId,
       };
       await cacheEstimateFee(params);
     },

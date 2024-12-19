@@ -139,6 +139,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  isCorrectNetwork: {
+    type: Boolean,
+    default: true,
+  },
 });
 
 const emit = defineEmits<{
@@ -219,6 +223,7 @@ const setMaxAmount = () => {
 
 const amountError = computed(() => {
   if (!selectedToken.value) return;
+  if (!props.isCorrectNetwork) return;
   if (tokenBalance.value && totalComputeAmount.value.gt(tokenBalance.value.amount)) {
     return "exceeds_balance";
   }

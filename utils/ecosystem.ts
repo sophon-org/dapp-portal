@@ -62,7 +62,7 @@ export const cards = [
   {
     id: 7,
     category: "Gaming",
-    title: "Gamp",
+    title: "GAMP",
     description: "Compete with a mad squad of Gampers on major titles",
     isComingSoon: false,
     link: "https://gamp.gg",

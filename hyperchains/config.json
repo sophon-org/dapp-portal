@@ -59,6 +59,13 @@
         "symbol": "USDC",
         "decimals": 6,
         "iconUrl": "/img/usdc.svg"
+      },
+      {
+        "address": "0xA96aD8EC6A83F23e0A75E5d8c9cE13C1042c4295",
+        "l1Address": "0xc28eb2250d1ae32c7e74cfb6d6b86afc9beb6509",
+        "symbol": "OPN",
+        "decimals": 18,
+        "iconUrl": "/img/opn.webp"
       }
     ]
   },

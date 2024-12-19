@@ -655,6 +655,17 @@ watch(
   }
 );
 
+// Add a watcher to re-estimate fees when account's chainId changes
+watch(
+  () => account.value.chainId,
+  async (newChainId, oldChainId) => {
+    if (newChainId !== oldChainId) {
+      await resetFee();
+      await estimate();
+    }
+  }
+);
+
 const autoUpdatingFee = computed(() => !feeError.value && fee.value && !feeLoading.value);
 const { reset: resetAutoUpdateEstimate, stop: stopAutoUpdateEstimate } = useInterval(async () => {
   if (!autoUpdatingFee.value) return;

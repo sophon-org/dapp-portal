@@ -159,7 +159,7 @@ export const cards = [
     id: 17,
     category: "Dev",
     title: "Dev Tooling",
-    description: "Discover our rich ecosystem for developer",
+    description: "Discover our rich ecosystem for developers",
     isComingSoon: false,
     link: "https://docs.sophon.xyz/build/partners/overview",
     icon: "/img/home/docs.svg",

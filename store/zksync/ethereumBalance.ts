@@ -18,7 +18,7 @@ export const useZkSyncEthereumBalanceStore = defineStore("zkSyncEthereumBalances
   const { balance: ethereumBalance } = storeToRefs(ethereumBalancesStore);
   const { l1Tokens } = storeToRefs(tokensStore);
   const additionalTokenAddresses = useStorage<string[]>("additionalTokenAddresses", []);
-
+  const { fetchEthPrice } = useEthPrice();
   const getBalancesFromApi = async (): Promise<TokenAmount[]> => {
     await Promise.all([ethereumBalancesStore.requestBalance(), tokensStore.requestTokens()]);
 
@@ -92,11 +92,14 @@ export const useZkSyncEthereumBalanceStore = defineStore("zkSyncEthereumBalances
             throw new Error(`Balance for token ${token.symbol} is undefined`);
           }
 
+          const price = token.address === utils.ETH_ADDRESS ? await fetchEthPrice() : token.price;
+
           return {
             ...token,
             symbol: token.symbol ?? balance.symbol,
             decimals: token.decimals ?? balance.decimals,
             amount: balance.value.toString(),
+            price,
           };
         } catch (error) {
           // eslint-disable-next-line no-console

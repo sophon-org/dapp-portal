@@ -51,14 +51,16 @@
         "l1Address": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
         "symbol": "USDT",
         "decimals": 6,
-        "iconUrl": "/img/usdt.svg"
+        "iconUrl": "/img/usdt.svg",
+        "price": 1
       },
       {
         "address": "0x9Aa0F72392B5784Ad86c6f3E899bCc053D00Db4F",
         "l1Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
         "symbol": "USDC",
         "decimals": 6,
-        "iconUrl": "/img/usdc.svg"
+        "iconUrl": "/img/usdc.svg",
+        "price": 1
       },
       {
         "address": "0xA96aD8EC6A83F23e0A75E5d8c9cE13C1042c4295",

@@ -51,21 +51,91 @@
         "l1Address": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
         "symbol": "USDT",
         "decimals": 6,
-        "iconUrl": "/img/usdt.svg"
+        "iconUrl": "/img/tokens/usdt.svg"
       },
       {
         "address": "0x9Aa0F72392B5784Ad86c6f3E899bCc053D00Db4F",
         "l1Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
         "symbol": "USDC",
         "decimals": 6,
-        "iconUrl": "/img/usdc.svg"
+        "iconUrl": "/img/tokens/usdc.svg"
       },
       {
         "address": "0xA96aD8EC6A83F23e0A75E5d8c9cE13C1042c4295",
         "l1Address": "0xc28eb2250d1ae32c7e74cfb6d6b86afc9beb6509",
         "symbol": "OPN",
         "decimals": 18,
-        "iconUrl": "/img/opn.webp"
+        "iconUrl": "/img/tokens/opn.webp"
+      },
+      {
+        "address": "0x7A94dFb534ec790277Ad332EFB9B11687A130880",
+        "l1Address": "0x62d0a8458ed7719fdaf978fe5929c6d342b0bfce",
+        "symbol": "BEAM",
+        "decimals": 18,
+        "iconUrl": "/img/tokens/beam.svg"
+      },
+      {
+        "address": "0x06432e41131B70708c1C46814c2fcE9e720edd8A",
+        "l1Address": "0x6982508145454ce325ddbe47a25d4ec3d2311933",
+        "symbol": "PEPE",
+        "decimals": 18,
+        "iconUrl": "/img/tokens/pepe.webp"
+      },
+      {
+        "address": "0xF1f9E08a0818594FDe4713AE0Db1E46672Ca960E",
+        "l1Address": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
+        "symbol": "wBTC",
+        "decimals": 8,
+        "iconUrl": "/img/tokens/wbtc.svg"
+      },
+      {
+        "address": "0x351ca00C5B64C03CA6d1eB9ABe5355ed449ac19C",
+        "l1Address": "0x996d67aa9b37df96428ad3608cb21352bf1fdb90",
+        "symbol": "stZENT",
+        "decimals": 18,
+        "iconUrl": "/img/tokens/stzent.webp"
+      },
+      {
+        "address": "0x42E5bFdC7032D1F8e4B4D3fea3Eb5dB9C01Ef997",
+        "l1Address": "0xc96aa65f31e41b4ca6924b86d93e25686019e59c",
+        "symbol": "stATH",
+        "decimals": 18,
+        "iconUrl": "/img/tokens/stath.svg"
+      },
+      {
+        "address": "0x60D02F185F80644e1A5ae35497736dd31d1b078B",
+        "l1Address": "0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0",
+        "symbol": "wstETH",
+        "decimals": 18,
+        "iconUrl": "/img/tokens/wsteth.svg"
+      },
+      {
+        "address": "0x5E9Fc50b44988B66BA84500f8Bc32C0493fe8F8D",
+        "l1Address": "0xcd5fe23c85820f7b72d0926fc9b05b43e359b7ee",
+        "symbol": "weETH",
+        "decimals": 18,
+        "iconUrl": "/img/tokens/weeth.svg"
+      },
+      {
+        "address": "0xeCcbb9360d235548473Cb8C752735F68e652439B",
+        "l1Address": "0x83f20f44975d03b1b09e64809b757c47f942beea",
+        "symbol": "sDAI",
+        "decimals": 18,
+        "iconUrl": "/img/tokens/sdai.svg"
+      },
+      {
+        "address": "0xB2253e3D9A00e1471Ae7A3F77cBe7d81ec542A3e",
+        "l1Address": "0x3742f3fcc56b2d46c7b8ca77c23be60cd43ca80a",
+        "symbol": "stAVAIL",
+        "decimals": 18,
+        "iconUrl": "/img/tokens/stavail.svg"
+      },
+      {
+        "address": "0x841bE23f3872309f50E0c955c8Cb4b660f733811",
+        "l1Address": "0x67f3228fd58f5a26d93a5dd0c6989b69c95618eb",
+        "symbol": "stAZUR",
+        "decimals": 18,
+        "iconUrl": "/img/tokens/stazur.svg"
       }
     ]
   },

@@ -6,7 +6,7 @@ const CUSTOM_USDC_TOKEN: Token = {
   symbol: "USDC",
   name: "USDC",
   decimals: 6,
-  iconUrl: "/img/usdc.svg",
+  iconUrl: "/img/tokens/usdc.svg",
   l1BridgeAddress: "0xf553E6D903AA43420ED7e3bc2313bE9286A8F987",
   l2BridgeAddress: "0x0f44bac3ec514be912aa4359017593b35e868d74",
 };

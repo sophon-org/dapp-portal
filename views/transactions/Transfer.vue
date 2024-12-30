@@ -1,5 +1,6 @@
 <template>
   <div>
+    transferrrrrrrrrr
     <NetworkDeprecationAlert v-if="step === 'form'" />
     <slot v-if="step === 'form'" name="title" />
     <PageTitle
@@ -35,6 +36,7 @@
       :network-key="destination.key"
       @update:network-key="toNetworkSelected($event)"
     />
+      transferrrrrrrrrr
 
     <CommonErrorBlock v-if="tokensRequestError" @try-again="fetchBalances">
       Getting tokens error: {{ tokensRequestError.message }}
@@ -42,6 +44,7 @@
     <CommonErrorBlock v-else-if="balanceError" @try-again="fetchBalances">
       Getting balances error: {{ balanceError.message }}
     </CommonErrorBlock>
+    
     <form v-else @submit.prevent="">
       <template v-if="step === 'form'">
         <TransactionWithdrawalsAvailableForClaimAlert />

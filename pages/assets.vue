@@ -88,7 +88,7 @@
 
       <template v-if="noBalances">
         <TypographyCategoryLabel>
-          To start using zkSync ecosystem, deposit tokens in any convenient way
+          To start using Sophon ecosystem, deposit tokens in any convenient way
         </TypographyCategoryLabel>
 
         <div class="flex flex-col gap-block-gap">

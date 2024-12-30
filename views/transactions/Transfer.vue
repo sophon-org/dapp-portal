@@ -36,7 +36,7 @@
       :network-key="destination.key"
       @update:network-key="toNetworkSelected($event)"
     />
-      transferrrrrrrrrr
+    transferrrrrrrrrr
 
     <CommonErrorBlock v-if="tokensRequestError" @try-again="fetchBalances">
       Getting tokens error: {{ tokensRequestError.message }}
@@ -44,7 +44,7 @@
     <CommonErrorBlock v-else-if="balanceError" @try-again="fetchBalances">
       Getting balances error: {{ balanceError.message }}
     </CommonErrorBlock>
-    
+
     <form v-else @submit.prevent="">
       <template v-if="step === 'form'">
         <TransactionWithdrawalsAvailableForClaimAlert />
@@ -136,11 +136,7 @@
               >24-hour withdrawal delay</a
             >, you will need to manually claim your funds which requires paying another transaction fee on
             {{ eraNetwork.l1Network?.name }}. Alternatively you can use
-            <a
-              href="https://zksync.dappradar.com/ecosystem?category=defi_bridge"
-              target="_blank"
-              class="underline underline-offset-2"
-              >third-party bridges</a
+            <a href="https://syncswap.xyz/" target="_blank" class="underline underline-offset-2">third-party bridges</a
             >.
           </p>
           <p v-else>

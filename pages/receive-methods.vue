@@ -46,7 +46,7 @@
           label="Bridge from other networks"
           description="Explore ecosystem of third party bridges"
           as="a"
-          href="https://zksync.dappradar.com/ecosystem?category=defi_bridge"
+          href="https://syncswap.xyz/"
           target="_blank"
           :icon="ArrowTopRightOnSquareIcon"
         >

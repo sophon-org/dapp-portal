@@ -30,6 +30,7 @@
         </template>
         <template v-else-if="!hasBalances && (!search || displayedTokens.length)">
           <CommonLineButtonsGroup class="category" :gap="false" :margin-y="false">
+            somethingssss
             <TokenLine
               v-for="item in displayedTokens"
               :key="item.address"

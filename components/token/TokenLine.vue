@@ -1,22 +1,32 @@
 <template>
-  <CommonButtonLineWithImg :as="as">
-    <template #image>
-      <TokenImage :symbol="symbol" :address="address" :icon-url="iconUrl" />
-    </template>
-    <template #default>
-      <CommonButtonLineBodyInfo class="text-left">
-        <template #label>
-          <div class="truncate">{{ symbol }}</div>
-        </template>
-        <template v-if="name" #underline>
-          <div class="truncate">{{ name }}</div>
-        </template>
-      </CommonButtonLineBodyInfo>
-    </template>
-    <template #right>
-      <slot name="right" />
-    </template>
-  </CommonButtonLineWithImg>
+  <div class="token-line-row">
+    <CommonButtonAddToWalletButton
+      :asset="{
+        address: address as `0x${string}`,
+        decimals,
+        symbol,
+      }"
+      variant="ghost"
+    />
+    <CommonButtonLineWithImg :as="as">
+      <template #image>
+        <TokenImage :symbol="symbol" :address="address" :icon-url="iconUrl" />
+      </template>
+      <template #default>
+        <CommonButtonLineBodyInfo class="text-left">
+          <template #label>
+            <div class="truncate">{{ symbol }}</div>
+          </template>
+          <template v-if="name" #underline>
+            <div class="truncate">{{ name }}</div>
+          </template>
+        </CommonButtonLineBodyInfo>
+      </template>
+      <template #right>
+        <slot name="right" />
+      </template>
+    </CommonButtonLineWithImg>
+  </div>
 </template>
 
 <script lang="ts" setup>
@@ -50,4 +60,9 @@ defineProps({
 });
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.token-line-row {
+  display: flex;
+  align-items: center;
+}
+</style>

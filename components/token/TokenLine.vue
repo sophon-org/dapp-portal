@@ -1,13 +1,5 @@
 <template>
   <div class="token-line-row">
-    <CommonButtonAddToWalletButton
-      :asset="{
-        address: address as `0x${string}`,
-        decimals,
-        symbol,
-      }"
-      variant="ghost"
-    />
     <CommonButtonLineWithImg :as="as">
       <template #image>
         <TokenImage :symbol="symbol" :address="address" :icon-url="iconUrl" />

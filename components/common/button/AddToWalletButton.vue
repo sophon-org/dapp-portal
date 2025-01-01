@@ -97,9 +97,9 @@ async function onClick(event: MouseEvent) {
 .group {
   width: fit-content;
   height: fit-content;
+}
 
-  button {
-    margin-top: 7px;
-  }
+.group button {
+  margin-top: 7px;
 }
 </style>

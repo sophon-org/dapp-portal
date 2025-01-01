@@ -26,7 +26,7 @@
           :description="`Explore ecosystem of third party bridges`"
           :icon="ArrowTopRightOnSquareIcon"
           as="a"
-          href="https://syncswap.xyz/"
+          href="https://layerswap.io/app"
           target="_blank"
         >
           <template #image>

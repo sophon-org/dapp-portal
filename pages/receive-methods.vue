@@ -27,26 +27,10 @@
       </CommonCardWithLineButtons>
       <CommonCardWithLineButtons v-if="isMainnet && eraNetwork.displaySettings?.showPartnerLinks">
         <DestinationItem
-          label="Top-up with cash"
-          description="Buy tokens using a card or another method for fiat"
-          as="a"
-          href="https://zksync.dappradar.com/ecosystem?category=non_dapps_on_off_ramps"
-          target="_blank"
-          :icon="ArrowTopRightOnSquareIcon"
-        >
-          <template #image>
-            <DestinationIconContainer>
-              <BanknotesIcon aria-hidden="true" />
-            </DestinationIconContainer>
-          </template>
-        </DestinationItem>
-      </CommonCardWithLineButtons>
-      <CommonCardWithLineButtons v-if="isMainnet && eraNetwork.displaySettings?.showPartnerLinks">
-        <DestinationItem
           label="Bridge from other networks"
           description="Explore ecosystem of third party bridges"
           as="a"
-          href="https://syncswap.xyz/"
+          href="https://layerswap.io/app"
           target="_blank"
           :icon="ArrowTopRightOnSquareIcon"
         >
@@ -62,7 +46,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ArrowsUpDownIcon, ArrowTopRightOnSquareIcon, BanknotesIcon, QrCodeIcon } from "@heroicons/vue/24/outline";
+import { ArrowsUpDownIcon, ArrowTopRightOnSquareIcon, QrCodeIcon } from "@heroicons/vue/24/outline";
 import { mainnet } from "viem/chains";
 
 const { destinations } = storeToRefs(useDestinationsStore());

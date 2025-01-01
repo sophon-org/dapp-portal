@@ -1,6 +1,5 @@
 <template>
   <div>
-    transferrrrrrrrrr
     <NetworkDeprecationAlert v-if="step === 'form'" />
     <slot v-if="step === 'form'" name="title" />
     <PageTitle
@@ -36,7 +35,6 @@
       :network-key="destination.key"
       @update:network-key="toNetworkSelected($event)"
     />
-    transferrrrrrrrrr
 
     <CommonErrorBlock v-if="tokensRequestError" @try-again="fetchBalances">
       Getting tokens error: {{ tokensRequestError.message }}
@@ -136,7 +134,8 @@
               >24-hour withdrawal delay</a
             >, you will need to manually claim your funds which requires paying another transaction fee on
             {{ eraNetwork.l1Network?.name }}. Alternatively you can use
-            <a href="https://syncswap.xyz/" target="_blank" class="underline underline-offset-2">third-party bridges</a
+            <a href="https://layerswap.io/app" target="_blank" class="underline underline-offset-2"
+              >third-party bridges</a
             >.
           </p>
           <p v-else>

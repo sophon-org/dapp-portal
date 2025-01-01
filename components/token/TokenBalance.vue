@@ -13,8 +13,18 @@
     <template #right>
       <CommonButtonLineBodyInfo class="text-right">
         <template #secondary>
-          <div class="token-balance-amount" :title="fullAmount">
-            {{ displayedAmount }}
+          <div class="flex items-center gap-3">
+            <CommonButtonAddToWalletButton
+              :asset="{
+              address: address as `0x${string}`,
+              decimals,
+              symbol,
+            }"
+              variant="ghost"
+            />
+            <div class="token-balance-amount" :title="fullAmount">
+              {{ displayedAmount }}
+            </div>
           </div>
         </template>
         <template #underline>

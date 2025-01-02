@@ -26,7 +26,7 @@
           :description="`Explore ecosystem of third party bridges`"
           :icon="ArrowTopRightOnSquareIcon"
           as="a"
-          href="https://zksync.dappradar.com/ecosystem?category=defi_bridge"
+          href="https://layerswap.io/app"
           target="_blank"
         >
           <template #image>

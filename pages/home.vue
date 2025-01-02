@@ -6,9 +6,24 @@
       </h1>
     </div>
 
+    <!-- Category Filter Buttons -->
+    <div class="mb-8 flex gap-4">
+      <button
+        v-for="category in categories"
+        :key="category"
+        :class="[
+          'h-[40px] min-w-[123px] rounded-lg px-4 py-2',
+          selectedCategory === category ? 'bg-[#0171E3] text-white' : 'bg-white text-[#6e6e73]',
+        ]"
+        @click="selectedCategory = category"
+      >
+        {{ category }}
+      </button>
+    </div>
+
     <div class="grid grid-cols-1 gap-[18px] md:grid-cols-2 lg:grid-cols-3">
       <NuxtLink
-        v-for="card in cards"
+        v-for="card in filteredCards"
         :key="card.id"
         :class="[
           'relative w-[317px] rounded-[24px] bg-white px-5 pb-8 pt-5 shadow-[0_0_30px_rgba(0,0,0,0.20)] transition-all duration-300 ease-in-out hover:scale-[1.02] hover:shadow-[0_0_40px_rgba(0,0,0,0.25)]',
@@ -47,7 +62,10 @@
           Coming soon
         </div>
       </NuxtLink>
-      <div class="height-full flex w-[317px] items-center justify-center rounded-[24px] bg-transparent">
+      <div
+        v-if="selectedCategory === 'All'"
+        class="height-full flex w-[317px] items-center justify-center rounded-[24px] bg-transparent"
+      >
         <p class="text-center text-sm font-normal text-[#6E6E73]">and more to come!</p>
       </div>
     </div>
@@ -59,7 +77,17 @@ export default {
   data() {
     return {
       cards,
+      categories: ["All", "Sophon Essentials", "DeFi", "Gaming", "Events", "Developers", "Casino"],
+      selectedCategory: "All",
     };
+  },
+  computed: {
+    filteredCards() {
+      if (this.selectedCategory === "All") {
+        return this.cards;
+      }
+      return this.cards.filter((card) => card.category === this.selectedCategory);
+    },
   },
 };
 </script>

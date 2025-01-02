@@ -1,7 +1,7 @@
 export const cards = [
   {
     id: 1,
-    category: "Bridge",
+    category: "Sophon Essentials",
     title: "Bridge",
     description: "Bridge tokens to and from Ethereum with Sophon's official bridge",
     isComingSoon: false,
@@ -41,7 +41,7 @@ export const cards = [
   },
   {
     id: 5,
-    category: "Guardian",
+    category: "Sophon Essentials",
     title: "Guardian",
     description: "The Sophon Guardian dashboard to manage nodes and rewards",
     isComingSoon: false,
@@ -50,7 +50,7 @@ export const cards = [
   },
   {
     id: 6,
-    category: "Ticketing",
+    category: "Events",
     title: "Open",
     description:
       "Bringing accessible onchain benefits to millions of event attendees, organizers and artists around the world.",
@@ -108,7 +108,7 @@ export const cards = [
   },
   {
     id: 12,
-    category: "Wallet",
+    category: "Developers",
     title: "Safe",
     description: "The leading and widely used multisig",
     isComingSoon: false,
@@ -117,7 +117,7 @@ export const cards = [
   },
   {
     id: 13,
-    category: "Bridge",
+    category: "Sophon Essentials",
     title: "Layerswap",
     description: "Fast and reliable cross-chain crypto transfers",
     isComingSoon: false,
@@ -127,7 +127,7 @@ export const cards = [
   },
   {
     id: 14,
-    category: "AI",
+    category: "Developers",
     title: "NOVA",
     description: "The AI Agent for AI Agents. Powered by Anomaly",
     isComingSoon: false,
@@ -137,7 +137,7 @@ export const cards = [
   },
   {
     id: 15,
-    category: "DePIN",
+    category: "Developers",
     title: "Aethir",
     description: "On-demand GPU computing",
     isComingSoon: false,
@@ -147,7 +147,7 @@ export const cards = [
   },
   {
     id: 16,
-    category: "Explorer",
+    category: "Sophon Essentials",
     title: "Explorer",
     description: "Browse through Sophon's transactions, blocks, tokens, and more",
     isComingSoon: false,
@@ -157,7 +157,7 @@ export const cards = [
   },
   {
     id: 17,
-    category: "Dev",
+    category: "Developers",
     title: "Dev Tooling",
     description: "Discover our rich ecosystem for developers",
     isComingSoon: false,
@@ -167,7 +167,7 @@ export const cards = [
 
   {
     id: 18,
-    category: "Betting",
+    category: "Casino",
     title: "Rivalry",
     description: "The ultimate iGaming betting platform made by gamers for gamers",
     isComingSoon: true,

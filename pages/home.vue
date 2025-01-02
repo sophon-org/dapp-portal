@@ -7,12 +7,12 @@
     </div>
 
     <!-- Category Filter Buttons -->
-    <div class="mb-8 flex gap-4">
+    <div class="lg:overflow-x-unset scrollbar mb-8 flex max-w-[90vw] gap-4 overflow-x-auto py-1 lg:max-w-none lg:py-0">
       <button
         v-for="category in categories"
         :key="category"
         :class="[
-          'h-[40px] min-w-[123px] rounded-lg px-4 py-2',
+          'h-[40px] min-w-fit rounded-lg px-4 py-2 lg:min-w-[123px]',
           selectedCategory === category ? 'bg-[#0171E3] text-white' : 'bg-white text-[#6e6e73]',
         ]"
         @click="selectedCategory = category"
@@ -91,3 +91,31 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.scrollbar {
+  /* For Internet Explorer and Edge */
+  -ms-overflow-style: none; /* Disables scrollbar */
+
+  /* For Firefox */
+  scrollbar-width: none; /* Hides scrollbar but allows scrolling */
+}
+
+.scrollbar::-webkit-scrollbar {
+  height: 1px;
+  display: none;
+}
+
+.scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar::-webkit-scrollbar-thumb {
+  background: transparent;
+}
+
+.scrollbar:hover::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.01);
+  border-radius: 2px;
+}
+</style>

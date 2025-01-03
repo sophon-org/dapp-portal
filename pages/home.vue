@@ -12,7 +12,7 @@
         v-for="category in categories"
         :key="category"
         :class="[
-          'h-[40px] min-w-fit rounded-lg px-4 py-2 lg:min-w-[123px]',
+          'h-[40px] min-w-fit rounded-lg px-4 py-2 transition-colors duration-300 lg:min-w-[123px]',
           selectedCategory === category ? 'bg-[#0171E3] text-white' : 'bg-white text-[#6e6e73]',
         ]"
         @click="selectedCategory = category"
@@ -21,7 +21,7 @@
       </button>
     </div>
 
-    <div class="grid grid-cols-1 gap-[18px] md:grid-cols-2 lg:grid-cols-3">
+    <TransitionGroup name="card-transition" tag="div" class="grid grid-cols-1 gap-[18px] md:grid-cols-2 lg:grid-cols-3">
       <NuxtLink
         v-for="card in filteredCards"
         :key="card.id"
@@ -64,11 +64,12 @@
       </NuxtLink>
       <div
         v-if="selectedCategory === 'All'"
+        key="more-to-come"
         class="height-full flex w-[317px] items-center justify-center rounded-[24px] bg-transparent"
       >
         <p class="text-center text-sm font-normal text-[#6E6E73]">and more to come!</p>
       </div>
-    </div>
+    </TransitionGroup>
   </div>
 </template>
 
@@ -93,6 +94,27 @@ export default {
 </script>
 
 <style scoped>
+.card-transition-move,
+.card-transition-enter-active,
+.card-transition-leave-active {
+  transition: all 0.3s ease;
+}
+
+.card-transition-enter-from {
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.card-transition-leave-to {
+  opacity: 0;
+  transform: translateY(500px);
+}
+
+.card-transition-leave-active {
+  opacity: 0;
+  position: absolute;
+}
+
 .scrollbar {
   /* For Internet Explorer and Edge */
   -ms-overflow-style: none; /* Disables scrollbar */

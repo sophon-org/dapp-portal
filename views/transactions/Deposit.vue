@@ -43,11 +43,6 @@
       </CommonAlert>
       <template v-if="step === 'form'">
         <TransactionWithdrawalsAvailableForClaimAlert />
-        <EcosystemBlock
-          v-if="eraNetwork.displaySettings?.showPartnerLinks && ecosystemBannerVisible"
-          show-close-button
-          class="mb-block-padding-1/2 sm:mb-block-gap"
-        />
         <CommonInputTransactionAmount
           v-model="amount"
           v-model:error="amountError"
@@ -736,7 +731,7 @@ const {
   error: transactionError,
   commitTransaction,
 } = useTransaction(eraWalletStore.getL1Signer);
-const { recentlyBridged, ecosystemBannerVisible } = useEcosystemBanner();
+const { recentlyBridged } = useEcosystemBanner();
 const { saveTransaction, waitForCompletion } = useZkSyncTransactionStatusStore();
 
 watch(step, (newStep) => {

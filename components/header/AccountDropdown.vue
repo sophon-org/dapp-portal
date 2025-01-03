@@ -1,6 +1,5 @@
 <template>
   <Menu v-slot="{ open }" as="div" class="account-dropdown-container">
-    <HeaderHelpModal v-model:opened="helpModalOpened" />
     <MenuButton as="div">
       <div ref="addressEl">
         <HeaderAccountDropdownButton :toggled="open" size="lg" variant="white" />
@@ -113,8 +112,6 @@ watch(
   },
   { immediate: true }
 );
-
-const helpModalOpened = ref(false);
 </script>
 
 <style lang="scss" scoped>

@@ -88,7 +88,7 @@
 
       <template v-if="noBalances">
         <TypographyCategoryLabel>
-          To start using zkSync ecosystem, deposit tokens in any convenient way
+          To start using Sophon ecosystem, deposit tokens in any convenient way
         </TypographyCategoryLabel>
 
         <div class="flex flex-col gap-block-gap">
@@ -123,15 +123,7 @@
 </template>
 
 <script lang="ts" setup>
-import {
-  ArrowDownLeftIcon,
-  ArrowsUpDownIcon,
-  ArrowTopRightOnSquareIcon,
-  ArrowUpRightIcon,
-  BanknotesIcon,
-  QrCodeIcon,
-} from "@heroicons/vue/24/outline";
-import { mainnet } from "viem/chains";
+import { ArrowDownLeftIcon, ArrowUpRightIcon, QrCodeIcon } from "@heroicons/vue/24/outline";
 
 import useEcosystemBanner from "@/composables/zksync/deposit/useEcosystemBanner";
 
@@ -175,7 +167,6 @@ const depositMethods = computed(() => {
     });
   }
 
-  const isMainnet = eraNetwork.value.l1Network?.id === mainnet.id;
   methods.push({
     props: {
       label: "View your address",
@@ -187,30 +178,6 @@ const depositMethods = computed(() => {
     },
     icon: QrCodeIcon,
   });
-  if (isMainnet && eraNetwork.value.displaySettings?.showPartnerLinks) {
-    methods.push({
-      props: {
-        label: "Top-up with cash",
-        description: "Buy tokens using a card or another method for fiat",
-        as: "a",
-        href: "https://zksync.dappradar.com/ecosystem?category=non_dapps_on_off_ramps",
-        target: "_blank",
-        icon: ArrowTopRightOnSquareIcon,
-      },
-      icon: BanknotesIcon,
-    });
-    methods.push({
-      props: {
-        label: "Bridge from other networks",
-        description: "Explore ecosystem of third party bridges",
-        as: "a",
-        href: "https://zksync.dappradar.com/ecosystem?category=defi_bridge",
-        target: "_blank",
-        icon: ArrowTopRightOnSquareIcon,
-      },
-      icon: ArrowsUpDownIcon,
-    });
-  }
   return methods;
 });
 

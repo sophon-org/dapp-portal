@@ -3,8 +3,6 @@
     <LoadersConnecting />
     <ModalConnectingWalletError />
     <ModalNetworkChangedWarning v-if="!isConnectingWallet" />
-    <ModalLegalNotice />
-
     <Header />
     <main
       :class="[

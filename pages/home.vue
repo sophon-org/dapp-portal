@@ -1,13 +1,13 @@
 <template>
-  <div class="flex flex-col items-center justify-center gap-[55px] py-[55px]">
+  <div class="flex flex-col items-center justify-center gap-[50px] py-[55px]">
     <div class="flex w-full flex-col items-center justify-center lg:w-[821px]">
-      <h1 class="mb-12 text-center text-5xl font-normal text-[#1C1C1C]">
+      <h1 class="mb-2 text-center text-5xl font-normal text-[#1C1C1C]">
         Welcome to Sophon.<span class="text-[#6E6E73]"> Discover our ecosystem of applications and tools.</span>
       </h1>
     </div>
 
     <!-- Category Filter Buttons -->
-    <div class="lg:overflow-x-unset scrollbar mb-8 flex max-w-[90vw] gap-4 overflow-x-auto py-1 lg:max-w-none lg:py-0">
+    <div class="lg:overflow-x-unset scrollbar flex max-w-[90vw] gap-4 overflow-x-auto py-1 lg:max-w-none lg:py-0">
       <button
         v-for="category in categories"
         :key="category"

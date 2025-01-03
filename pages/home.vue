@@ -1,14 +1,29 @@
 <template>
-  <div class="flex flex-col items-center justify-center gap-[55px] py-[55px]">
+  <div class="flex flex-col items-center justify-center gap-[50px] py-[55px]">
     <div class="flex w-full flex-col items-center justify-center lg:w-[821px]">
-      <h1 class="mb-12 text-center text-5xl font-normal text-[#1C1C1C]">
+      <h1 class="mb-2 text-center text-5xl font-normal text-[#1C1C1C]">
         Welcome to Sophon.<span class="text-[#6E6E73]"> Discover our ecosystem of applications and tools.</span>
       </h1>
     </div>
 
-    <div class="grid grid-cols-1 gap-[18px] md:grid-cols-2 lg:grid-cols-3">
+    <!-- Category Filter Buttons -->
+    <div class="lg:overflow-x-unset scrollbar flex max-w-[90vw] gap-4 overflow-x-auto py-1 lg:max-w-none lg:py-0">
+      <button
+        v-for="category in categories"
+        :key="category"
+        :class="[
+          'h-[40px] min-w-fit rounded-lg px-4 py-2 transition-colors duration-300 lg:min-w-[123px]',
+          selectedCategory === category ? 'bg-[#0171E3] text-white' : 'bg-white text-[#6e6e73]',
+        ]"
+        @click="selectedCategory = category"
+      >
+        {{ category }}
+      </button>
+    </div>
+
+    <TransitionGroup name="card-transition" tag="div" class="grid grid-cols-1 gap-[18px] md:grid-cols-2 lg:grid-cols-3">
       <NuxtLink
-        v-for="card in cards"
+        v-for="card in filteredCards"
         :key="card.id"
         :class="[
           'relative w-[317px] rounded-[24px] bg-white px-5 pb-8 pt-5 shadow-[0_0_30px_rgba(0,0,0,0.20)] transition-all duration-300 ease-in-out hover:scale-[1.02] hover:shadow-[0_0_40px_rgba(0,0,0,0.25)]',
@@ -47,10 +62,14 @@
           Coming soon
         </div>
       </NuxtLink>
-      <div class="height-full flex w-[317px] items-center justify-center rounded-[24px] bg-transparent">
+      <div
+        v-if="selectedCategory === 'All'"
+        key="more-to-come"
+        class="height-full flex w-[317px] items-center justify-center rounded-[24px] bg-transparent"
+      >
         <p class="text-center text-sm font-normal text-[#6E6E73]">and more to come!</p>
       </div>
-    </div>
+    </TransitionGroup>
   </div>
 </template>
 
@@ -59,7 +78,66 @@ export default {
   data() {
     return {
       cards,
+      categories: ["All", "Sophon Essentials", "DeFi", "Gaming", "Events", "Developers", "Casino"],
+      selectedCategory: "All",
     };
+  },
+  computed: {
+    filteredCards() {
+      if (this.selectedCategory === "All") {
+        return this.cards;
+      }
+      return this.cards.filter((card) => card.category === this.selectedCategory);
+    },
   },
 };
 </script>
+
+<style scoped>
+.card-transition-move,
+.card-transition-enter-active,
+.card-transition-leave-active {
+  transition: all 0.3s ease;
+}
+
+.card-transition-enter-from {
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.card-transition-leave-to {
+  opacity: 0;
+  transform: translateY(500px);
+}
+
+.card-transition-leave-active {
+  opacity: 0;
+  position: absolute;
+}
+
+.scrollbar {
+  /* For Internet Explorer and Edge */
+  -ms-overflow-style: none; /* Disables scrollbar */
+
+  /* For Firefox */
+  scrollbar-width: none; /* Hides scrollbar but allows scrolling */
+}
+
+.scrollbar::-webkit-scrollbar {
+  height: 1px;
+  display: none;
+}
+
+.scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar::-webkit-scrollbar-thumb {
+  background: transparent;
+}
+
+.scrollbar:hover::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.01);
+  border-radius: 2px;
+}
+</style>

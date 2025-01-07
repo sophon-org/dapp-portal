@@ -8,11 +8,6 @@
     </template>
     <template v-else>
       <TransactionWithdrawalsAvailableForClaimAlert />
-      <EcosystemBlock
-        v-if="eraNetwork.displaySettings?.showPartnerLinks && ecosystemBannerVisible"
-        show-close-button
-        class="mb-block-padding-1/2 sm:mb-block-gap"
-      />
       <CommonContentBlock class="mb-block-gap">
         <div class="flex flex-col flex-wrap gap-block-gap sm:flex-row sm:items-center sm:justify-between">
           <CommonTotalBalance :balance="balance" :loading="loading" :error="balanceError" />
@@ -125,8 +120,6 @@
 <script lang="ts" setup>
 import { ArrowDownLeftIcon, ArrowUpRightIcon, QrCodeIcon } from "@heroicons/vue/24/outline";
 
-import useEcosystemBanner from "@/composables/zksync/deposit/useEcosystemBanner";
-
 import type { FunctionalComponent } from "vue";
 
 const onboardStore = useOnboardStore();
@@ -135,8 +128,6 @@ const { isConnected } = storeToRefs(onboardStore);
 const { balance, balanceInProgress, balanceError } = storeToRefs(walletStore);
 const { destinations } = storeToRefs(useDestinationsStore());
 const { eraNetwork } = storeToRefs(useZkSyncProviderStore());
-
-const { ecosystemBannerVisible } = useEcosystemBanner();
 
 const { loading, reset: resetSingleLoading } = useSingleLoading(computed(() => balanceInProgress.value));
 

@@ -1,5 +1,5 @@
 <template>
-  <CommonButtonLine :as="as" class="line-button-with-img">
+  <CommonButtonLine :as="as" :to="to" class="line-button-with-img">
     <div class="line-button-with-img-image">
       <slot name="image" />
     </div>
@@ -28,9 +28,16 @@
 </template>
 
 <script lang="ts" setup>
+import type { Component } from "nuxt/schema";
+import type { RouteLocationRaw } from "vue-router";
+
 defineProps({
   as: {
     type: [String, Object] as PropType<string | Component>,
+  },
+  to: {
+    type: [String, Object] as PropType<RouteLocationRaw>,
+    default: undefined,
   },
   icon: {
     type: [Object, Function] as PropType<Component>,

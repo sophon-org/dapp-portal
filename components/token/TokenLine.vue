@@ -1,6 +1,6 @@
 <template>
   <div class="token-line-row">
-    <CommonButtonLineWithImg :as="as">
+    <CommonButtonLineWithImg :as="as" :to="to">
       <template #image>
         <TokenImage :symbol="symbol" :address="address" :icon-url="iconUrl" />
       </template>
@@ -23,10 +23,16 @@
 
 <script lang="ts" setup>
 import type { TokenPrice } from "@/types";
+import type { Component } from "nuxt/schema";
+import type { RouteLocationRaw } from "vue-router";
 
 defineProps({
   as: {
     type: [String, Object] as PropType<string | Component>,
+  },
+  to: {
+    type: [String, Object] as PropType<RouteLocationRaw>,
+    default: undefined,
   },
   symbol: {
     type: String,

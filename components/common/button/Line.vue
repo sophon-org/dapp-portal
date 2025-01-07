@@ -1,14 +1,21 @@
 <template>
-  <component :is="as" class="line-button-container" :class="[`size-${size}`, `variant-${variant}`]">
+  <component :is="as" class="line-button-container" :class="[`size-${size}`, `variant-${variant}`]" :to="to">
     <slot />
   </component>
 </template>
 
 <script lang="ts" setup>
+import type { Component } from "nuxt/schema";
+import type { RouteLocationRaw } from "vue-router";
+
 defineProps({
   as: {
     type: [String, Object] as PropType<string | Component>,
     default: "button",
+  },
+  to: {
+    type: [String, Object] as PropType<RouteLocationRaw>,
+    default: undefined,
   },
   variant: {
     type: String as PropType<"default" | "light" | "primary">,

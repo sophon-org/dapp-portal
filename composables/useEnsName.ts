@@ -1,10 +1,10 @@
 import { useMemoize } from "@vueuse/core";
 import { getEnsAddress } from "@wagmi/core";
 
-import { wagmiConfig } from "@/data/wagmi";
+import { wagmiL1Config } from "@/data/wagmi";
 
 export default (ensName: Ref<string>) => {
-  const fetchEnsAddress = useMemoize((name: string) => getEnsAddress(wagmiConfig, { name, chainId: 1 }));
+  const fetchEnsAddress = useMemoize((name: string) => getEnsAddress(wagmiL1Config, { name, chainId: 1 }));
 
   const nameToAddress = ref<{ [name: string]: string }>({});
   const {

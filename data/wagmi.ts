@@ -2,7 +2,7 @@ import { fallback, http } from "@wagmi/core";
 import { zkSync, type Chain, zkSyncSepoliaTestnet, zkSyncTestnet } from "@wagmi/core/chains";
 import { defaultWagmiConfig } from "@web3modal/wagmi";
 
-import { chainList, type ZkSyncNetwork } from "@/data/networks";
+import { chainList, l1Networks, type ZkSyncNetwork } from "@/data/networks";
 
 const portalRuntimeConfig = usePortalRuntimeConfig();
 
@@ -49,6 +49,7 @@ const getAllChains = () => {
       chains.push(chain);
     }
   };
+
   for (const network of chainList) {
     addUniqueChain(useExistingEraChain(network) ?? formatZkSyncChain(network));
     if (network.l1Network) {
@@ -65,6 +66,16 @@ export const wagmiConfig = defaultWagmiConfig({
   transports: Object.fromEntries(
     chains.map((chain) => [chain.id, fallback(chain.rpcUrls.default.http.map((e) => http(e)))])
   ),
+  projectId: portalRuntimeConfig.walletConnectProjectId,
+  metadata,
+  enableCoinbase: false,
+});
+
+export const wagmiL1Config = defaultWagmiConfig({
+  chains: [l1Networks.mainnet],
+  transports: Object.fromEntries([
+    [l1Networks.mainnet.id, fallback(l1Networks.mainnet.rpcUrls.default.http.map((e) => http(e)))],
+  ]),
   projectId: portalRuntimeConfig.walletConnectProjectId,
   metadata,
   enableCoinbase: false,

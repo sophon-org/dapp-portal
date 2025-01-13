@@ -593,7 +593,8 @@ const estimate = async () => {
     !transaction.value?.from.address ||
     !transaction.value?.to.address ||
     !selectedToken.value ||
-    !tokenBalance.value
+    !tokenBalance.value ||
+    BigNumber.from(tokenBalance.value).isZero()
   ) {
     return;
   }

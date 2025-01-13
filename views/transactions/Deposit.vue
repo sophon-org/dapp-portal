@@ -628,17 +628,8 @@ const estimate = async () => {
   if (!transaction.value?.from.address || !transaction.value?.to.address || !selectedToken.value) {
     return;
   }
-  // Only estimate if there's an amount
-  if (!amount.value || totalComputeAmount.value.isZero()) {
-    return;
-  }
-  // Only estimate if there's a balance
-  if (!tokenBalance.value || BigNumber.from(tokenBalance.value).isZero()) {
-    return;
-  }
   await estimateFee(transaction.value.to.address, selectedToken.value.address);
 };
-
 watch(
   [() => selectedToken.value?.address, () => transaction.value?.from.address],
   () => {

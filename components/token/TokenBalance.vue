@@ -15,6 +15,7 @@
         <template #secondary>
           <div class="flex items-center gap-3">
             <CommonButtonAddToWalletButton
+              v-if="shouldShowAddToWallet"
               :asset="{
               address: address as `0x${string}`,
               decimals,
@@ -44,6 +45,8 @@ import { BigNumber } from "ethers";
 
 import type { TokenPrice } from "@/types";
 import type { BigNumberish } from "ethers";
+
+const route = useRoute();
 
 const props = defineProps({
   as: {
@@ -82,6 +85,8 @@ const props = defineProps({
     type: String,
   },
 });
+
+const shouldShowAddToWallet = computed(() => route.path !== "/bridge");
 
 const isZeroAmount = computed(() => BigNumber.from(props.amount).isZero());
 

@@ -76,7 +76,7 @@
       class="mx-auto mt-block-gap"
     />
 
-    <div class="mt-block-padding flex flex-wrap items-center justify-center gap-4">
+    <div class="mt-block-padding flex flex-col flex-wrap items-center justify-center gap-2">
       <div>
         <span class="text-gray">Value:</span>
         <span class="ml-1 inline-flex items-center">
@@ -85,16 +85,24 @@
           <TokenImage class="ml-1.5 h-5 w-5" v-bind="token" />
         </span>
       </div>
-      <div v-if="expectedCompleteTimestamp && !completed">
-        <span class="text-gray">Time: </span>
-        <CommonTimer format="human-readable" :future-date="expectedCompleteTimestamp">
-          <template #default="{ timer, isTimerFinished }">
-            <template v-if="isTimerFinished">Funds should arrive soon!</template>
-            <template v-else>
-              <span class="tabular-nums">{{ timer }} left</span>
+      <div v-if="expectedCompleteTimestamp && !completed" class="flex flex-col items-center justify-center gap-[2px]">
+        <div>
+          <span class="text-gray">Processing time: </span>
+          <CommonTimer format="human-readable" :future-date="expectedCompleteTimestamp">
+            <template #default="{ timer, isTimerFinished }">
+              <template v-if="isTimerFinished">Funds should arrive soon!</template>
+              <template v-else>
+                <span class="tabular-nums">{{ timer }} left</span>
+              </template>
             </template>
-          </template>
-        </CommonTimer>
+          </CommonTimer>
+        </div>
+        <a
+          href="https://docs.sophon.xyz/discover/bridging/withdrawal-delay"
+          target="_blank"
+          class="text-xs text-gray underline"
+          >Why do I have to wait?</a
+        >
       </div>
     </div>
   </CommonContentBlock>

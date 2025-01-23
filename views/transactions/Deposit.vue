@@ -368,6 +368,7 @@ import {
 import { useRouteQuery } from "@vueuse/router";
 import { BigNumber } from "ethers";
 import { isAddress } from "ethers/lib/utils";
+import { parseUnits } from "viem";
 
 import EthereumTransactionFooter from "@/components/transaction/EthereumTransactionFooter.vue";
 import useAllowance from "@/composables/transaction/useAllowance";
@@ -742,7 +743,46 @@ watch(step, (newStep) => {
 
 const transactionInfo = ref<TransactionInfo | undefined>();
 const makeTransaction = async () => {
+  const OFT_ABI = [
+    "function quoteSend(tuple(uint32 dstEid, bytes32 to, uint256 amountLD, uint256 minAmountLD, bytes extraOptions, bytes composeMsg, bytes oftCmd) sendParam, bool payInLzToken) view returns (tuple(uint256 nativeFee, uint256 lzTokenFee))",
+    "function send(tuple(uint32 dstEid, bytes32 to, uint256 amountLD, uint256 minAmountLD, bytes extraOptions, bytes composeMsg, bytes oftCmd) sendParam, tuple(uint256 nativeFee, uint256 lzTokenFee) fee, address refundAddress) payable returns (tuple(bytes32 guid, uint64 nonce, tuple(uint256 nativeFee, uint256 lzTokenFee) fee), tuple(uint256 amountSentLD, uint256 amountReceivedLD))",
+  ];
   if (continueButtonDisabled.value) return;
+
+  if (transaction.value?.token.isOft) {
+    const wallet = await onboardStore.getWallet();
+    const publicClient = onboardStore.getPublicClient();
+    const amount = parseUnits(transaction.value.token.amount.toString(), transaction.value.token.decimals);
+    const sendParams = {
+      dstEid: 30334, // sophon mainnet
+      to: transaction.value!.to.address,
+      amountLD: amount,
+      minAmountLD: amount,
+      extraOptions: "0x",
+      composeMsg: "0x",
+      oftCmd: "0x",
+    };
+    try {
+      const quote = (await publicClient.readContract({
+        address: transaction.value!.token.address as `0x${string}`,
+        abi: OFT_ABI,
+        functionName: "quoteSend",
+        args: [sendParams, false], // false means don't pay in LZ token
+      })) as { nativeFee: bigint; lzTokenFee: bigint };
+
+      const tx = await wallet.writeContract({
+        address: transaction.value!.token.address as `0x${string}`,
+        abi: OFT_ABI,
+        functionName: "send",
+        args: [sendParams, quote, account.value.address],
+        value: quote.nativeFee,
+      });
+
+      return tx;
+    } catch (error) {
+      return undefined;
+    }
+  }
 
   const tx = await commitTransaction(
     {

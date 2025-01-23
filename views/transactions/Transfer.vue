@@ -321,8 +321,9 @@
 <script lang="ts" setup>
 import { ExclamationTriangleIcon, InformationCircleIcon, LockClosedIcon } from "@heroicons/vue/24/outline";
 import { useRouteQuery } from "@vueuse/router";
-import { BigNumber } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { isAddress } from "ethers/lib/utils";
+import { parseUnits } from "viem";
 
 import useFee from "@/composables/zksync/useFee";
 import useTransaction, { isWithdrawalManualFinalizationRequired } from "@/composables/zksync/useTransaction";
@@ -682,6 +683,40 @@ watch(step, (newStep) => {
 const transactionInfo = ref<TransactionInfo | undefined>();
 const makeTransaction = async () => {
   if (continueButtonDisabled.value) return;
+  if (transaction.value?.token.isOft) {
+    const HELPER_ABI = [
+      "function quoteSend(address oftContract, tuple(uint32 dstEid, bytes32 to, uint256 amountLD, uint256 minAmountLD, bytes extraOptions, bytes composeMsg, bytes oftCmd) sendParam) view returns (tuple(uint256 nativeFee, uint256 lzTokenFee))",
+      "function send(address oftContract, tuple(uint32 dstEid, bytes32 to, uint256 amountLD, uint256 minAmountLD, bytes extraOptions, bytes composeMsg, bytes oftCmd) sendParam) payable returns (tuple(bytes32 guid, uint64 nonce, tuple(uint256 nativeFee, uint256 lzTokenFee) fee), tuple(uint256 amountSentLD, uint256 amountReceivedLD))",
+    ];
+    const HELPER_ADDRESS = "0x88172F3041Bd0787520dbc9Bd33D3d48e1fb46dc";
+    const provider = providerStore.requestProvider();
+    const signer = await walletStore.getSigner();
+    // Initialize helper contract
+    const helperContract = new ethers.Contract(HELPER_ADDRESS, HELPER_ABI, provider);
+    const amount = parseUnits(transaction.value.token.amount.toString(), transaction.value.token.decimals);
+
+    const sendParam = {
+      dstEid: 30101, // Ethereum mainnet
+      to: transaction.value!.to.address,
+      amountLD: amount,
+      minAmountLD: amount,
+      extraOptions: "0x",
+      composeMsg: "0x",
+      oftCmd: "0x",
+    };
+
+    try {
+      if (!signer) throw new Error("Signer is not available");
+
+      const quote = await helperContract.quoteSend(transaction.value.token.address, sendParam);
+
+      const helperWithSigner = helperContract.connect(signer);
+      const tx = await helperWithSigner.send(transaction.value.token.address, sendParam, { value: quote.nativeFee });
+      return tx;
+    } catch (error) {
+      return undefined;
+    }
+  }
 
   const tx = await commitTransaction(
     {

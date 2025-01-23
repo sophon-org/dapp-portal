@@ -30,11 +30,6 @@ const MAINNET = {
       name: "ATH",
       reason: "Cannot bridge L0 tokens for now...",
     },
-    {
-      address: "0xC1AA99c3881B26901aF70738A7C217dc32536d36",
-      name: "NOON",
-      reason: "Cannot bridge L0 tokens for now...",
-    },
   ],
 };
 

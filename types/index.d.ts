@@ -12,6 +12,7 @@ export type Token = {
   iconUrl?: string;
   price?: TokenPrice;
   isETH?: boolean;
+  isOft?: boolean;
   l1BridgeAddress?: string;
   l2BridgeAddress?: string;
 };

@@ -12,9 +12,7 @@ import LZ_OFT_HELPER_ABI from "./oftHelperAbi";
 
 import type { Token } from "~/types";
 
-const HELPER_ADDRESS = "0x88172F3041Bd0787520dbc9Bd33D3d48e1fb46dc";
-
-const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
+const OFT_HELPER_ADDRESS = "0x88172F3041Bd0787520dbc9Bd33D3d48e1fb46dc";
 
 export default (getL1Signer: () => Promise<any>) => {
   const status = ref<"not-started" | "processing" | "waiting-for-signature" | "done">("not-started");
@@ -35,19 +33,19 @@ export default (getL1Signer: () => Promise<any>) => {
   const commitTransaction = async (transaction: {
     token: Token;
     amount: BigNumberish;
-    fromChainId: number;
-    toChainId: number;
     from: string;
     to: string;
     nativeFee: BigNumberish;
+    gasLimit: BigNumberish;
+    gasPrice: BigNumberish;
   }) => {
     try {
       error.value = undefined;
       status.value = "processing";
 
       // Get signer
-      const wallet = await getL1Signer();
-      if (!wallet) throw new Error("Wallet is not available");
+      const signer = await getL1Signer();
+      if (!signer) throw new Error("Signer is not available");
       if (!transaction.to || !transaction.amount) {
         throw new Error("Invalid transaction parameters");
       }
@@ -55,35 +53,33 @@ export default (getL1Signer: () => Promise<any>) => {
       const dstChainId = getEndpointId();
       const toAddressBytes32 = toBytes32Address(transaction.to);
 
-      // Default adapter params (can be customized if needed)
-      const adapterParams = "0x"; // We'll need to implement proper adapter params later
+      const sendParam = {
+        dstEid: dstChainId,
+        to: toAddressBytes32,
+        amountLD: transaction.amount,
+        minAmountLD: transaction.amount,
+        extraOptions: "0x",
+        composeMsg: "0x",
+        oftCmd: "0x",
+      };
 
       status.value = "waiting-for-signature";
 
-      // L2 to L1
-      const helperContract = new Contract(HELPER_ADDRESS, LZ_OFT_HELPER_ABI, wallet);
+      const helperContract = new Contract(OFT_HELPER_ADDRESS, LZ_OFT_HELPER_ABI, signer);
 
-      // Add paymaster params for L2 transactions
       const paymasterParams = utils.getPaymasterParams(NETWORK_CONFIG.L2_GLOBAL_PAYMASTER.address, {
         type: "General",
         innerInput: new Uint8Array(),
       });
 
-      const tx = await helperContract.sendToL1(
-        transaction.token.address,
-        dstChainId,
-        toAddressBytes32,
-        transaction.amount,
-        transaction.from,
-        ZERO_ADDRESS,
-        adapterParams,
-        {
+      const tx = await helperContract.send(transaction.token.address, sendParam, {
+        customData: {
+          paymasterParams,
           value: transaction.nativeFee,
-          customData: {
-            paymasterParams,
-          },
-        }
-      );
+        },
+        gasLimit: transaction.gasLimit,
+        gasPrice: transaction.gasPrice,
+      });
 
       transactionHash.value = tx.hash;
       status.value = "done";

@@ -800,12 +800,10 @@ watch(step, (newStep) => {
 
 const transactionInfo = ref<TransactionInfo | undefined>();
 const makeTransaction = async () => {
-  console.log("continueButtonDisabled", continueButtonDisabled.value);
   if (continueButtonDisabled.value) return;
 
   let tx: string | undefined;
   if (transaction.value?.token.isOft) {
-    console.log("commitLayerzeroTransaction", transaction.value.token, account.value.address, fee.value);
     tx = await commitLayerzeroTransaction({
       token: transaction.value.token,
       to: account.value.address,

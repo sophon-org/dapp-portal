@@ -140,9 +140,6 @@ export default (tokens: Ref<Token[]>, balances: Ref<TokenAmount[] | undefined>) 
       gasCost.add(gasFee.value.l1GasLimit.mul(gasFee.value.maxPriorityFeePerGas));
     }
 
-    console.log("gasCost", gasCost.toString());
-    console.log("quoteFee.value", quoteFee.value.toString());
-
     return quoteFee.value + gasCost.toBigInt();
   });
 

@@ -27,11 +27,8 @@ export default () => {
     error.value = undefined;
     status.value = "processing";
 
-    console.log("commitTransaction", token, to, nativeFee);
-
     // Validate wallet and parameters
     const wallet = await onboardStore.getWallet();
-    console.log("wallet", wallet);
     if (!wallet) throw new Error("Wallet is not available");
     if (!to || !token.address || !token.amount) {
       throw new Error("Invalid transaction parameters");
@@ -63,11 +60,9 @@ export default () => {
       composeMsg: "0x",
       oftCmd: "0x",
     };
-    console.log("sendParams", sendParams);
     try {
       status.value = "waiting-for-signature";
 
-      console.log("write contract");
       const tx = await wallet.writeContract({
         address: token.address as `0x${string}`,
         abi: OFT_ABI,
@@ -79,8 +74,6 @@ export default () => {
         // maxFeePerGas: overrides.maxFeePerGas,
         // maxPriorityFeePerGas: overrides.maxPriorityFeePerGas,
       });
-
-      console.log("tx", tx);
 
       ethTransactionHash.value = tx;
       status.value = "done";

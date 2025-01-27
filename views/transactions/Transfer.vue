@@ -321,10 +321,11 @@
 <script lang="ts" setup>
 import { ExclamationTriangleIcon, InformationCircleIcon, LockClosedIcon } from "@heroicons/vue/24/outline";
 import { useRouteQuery } from "@vueuse/router";
-import { BigNumber, ethers } from "ethers";
+import { BigNumber } from "ethers";
 import { isAddress } from "ethers/lib/utils";
-import { parseUnits } from "viem";
 
+import useLayerzeroFee from "@/composables/layerzero/useFee";
+import useLayerzeroTransaction from "@/composables/layerzero/useTransaction";
 import useFee from "@/composables/zksync/useFee";
 import useTransaction, { isWithdrawalManualFinalizationRequired } from "@/composables/zksync/useTransaction";
 import { customBridgeTokens } from "@/data/customBridgeTokens";
@@ -332,12 +333,11 @@ import { isCustomNode, isMainnet } from "@/data/networks";
 import TransferSubmitted from "@/views/transactions/TransferSubmitted.vue";
 import WithdrawalSubmitted from "@/views/transactions/WithdrawalSubmitted.vue";
 import useWithdrawalAllowance from "~/composables/transaction/useWithdrawalAllowance";
-import { MAINNET } from "~/data/mainnet";
-import { TESTNET } from "~/data/testnet";
 
 import type { FeeEstimationParams } from "@/composables/zksync/useFee";
 import type { Token, TokenAmount } from "@/types";
 import type { BigNumberish } from "ethers";
+import type { TransactionResponse } from "zksync-ethers/build/types";
 
 // TODO(@consvic): Remove this after some time
 const FILTERED_TOKENS = computed(() => {
@@ -364,7 +364,6 @@ const { destinations } = storeToRefs(useDestinationsStore());
 const { tokens, tokensRequestInProgress, tokensRequestError } = storeToRefs(tokensStore);
 const { balance, balanceInProgress, balanceError } = storeToRefs(walletStore);
 const { selectedNetwork } = storeToRefs(useNetworkStore());
-const NETWORK_CONFIG = selectedNetwork.value.key === "sophon" ? MAINNET : TESTNET;
 const refetchingAllowance = ref(false);
 
 const toNetworkModalOpened = ref(false);
@@ -467,7 +466,7 @@ const {
   providerStore.requestProvider,
   computed(() => account.value.address),
   computed(() => selectedToken.value?.address),
-  async () => await NETWORK_CONFIG.CUSTOM_USDC_TOKEN.address
+  computed(() => selectedToken.value?.isOft)
 );
 
 const enoughAllowance = computed(() => {
@@ -489,8 +488,8 @@ const setTokenAllowance = async () => {
 };
 
 const {
-  gasLimit,
-  gasPrice,
+  gasLimit: gasLimitDefault,
+  gasPrice: gasPriceDefault,
   result: fee,
   inProgress: feeInProgress,
   error: feeError,
@@ -499,6 +498,16 @@ const {
   estimateFee,
   resetFee,
 } = useFee(providerStore.requestProvider, tokens, balance, totalComputeAmount);
+
+const {
+  gasLimit: gasLimitLayerzero,
+  gasPrice: gasPriceLayerzero,
+  result: feeLayerzero,
+  estimateFee: estimateLayerzeroFee,
+} = useLayerzeroFee(walletStore.getSigner, providerStore.requestProvider);
+
+const gasLimit = computed(() => (selectedToken.value?.isOft ? gasLimitLayerzero.value : gasLimitDefault.value));
+const gasPrice = computed(() => (selectedToken.value?.isOft ? gasPriceLayerzero.value : gasPriceDefault.value));
 
 const queryAddress = useRouteQuery<string | undefined>("address", undefined, {
   transform: String,
@@ -599,12 +608,22 @@ const estimate = async () => {
   ) {
     return;
   }
-  await estimateFee({
-    type: props.type,
-    from: transaction.value.from.address,
-    to: transaction.value.to.address,
-    tokenAddress: selectedToken.value.address,
-  });
+  if (transaction.value?.token.isOft) {
+    await estimateLayerzeroFee({
+      type: props.type,
+      token: transaction.value.token,
+      amount: totalComputeAmount.value,
+      from: transaction.value.from.address,
+      to: transaction.value.to.address,
+    });
+  } else {
+    await estimateFee({
+      type: props.type,
+      from: transaction.value.from.address,
+      to: transaction.value.to.address,
+      tokenAddress: selectedToken.value.address,
+    });
+  }
 };
 watch(
   [() => selectedToken.value?.address, () => tokenBalance.value?.toString(), () => enoughAllowance.value],
@@ -673,6 +692,11 @@ const {
   commitTransaction,
 } = useTransaction(walletStore.getSigner, providerStore.requestProvider);
 const { saveTransaction, waitForCompletion } = useZkSyncTransactionStatusStore();
+const {
+  status: transactionStatusLayerzero,
+  error: transactionErrorLayerzero,
+  commitTransaction: commitLayerzeroTransaction,
+} = useLayerzeroTransaction(walletStore.getSigner);
 
 watch(step, (newStep) => {
   if (newStep === "form") {
@@ -683,55 +707,33 @@ watch(step, (newStep) => {
 const transactionInfo = ref<TransactionInfo | undefined>();
 const makeTransaction = async () => {
   if (continueButtonDisabled.value) return;
+  let tx: TransactionResponse | undefined;
   if (transaction.value?.token.isOft) {
-    const HELPER_ABI = [
-      "function quoteSend(address oftContract, tuple(uint32 dstEid, bytes32 to, uint256 amountLD, uint256 minAmountLD, bytes extraOptions, bytes composeMsg, bytes oftCmd) sendParam) view returns (tuple(uint256 nativeFee, uint256 lzTokenFee))",
-      "function send(address oftContract, tuple(uint32 dstEid, bytes32 to, uint256 amountLD, uint256 minAmountLD, bytes extraOptions, bytes composeMsg, bytes oftCmd) sendParam) payable returns (tuple(bytes32 guid, uint64 nonce, tuple(uint256 nativeFee, uint256 lzTokenFee) fee), tuple(uint256 amountSentLD, uint256 amountReceivedLD))",
-    ];
-    const HELPER_ADDRESS = "0x88172F3041Bd0787520dbc9Bd33D3d48e1fb46dc";
-    const provider = providerStore.requestProvider();
-    const signer = await walletStore.getSigner();
-    // Initialize helper contract
-    const helperContract = new ethers.Contract(HELPER_ADDRESS, HELPER_ABI, provider);
-    const amount = parseUnits(transaction.value.token.amount.toString(), transaction.value.token.decimals);
-
-    const sendParam = {
-      dstEid: 30101, // Ethereum mainnet
+    tx = await commitLayerzeroTransaction({
+      token: transaction.value.token,
+      amount: transaction.value.token.amount,
+      from: account.value.address!,
       to: transaction.value!.to.address,
-      amountLD: amount,
-      minAmountLD: amount,
-      extraOptions: "0x",
-      composeMsg: "0x",
-      oftCmd: "0x",
-    };
-
-    try {
-      if (!signer) throw new Error("Signer is not available");
-
-      const quote = await helperContract.quoteSend(transaction.value.token.address, sendParam);
-
-      const helperWithSigner = helperContract.connect(signer);
-      const tx = await helperWithSigner.send(transaction.value.token.address, sendParam, { value: quote.nativeFee });
-      return tx;
-    } catch (error) {
-      return undefined;
-    }
-  }
-
-  const tx = await commitTransaction(
-    {
-      type: props.type,
-      to: transaction.value!.to.address,
-      tokenAddress: transaction.value!.token.address,
-      amount: transaction.value!.token.amount,
-    },
-    {
+      nativeFee: feeLayerzero.value!.nativeFee,
       gasLimit: gasLimit.value!,
       gasPrice: gasPrice.value!,
-    }
-  );
+    });
+  } else {
+    tx = await commitTransaction(
+      {
+        type: props.type,
+        to: transaction.value!.to.address,
+        tokenAddress: transaction.value!.token.address,
+        amount: transaction.value!.token.amount,
+      },
+      {
+        gasLimit: gasLimit.value!,
+        gasPrice: gasPrice.value!,
+      }
+    );
+  }
 
-  if (transactionStatus.value === "done") {
+  if (transactionStatus.value === "done" || transactionStatusLayerzero.value === "done") {
     step.value = "submitted";
     previousTransactionAddress.value = transaction.value!.to.address;
   }
@@ -779,6 +781,8 @@ const makeTransaction = async () => {
       .catch((err) => {
         transactionError.value = err as Error;
         transactionStatus.value = "not-started";
+        transactionErrorLayerzero.value = err as Error;
+        transactionStatusLayerzero.value = "not-started";
       });
   }
 };

@@ -72,7 +72,9 @@ export default (transactionInfo: ComputedRef<TransactionInfo>) => {
         status: "completed" as const,
         hash: transaction.destination.tx.txHash as Hash,
       };
-    } else if (transaction.source.status === "FAILED" || transaction.destination.status === "FAILED") {
+    }
+
+    if (transaction.source.status === "FAILED" || transaction.destination.status === "FAILED") {
       throw new Error("LayerZero message delivery failed");
     }
     // Still in progress

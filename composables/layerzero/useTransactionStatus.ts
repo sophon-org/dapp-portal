@@ -24,8 +24,7 @@ export default (transactionInfo: ComputedRef<TransactionInfo>) => {
       const publicClient = onboardStore.getPublicClient();
       if (!publicClient) throw new Error("Public client not available");
 
-      const l1Signer = await walletStore.getL1Signer();
-
+      const l1Signer = await walletStore.getL1VoidSigner();
       // Create contract instance for the token on L1
       const tokenContract = new ethers.Contract(transactionInfo.value.token.l1Address!, OFT, l1Signer);
 

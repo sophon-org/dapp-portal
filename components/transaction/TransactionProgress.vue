@@ -85,7 +85,10 @@
           <TokenImage class="ml-1.5 h-5 w-5" v-bind="token" />
         </span>
       </div>
-      <div v-if="expectedCompleteTimestamp && !completed" class="flex flex-col items-center justify-center gap-[2px]">
+      <div
+        v-if="expectedCompleteTimestamp && !token.isOft && !completed"
+        class="flex flex-col items-center justify-center gap-[2px]"
+      >
         <div>
           <span class="text-gray">Processing time: </span>
           <CommonTimer format="human-readable" :future-date="expectedCompleteTimestamp">

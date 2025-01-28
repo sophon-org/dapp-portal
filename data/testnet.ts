@@ -24,6 +24,11 @@ const TESTNET = {
   L1_GLOBAL_PAYMASTER,
   L2_GLOBAL_PAYMASTER,
   TOKENS: [CUSTOM_USDC_TOKEN],
+  LAYER_ZERO_CONFIG: {
+    sophonEid: 40341,
+    l1Eid: 40161, // Ethereum sepolia
+    oftHelperAddress: "0x88172F3041Bd0787520dbc9Bd33D3d48e1fb46dc",
+  },
 };
 
 export { TESTNET };

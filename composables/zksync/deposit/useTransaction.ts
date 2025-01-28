@@ -89,7 +89,7 @@ export default (getL1Signer: () => Promise<L1Signer | undefined>) => {
 
       ethTransactionHash.value = depositResponse.hash;
       status.value = "done";
-      return depositResponse;
+      return depositResponse.hash;
     } catch (err) {
       error.value = formatError(err as Error);
       status.value = "not-started";

@@ -105,12 +105,31 @@
         >
       </div>
     </div>
+    <div v-if="token.isOft && !completed" class="mt-4 flex flex-col items-center justify-center gap-2">
+      <div class="flex items-center gap-2">
+        <span class="text-gray">LayerZero Status:</span>
+        <span v-if="lzStatus === 'processing'" class="text-primary"> Waiting for L1 confirmation... </span>
+        <span v-else-if="lzStatus === 'completed'" class="text-success"> Confirmed on L1 </span>
+        <span v-else-if="lzStatus === 'failed'" class="text-error">
+          {{ lzError?.message || "Failed to confirm on L1" }}
+        </span>
+      </div>
+      <TransactionHashButton
+        v-if="l1TransactionHash"
+        :explorer-url="toExplorerLink"
+        :transaction-hash="l1TransactionHash"
+        class="mx-auto"
+      />
+    </div>
   </CommonContentBlock>
 </template>
 
 <script lang="ts" setup>
+import useLayerZeroTransactionStatus from "~/composables/layerzero/useTransactionStatus";
+
 import type { AnimationState } from "@/components/animations/TransactionProgress.vue";
 import type { TokenAmount } from "@/types";
+import type { TransactionInfo } from "~/store/zksync/transactionStatus";
 
 const props = defineProps({
   fromAddress: {
@@ -118,7 +137,7 @@ const props = defineProps({
     required: true,
   },
   fromDestination: {
-    type: Object as PropType<TransactionDestination>,
+    type: Object as PropType<{ label: string; iconUrl: string }>,
     required: true,
   },
   toAddress: {
@@ -126,7 +145,7 @@ const props = defineProps({
     required: true,
   },
   toDestination: {
-    type: Object as PropType<TransactionDestination>,
+    type: Object as PropType<{ label: string; iconUrl: string }>,
     required: true,
   },
   // left right buttons
@@ -167,6 +186,10 @@ const props = defineProps({
   animationState: {
     type: String as PropType<AnimationState>,
   },
+  transactionInfo: {
+    type: Object as PropType<TransactionInfo>,
+    required: true,
+  },
 });
 
 const isSameAddress = computed(() => props.fromAddress === props.toAddress);
@@ -174,10 +197,16 @@ const isSameAddressDifferentDestination = computed(
   () => isSameAddress.value && props.fromDestination.label !== props.toDestination.label
 );
 
+const {
+  status: lzStatus,
+  error: lzError,
+  l1TransactionHash,
+} = useLayerZeroTransactionStatus(computed(() => props.transactionInfo));
+
 const transactionProgressAnimationState = computed<AnimationState>(() => {
   if (props.animationState) return props.animationState;
-  if (props.failed) return "failed";
-  if (props.completed) return "completed";
+  if (props.failed || lzStatus.value === "failed") return "failed";
+  if (props.completed || lzStatus.value === "completed") return "completed";
   return "playing";
 });
 </script>

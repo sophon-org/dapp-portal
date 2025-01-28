@@ -51,7 +51,7 @@ interface LayerZeroApiResponse {
 export default (transactionInfo: ComputedRef<TransactionInfo>) => {
   const status = ref<"not-started" | "processing" | "completed" | "failed">("not-started");
   const error = ref<Error | undefined>();
-  const l1TransactionHash = ref<Hash | undefined>();
+  const destinationTxHash = ref<Hash | undefined>();
 
   const checkLzScanApi = async (txHash: string) => {
     const response = await fetch(`${LAYERZERO_SCAN_API}/messages/tx/${txHash}`);
@@ -91,7 +91,7 @@ export default (transactionInfo: ComputedRef<TransactionInfo>) => {
         try {
           const result = await checkLzScanApi(transactionInfo.value.transactionHash);
           if (result) {
-            l1TransactionHash.value = result.hash;
+            destinationTxHash.value = result.hash;
             status.value = result.status;
             return;
           }
@@ -123,7 +123,7 @@ export default (transactionInfo: ComputedRef<TransactionInfo>) => {
   return {
     status,
     error,
-    l1TransactionHash,
+    destinationTxHash,
     checkTransactionStatus,
   };
 };

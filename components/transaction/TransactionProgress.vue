@@ -56,13 +56,16 @@
 
       <AnimationsTransactionProgress :state="transactionProgressAnimationState" class="transaction-animation" />
 
-      <div v-if="fromExplorerLink || fromTransactionHash" class="info-column bottom-left mt-block-gap-1/2">
+      <div v-if="fromExplorerLink || fromTransactionHash" class="info-column bottom-left prueba_3 mt-block-gap-1/2">
         <TransactionHashButton :explorer-url="fromExplorerLink" :transaction-hash="fromTransactionHash" />
       </div>
-      <div v-else-if="$slots['from-button']" class="info-column bottom-left mt-block-gap-1/2">
+      <div v-else-if="$slots['from-button']" class="info-column bottom-left prueba_2 mt-block-gap-1/2">
         <slot name="from-button" />
       </div>
-      <div v-if="toExplorerLink || toTransactionHash" class="info-column bottom-right mt-block-gap-1/2">
+      <div v-if="destinationTxHash" class="info-column bottom-right prueba mt-block-gap-1/2">
+        <TransactionHashButton :explorer-url="toExplorerLink" :transaction-hash="destinationTxHash" />
+      </div>
+      <div v-else-if="toExplorerLink || toTransactionHash" class="info-column bottom-right prueba_1 mt-block-gap-1/2">
         <TransactionHashButton :explorer-url="toExplorerLink" :transaction-hash="toTransactionHash" />
       </div>
       <div v-else-if="$slots['to-button']" class="info-column bottom-right mt-block-gap-1/2">
@@ -75,7 +78,6 @@
       :transaction-hash="transactionHash"
       class="mx-auto mt-block-gap"
     />
-
     <div class="mt-block-padding flex flex-col flex-wrap items-center justify-center gap-2">
       <div>
         <span class="text-gray">Value:</span>
@@ -117,12 +119,6 @@
           {{ lzError?.message || "Failed to confirm on L1" }}
         </span>
       </div>
-      <TransactionHashButton
-        v-if="l1TransactionHash"
-        :explorer-url="toExplorerLink"
-        :transaction-hash="l1TransactionHash"
-        class="mx-auto"
-      />
     </div>
   </CommonContentBlock>
 </template>
@@ -203,7 +199,7 @@ const isSameAddressDifferentDestination = computed(
 const {
   status: lzStatus,
   error: lzError,
-  l1TransactionHash,
+  destinationTxHash,
 } = useLayerZeroTransactionStatus(computed(() => props.transactionInfo));
 
 const transactionProgressAnimationState = computed<AnimationState>(() => {

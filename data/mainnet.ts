@@ -24,6 +24,11 @@ const MAINNET = {
   L1_GLOBAL_PAYMASTER,
   L2_GLOBAL_PAYMASTER,
   TOKENS: [CUSTOM_USDC_TOKEN],
+  LAYER_ZERO_CONFIG: {
+    sophonEid: 30334,
+    l1Eid: 30101, // Ethereum mainnet
+    oftHelperAddress: "0x88172F3041Bd0787520dbc9Bd33D3d48e1fb46dc",
+  },
   BLACKLISTED_TOKENS: [
     {
       address: "0xbe0ed4138121ecfc5c0e56b40517da27e6c5226b",

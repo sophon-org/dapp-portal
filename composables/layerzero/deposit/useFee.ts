@@ -3,6 +3,9 @@ import { parseEther } from "ethers/lib/utils";
 import { type Address, getAddress, pad } from "viem";
 import { utils } from "zksync-ethers";
 
+import { MAINNET } from "~/data/mainnet";
+import { TESTNET } from "~/data/testnet";
+
 import OFT_ABI from "./abi";
 
 import type { BigNumberish } from "ethers";
@@ -30,6 +33,9 @@ export default (tokens: Ref<Token[]>, balances: Ref<TokenAmount[] | undefined>) 
     to: undefined as Address | undefined,
   };
 
+  const { selectedNetwork } = storeToRefs(useNetworkStore());
+  const NETWORK_CONFIG = selectedNetwork.value.key === "sophon" ? MAINNET : TESTNET;
+
   const quoteFee = ref<bigint | undefined>();
   const gasFee = ref<DepositFeeValues | undefined>();
   const recommendedBalance = ref<BigNumberish | undefined>();
@@ -49,6 +55,10 @@ export default (tokens: Ref<Token[]>, balances: Ref<TokenAmount[] | undefined>) 
     }
     return true;
   });
+
+  const getEndpointId = (): number => {
+    return NETWORK_CONFIG.LAYER_ZERO_CONFIG.sophonEid;
+  };
 
   const getGasPrice = async () => {
     const web3Provider = new ethers.providers.Web3Provider((await onboardStore.getWallet()) as any, "any");
@@ -73,7 +83,7 @@ export default (tokens: Ref<Token[]>, balances: Ref<TokenAmount[] | undefined>) 
       const toBytes32 = pad(getAddress(params.to), { size: 32 });
 
       const sendParams = {
-        dstEid: 30334, // sophon mainnet
+        dstEid: getEndpointId(),
         to: toBytes32,
         amountLD: amount,
         minAmountLD: amount,

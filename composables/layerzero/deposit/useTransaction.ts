@@ -1,5 +1,8 @@
 import { getAddress, pad, type Address } from "viem";
 
+import { MAINNET } from "~/data/mainnet";
+import { TESTNET } from "~/data/testnet";
+
 import OFT_ABI from "./abi";
 
 import type { DepositFeeValues } from "./useFee";
@@ -10,8 +13,15 @@ export default () => {
   const error = ref<Error | undefined>();
   const ethTransactionHash = ref<string | undefined>();
 
+  const { selectedNetwork } = storeToRefs(useNetworkStore());
+  const NETWORK_CONFIG = selectedNetwork.value.key === "sophon" ? MAINNET : TESTNET;
+
   const onboardStore = useOnboardStore();
   const { account } = storeToRefs(onboardStore);
+
+  const getEndpointId = (): number => {
+    return NETWORK_CONFIG.LAYER_ZERO_CONFIG.sophonEid;
+  };
 
   const commitTransaction = async ({
     token,
@@ -52,7 +62,7 @@ export default () => {
 
     // Prepare deposit parameters
     const sendParams = {
-      dstEid: 30334, // sophon mainnet
+      dstEid: getEndpointId(),
       to: toBytes32,
       amountLD: amount,
       minAmountLD: amount,
@@ -71,8 +81,6 @@ export default () => {
         value: nativeFee,
         gas: overrides.gasLimit,
         gasPrice: overrides.gasPrice,
-        // maxFeePerGas: overrides.maxFeePerGas,
-        // maxPriorityFeePerGas: overrides.maxPriorityFeePerGas,
       });
 
       ethTransactionHash.value = tx;

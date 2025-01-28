@@ -8,8 +8,6 @@ import { TESTNET } from "~/data/testnet";
 
 import type { Hash } from "~/types";
 
-const OFT_HELPER_ADDRESS = "0x88172F3041Bd0787520dbc9Bd33D3d48e1fb46dc";
-
 export default (
   getProvider: () => Provider,
   accountAddress: Ref<string | undefined>,
@@ -26,7 +24,7 @@ export default (
     if (!tokenAddress.value) throw new Error("Token address is not available");
     let spender;
     if (isOft.value) {
-      spender = OFT_HELPER_ADDRESS;
+      spender = NETWORK_CONFIG.LAYER_ZERO_CONFIG.oftHelperAddress;
     } else {
       spender = NETWORK_CONFIG.CUSTOM_USDC_TOKEN.l2BridgeAddress;
     }
@@ -68,7 +66,7 @@ export default (
         if (tokenAddress.value === NETWORK_CONFIG.CUSTOM_USDC_TOKEN.address) {
           contractAddress = NETWORK_CONFIG.CUSTOM_USDC_TOKEN.l2BridgeAddress;
         } else {
-          contractAddress = OFT_HELPER_ADDRESS;
+          contractAddress = NETWORK_CONFIG.LAYER_ZERO_CONFIG.oftHelperAddress;
         }
         if (!contractAddress) throw new Error("Contract address is not available");
 

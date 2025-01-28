@@ -5,6 +5,8 @@ import { ref } from "vue";
 import IERC20 from "zksync-ethers/abi/IERC20.json";
 
 import usePromise from "~/composables/usePromise";
+import { MAINNET } from "~/data/mainnet";
+import { TESTNET } from "~/data/testnet";
 
 import LZ_OFT_HELPER_ABI from "./oftHelperAbi";
 
@@ -14,8 +16,6 @@ import type { Token } from "~/types";
 export interface LayerZeroFeeValues {
   nativeFee: BigNumberish;
 }
-
-const OFT_HELPER_ADDRESS = "0x88172F3041Bd0787520dbc9Bd33D3d48e1fb46dc";
 
 export type LayerZeroFeeParams = {
   type: "transfer" | "withdrawal";
@@ -30,8 +30,10 @@ export type LayerZeroFeeParams = {
 export default (getSigner: () => Promise<any>, getProvider: () => Provider) => {
   const allowanceValue = ref<BigNumber | undefined>();
   const approvalNeeded = ref(false);
+  const { selectedNetwork } = storeToRefs(useNetworkStore());
+  const NETWORK_CONFIG = selectedNetwork.value.key === "sophon" ? MAINNET : TESTNET;
   const getEndpointId = (): number => {
-    return 30101; // Ethereum mainnet
+    return NETWORK_CONFIG.LAYER_ZERO_CONFIG.l1Eid;
   };
 
   const toBytes32Address = (address: string): string => {
@@ -79,7 +81,7 @@ export default (getSigner: () => Promise<any>, getProvider: () => Provider) => {
       const dstChainId = getEndpointId();
       const toAddressBytes32 = toBytes32Address(params.to);
       // L2 to L1
-      const helperContract = new Contract(OFT_HELPER_ADDRESS, LZ_OFT_HELPER_ABI, wallet);
+      const helperContract = new Contract(NETWORK_CONFIG.LAYER_ZERO_CONFIG.oftHelperAddress, LZ_OFT_HELPER_ABI, wallet);
       const sendParam = {
         dstEid: dstChainId, // Ethereum mainnet
         to: toAddressBytes32,
@@ -115,7 +117,7 @@ export default (getSigner: () => Promise<any>, getProvider: () => Provider) => {
       const isApproved = await checkApproval(
         estimationParams.token.address,
         estimationParams.from,
-        OFT_HELPER_ADDRESS,
+        NETWORK_CONFIG.LAYER_ZERO_CONFIG.oftHelperAddress,
         estimationParams.amount
       );
       if (!isApproved) return;

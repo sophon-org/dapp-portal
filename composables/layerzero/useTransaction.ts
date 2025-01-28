@@ -12,8 +12,6 @@ import LZ_OFT_HELPER_ABI from "./oftHelperAbi";
 
 import type { Token } from "~/types";
 
-const OFT_HELPER_ADDRESS = "0x88172F3041Bd0787520dbc9Bd33D3d48e1fb46dc";
-
 export default (getL1Signer: () => Promise<any>) => {
   const status = ref<"not-started" | "processing" | "waiting-for-signature" | "done">("not-started");
   const error = ref<Error | undefined>();
@@ -23,7 +21,7 @@ export default (getL1Signer: () => Promise<any>) => {
   const NETWORK_CONFIG = selectedNetwork.value.key === "sophon" ? MAINNET : TESTNET;
 
   const getEndpointId = (): number => {
-    return 30101; // Ethereum mainnet
+    return NETWORK_CONFIG.LAYER_ZERO_CONFIG.l1Eid;
   };
 
   const toBytes32Address = (address: string): string => {
@@ -65,7 +63,7 @@ export default (getL1Signer: () => Promise<any>) => {
 
       status.value = "waiting-for-signature";
 
-      const helperContract = new Contract(OFT_HELPER_ADDRESS, LZ_OFT_HELPER_ABI, signer);
+      const helperContract = new Contract(NETWORK_CONFIG.LAYER_ZERO_CONFIG.oftHelperAddress, LZ_OFT_HELPER_ABI, signer);
 
       const paymasterParams = utils.getPaymasterParams(NETWORK_CONFIG.L2_GLOBAL_PAYMASTER.address, {
         type: "General",

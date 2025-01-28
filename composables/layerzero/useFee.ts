@@ -27,7 +27,7 @@ export type LayerZeroFeeParams = {
   toChainId?: number;
 };
 
-export default (getL1Signer: () => Promise<any>, getProvider: () => Provider) => {
+export default (getSigner: () => Promise<any>, getProvider: () => Provider) => {
   const allowanceValue = ref<BigNumber | undefined>();
   const approvalNeeded = ref(false);
   const getEndpointId = (): number => {
@@ -70,7 +70,7 @@ export default (getL1Signer: () => Promise<any>, getProvider: () => Provider) =>
     async () => {
       if (!currentParams) throw new Error("Fee estimation params not set");
       const params = currentParams;
-      const wallet = await getL1Signer();
+      const wallet = await getSigner();
       const provider = getProvider();
 
       if (!wallet) throw new Error("No provider available");

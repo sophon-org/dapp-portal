@@ -60,7 +60,11 @@
       :from-explorer-link="blockExplorerUrl"
       :from-transaction-hash="transaction.transactionHash"
       :to-transaction-hash="finalizeTransactionHash || transaction.info.toTransactionHash"
-      :to-explorer-link="finalizeTransactionHash || transaction.info.toTransactionHash ? l1BlockExplorerUrl : undefined"
+      :to-explorer-link="
+        finalizeTransactionHash || transaction.info.toTransactionHash || l1BlockExplorerUrl
+          ? l1BlockExplorerUrl
+          : undefined
+      "
       :token="transaction.token"
       :completed="transaction.info.completed"
       :failed="transaction.info.failed"

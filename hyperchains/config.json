@@ -21,6 +21,11 @@
           "symbol": "ETH",
           "decimals": 18
         },
+        "blockExplorers": {
+          "default": {
+            "url": "https://etherscan.io"
+          }
+        },
         "rpcUrls": {
           "default": {
             "http": ["https://eth-mainnet.g.alchemy.com/v2/aWaUjYiknNQrFwU8r8agl-R9bye7XX2u"]
@@ -176,6 +181,11 @@
           "name": "Ether",
           "symbol": "ETH",
           "decimals": 18
+        },
+        "blockExplorers": {
+          "default": {
+            "url": "https://sepolia.etherscan.io"
+          }
         },
         "rpcUrls": {
           "default": {

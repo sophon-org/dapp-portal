@@ -295,15 +295,27 @@
                 </div>
               </transition>
               <CommonButton
-                :disabled="continueButtonDisabled || transactionStatus !== 'not-started'"
+                :disabled="
+                  continueButtonDisabled ||
+                  transactionStatus !== 'not-started' ||
+                  transactionStatusLayerzero !== 'not-started'
+                "
                 class="w-full"
                 size="lg"
                 variant="primary"
                 @click="buttonContinue()"
               >
                 <transition v-bind="TransitionPrimaryButtonText" mode="out-in">
-                  <span v-if="transactionStatus === 'processing'">Processing...</span>
-                  <span v-else-if="transactionStatus === 'waiting-for-signature'">Waiting for confirmation</span>
+                  <span v-if="transactionStatus === 'processing' || transactionStatusLayerzero === 'processing'"
+                    >Processing...</span
+                  >
+                  <span
+                    v-else-if="
+                      transactionStatus === 'waiting-for-signature' ||
+                      transactionStatusLayerzero === 'waiting-for-signature'
+                    "
+                    >Waiting for confirmation</span
+                  >
                   <span v-else>
                     {{ type === "withdrawal" ? "Bridge now" : "Send now" }}
                   </span>

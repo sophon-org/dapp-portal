@@ -112,11 +112,10 @@
     </div>
     <div v-if="token.isOft && !completed" class="mt-4 flex flex-col items-center justify-center gap-2">
       <div class="flex items-center gap-2">
-        <span class="text-gray">LayerZero Status:</span>
-        <span v-if="lzStatus === 'processing'" class="text-primary"> Waiting for L1 confirmation... </span>
-        <span v-else-if="lzStatus === 'completed'" class="text-success"> Confirmed on L1 </span>
+        <span v-if="lzStatus === 'processing'" class="text-primary"> Waiting for confirmation... </span>
+        <span v-else-if="lzStatus === 'completed'" class="text-success"> Transaction completed </span>
         <span v-else-if="lzStatus === 'failed'" class="text-error">
-          {{ lzError?.message || "Failed to confirm on L1" }}
+          {{ lzError?.message || "Failed to confirm" }}
         </span>
       </div>
     </div>

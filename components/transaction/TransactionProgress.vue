@@ -56,16 +56,16 @@
 
       <AnimationsTransactionProgress :state="transactionProgressAnimationState" class="transaction-animation" />
 
-      <div v-if="fromExplorerLink || fromTransactionHash" class="info-column bottom-left prueba_3 mt-block-gap-1/2">
+      <div v-if="fromExplorerLink || fromTransactionHash" class="info-column bottom-left mt-block-gap-1/2">
         <TransactionHashButton :explorer-url="fromExplorerLink" :transaction-hash="fromTransactionHash" />
       </div>
-      <div v-else-if="$slots['from-button']" class="info-column bottom-left prueba_2 mt-block-gap-1/2">
+      <div v-else-if="$slots['from-button']" class="info-column bottom-left mt-block-gap-1/2">
         <slot name="from-button" />
       </div>
-      <div v-if="destinationTxHash" class="info-column bottom-right prueba mt-block-gap-1/2">
+      <div v-if="destinationTxHash" class="info-column bottom-right mt-block-gap-1/2">
         <TransactionHashButton :explorer-url="toExplorerLink" :transaction-hash="destinationTxHash" />
       </div>
-      <div v-else-if="toExplorerLink || toTransactionHash" class="info-column bottom-right prueba_1 mt-block-gap-1/2">
+      <div v-else-if="toExplorerLink || toTransactionHash" class="info-column bottom-right mt-block-gap-1/2">
         <TransactionHashButton :explorer-url="toExplorerLink" :transaction-hash="toTransactionHash" />
       </div>
       <div v-else-if="$slots['to-button']" class="info-column bottom-right mt-block-gap-1/2">

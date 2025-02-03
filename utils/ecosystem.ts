@@ -127,6 +127,15 @@ export const cards = [
   },
   {
     id: 14,
+    category: "DeFi",
+    title: "NooN",
+    description: "The intelligent and fair yield-generating stablecoin",
+    icon: "/img/home/noon.svg",
+    link: "https://app.noon.capital",
+    iconStyling: "bg-white",
+  },
+  {
+    id: 15,
     category: "Developers",
     title: "Nova",
     description: "The AI Agent for AI Agents. Powered by Anomaly",
@@ -136,7 +145,7 @@ export const cards = [
     iconStyling: "p-1",
   },
   {
-    id: 15,
+    id: 16,
     category: "Developers",
     title: "Aethir",
     description: "On-demand GPU computing",
@@ -146,7 +155,7 @@ export const cards = [
     iconStyling: "bg-white",
   },
   {
-    id: 16,
+    id: 17,
     category: "Sophon Essentials",
     title: "Explorer",
     description: "Browse Sophon's transactions, blocks, tokens, and more",
@@ -156,7 +165,7 @@ export const cards = [
     iconStyling: "bg-white",
   },
   {
-    id: 17,
+    id: 18,
     category: "Developers",
     title: "Dev Tooling",
     description: "Discover our rich ecosystem for developers",
@@ -164,25 +173,14 @@ export const cards = [
     link: "https://docs.sophon.xyz/build/partners/overview",
     icon: "/img/home/docs.svg",
   },
-
   {
-    id: 18,
+    id: 19,
     category: "Casino",
     title: "Rivalry",
     description: "The ultimate iGaming platform built by gamers, for gamers",
     isComingSoon: true,
     icon: "/img/home/rivalry.svg",
     iconStyling: "p-1",
-  },
-
-  {
-    id: 19,
-    category: "DeFi",
-    title: "NooN",
-    description: "The most intelligent yield-generating stablecoin",
-    isComingSoon: true,
-    icon: "/img/home/noon.svg",
-    iconStyling: "bg-white",
   },
   {
     id: 20,

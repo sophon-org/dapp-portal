@@ -520,6 +520,9 @@ const enoughAllowance = computed(() => {
   if (!allowance.value || !selectedToken.value) {
     return true;
   }
+  if (selectedToken.value.isOft) {
+    return true;
+  }
   return !allowance.value.isZero() && allowance.value.gte(totalComputeAmount.value);
 });
 const setAmountToCurrentAllowance = () => {

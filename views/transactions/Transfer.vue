@@ -604,7 +604,8 @@ const withdrawalManualFinalizationRequired = computed(() => {
   if (!transaction.value) return false;
   return (
     props.type === "withdrawal" &&
-    isWithdrawalManualFinalizationRequired(transaction.value.token, eraNetwork.value.l1Network?.id || -1)
+    isWithdrawalManualFinalizationRequired(transaction.value.token, eraNetwork.value.l1Network?.id || -1) &&
+    !selectedToken.value?.isOft
   );
 });
 

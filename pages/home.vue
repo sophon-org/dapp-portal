@@ -29,7 +29,8 @@
           'relative w-[317px] rounded-[24px] bg-white px-5 pb-8 pt-5 shadow-[0_0_30px_rgba(0,0,0,0.20)] transition-all duration-300 ease-in-out hover:scale-[1.02] hover:shadow-[0_0_40px_rgba(0,0,0,0.25)]',
           { 'cursor-pointer': !card.isComingSoon, 'cursor-not-allowed': card.isComingSoon },
         ]"
-        :to="card.link"
+        :to="card.isComingSoon ? null : card.link"
+        :pointer-event="card.isComingSoon ? 'none' : 'auto'"
         :target="card.isInternal ? '_self' : '_blank'"
       >
         <div :class="['flex items-center', card.icon ? 'justify-between' : '']">
@@ -78,7 +79,7 @@ export default {
   data() {
     return {
       cards,
-      categories: ["All", "Sophon Essentials", "DeFi", "Gaming", "Events", "Developers", "Casino"],
+      categories: ["All", "Sophon Essentials", "DeFi", "Gaming", "Events", "Casino", "AI", "NFT", "Developers"],
       selectedCategory: "All",
     };
   },

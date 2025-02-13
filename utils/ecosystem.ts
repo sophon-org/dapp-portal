@@ -1,6 +1,5 @@
 export const cards = [
   {
-    id: 1,
     category: "Sophon Essentials",
     title: "Bridge",
     description: "Bridge tokens to and from Ethereum with Sophon's official bridge",
@@ -11,7 +10,6 @@ export const cards = [
     isInternal: true,
   },
   {
-    id: 2,
     category: "DeFi",
     title: "SyncSwap",
     description: "Trade your tokens seamlessly",
@@ -21,7 +19,6 @@ export const cards = [
     iconStyling: "bg-white",
   },
   {
-    id: 3,
     category: "DeFi",
     title: "The Farm",
     description: "Farm on Sophon and accrue points that will become $SOPH",
@@ -31,7 +28,6 @@ export const cards = [
     iconStyling: "bg-white",
   },
   {
-    id: 4,
     category: "Gaming",
     title: "(((+)))",
     description: "Your mastery here may echo through the void",
@@ -40,7 +36,6 @@ export const cards = [
     icon: "/img/home/play.png",
   },
   {
-    id: 5,
     category: "Sophon Essentials",
     title: "Guardian",
     description: "Manage your nodes and rewards via Sophon's Guardian App",
@@ -49,7 +44,6 @@ export const cards = [
     icon: "/img/home/guardian.svg",
   },
   {
-    id: 6,
     category: "Events",
     title: "OPEN",
     description:
@@ -60,7 +54,6 @@ export const cards = [
     icon: "/img/home/open.svg",
   },
   {
-    id: 7,
     category: "Gaming",
     title: "GAMP",
     description: "Compete with players around the world across a wide range of games",
@@ -69,7 +62,6 @@ export const cards = [
     icon: "/img/home/gamp.svg",
   },
   {
-    id: 8,
     category: "Casino",
     title: "Lé Poker",
     description: "Free, fair poker tournaments",
@@ -78,7 +70,6 @@ export const cards = [
     icon: "/img/home/lepoker.jpg",
   },
   {
-    id: 9,
     category: "Gaming",
     title: "Petopia",
     description: "An intense top-down roguelite shooter available on Android and iOS",
@@ -87,7 +78,6 @@ export const cards = [
     icon: "/img/home/petopia.png",
   },
   {
-    id: 10,
     category: "Gaming",
     title: "Pioneers of New World",
     description: "Turn-based strategy game inspired by Settlers of Catan",
@@ -97,7 +87,6 @@ export const cards = [
     iconStyling: "bg-white",
   },
   {
-    id: 11,
     category: "Gaming",
     title: "Animix",
     description: "Mix DNA to create fantastical pets in this fun creature collection and battle game",
@@ -107,7 +96,6 @@ export const cards = [
     iconStyling: "bg-white",
   },
   {
-    id: 12,
     category: "Developers",
     title: "Safe",
     description: "The leading and widely used multisig",
@@ -116,7 +104,6 @@ export const cards = [
     icon: "/img/home/safe.svg",
   },
   {
-    id: 13,
     category: "Sophon Essentials",
     title: "Layerswap",
     description: "Fast and reliable cross-chain crypto transfers",
@@ -126,7 +113,6 @@ export const cards = [
     icon: "/img/home/layerswap.svg",
   },
   {
-    id: 14,
     category: "DeFi",
     title: "NooN",
     description: "The intelligent and fair yield-generating stablecoin",
@@ -135,17 +121,15 @@ export const cards = [
     iconStyling: "bg-white",
   },
   {
-    id: 15,
-    category: "Developers",
+    category: "Gaming",
     title: "Nova",
-    description: "The AI Agent for AI Agents. Powered by Anomaly",
+    description: "The AI powered Reddit game by Anomaly",
     isComingSoon: false,
-    link: "https://terminal.poweredbynova.ai/",
+    link: "https://www.reddit.com/r/AnomalyGamesInc/",
     icon: "/img/home/nova.jpg",
     iconStyling: "p-1",
   },
   {
-    id: 16,
     category: "Developers",
     title: "Aethir",
     description: "On-demand GPU computing",
@@ -155,7 +139,6 @@ export const cards = [
     iconStyling: "bg-white",
   },
   {
-    id: 17,
     category: "Sophon Essentials",
     title: "Explorer",
     description: "Browse Sophon's transactions, blocks, tokens, and more",
@@ -165,7 +148,6 @@ export const cards = [
     iconStyling: "bg-white",
   },
   {
-    id: 18,
     category: "Developers",
     title: "Dev Tooling",
     description: "Discover our rich ecosystem for developers",
@@ -174,7 +156,6 @@ export const cards = [
     icon: "/img/home/docs.svg",
   },
   {
-    id: 19,
     category: "Casino",
     title: "Rivalry",
     description: "The ultimate iGaming platform built by gamers, for gamers",
@@ -183,7 +164,6 @@ export const cards = [
     iconStyling: "p-1",
   },
   {
-    id: 20,
     category: "Gaming",
     title: "Brutal Knights",
     description: "A web3 extraction-roguelike strategy game with a focus on F2P",

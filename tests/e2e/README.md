@@ -60,10 +60,10 @@ npm run test:report
 ```
 Allure reports: 
 
-It's working on CI/CD. The results are collected in allure-results folder. Every test run generate appropriate test result data in JSON format. 
+It's working on CI/CD. The results are collected in allure-results folder. Every test run generates appropriate test result data in JSON format. 
 
 ## Tags 
-Tags allow to separate the current feature scope to appropriate suits, eg:
+Tags allow to separate the current feature scope to appropriate suites, eg:
 
 
 @regression

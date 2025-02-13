@@ -337,15 +337,27 @@
                 </div>
               </transition>
               <CommonButton
-                :disabled="continueButtonDisabled || transactionStatus !== 'not-started'"
+                :disabled="
+                  continueButtonDisabled ||
+                  transactionStatus !== 'not-started' ||
+                  transactionStatusLayerzero !== 'not-started'
+                "
                 class="w-full"
                 size="lg"
                 variant="primary"
                 @click="buttonContinue()"
               >
                 <transition v-bind="TransitionPrimaryButtonText" mode="out-in">
-                  <span v-if="transactionStatus === 'processing'">Processing...</span>
-                  <span v-else-if="transactionStatus === 'waiting-for-signature'">Waiting for confirmation</span>
+                  <span v-if="transactionStatus === 'processing' || transactionStatusLayerzero === 'processing'"
+                    >Processing...</span
+                  >
+                  <span
+                    v-else-if="
+                      transactionStatus === 'waiting-for-signature' ||
+                      transactionStatusLayerzero === 'waiting-for-signature'
+                    "
+                    >Waiting for confirmation</span
+                  >
                   <span v-else>Bridge now</span>
                 </transition>
               </CommonButton>
@@ -368,8 +380,11 @@ import {
 import { useRouteQuery } from "@vueuse/router";
 import { BigNumber } from "ethers";
 import { isAddress } from "ethers/lib/utils";
+import { type Address } from "viem";
 
 import EthereumTransactionFooter from "@/components/transaction/EthereumTransactionFooter.vue";
+import useLayerzeroFee from "@/composables/layerzero/deposit/useFee";
+import useLayerzeroTransaction from "@/composables/layerzero/deposit/useTransaction";
 import useAllowance from "@/composables/transaction/useAllowance";
 import useEcosystemBanner from "@/composables/zksync/deposit/useEcosystemBanner";
 import useFee from "@/composables/zksync/deposit/useFee";
@@ -505,6 +520,9 @@ const enoughAllowance = computed(() => {
   if (!allowance.value || !selectedToken.value) {
     return true;
   }
+  if (selectedToken.value.isOft) {
+    return true;
+  }
   return !allowance.value.isZero() && allowance.value.gte(totalComputeAmount.value);
 });
 const setAmountToCurrentAllowance = () => {
@@ -537,16 +555,65 @@ const unsubscribe = onboardStore.subscribeOnAccountChange(() => {
 });
 
 const {
-  fee: feeValues,
-  result: fee,
-  inProgress: feeInProgress,
-  error: feeError,
-  recommendedBalance,
-  feeToken,
-  enoughBalanceToCoverFee,
-  estimateFee,
-  resetFee,
+  fee: feeValuesDefault,
+  result: feeDefault,
+  inProgress: feeInProgressDefault,
+  error: feeErrorDefault,
+  recommendedBalance: recommendedBalanceDefault,
+  feeToken: feeTokenDefault,
+  enoughBalanceToCoverFee: enoughBalanceToCoverFeeDefault,
+  estimateFee: estimateFeeDefault,
+  resetFee: resetFeeDefault,
 } = useFee(availableTokens, balanceWithAdditionalTokens);
+
+const {
+  fee: feeValuesLayerzero,
+  result: feeLayerzero,
+  inProgress: feeInProgressLayerzero,
+  error: feeErrorLayerzero,
+  recommendedBalance: recommendedBalanceLayerzero,
+  feeToken: feeTokenLayerzero,
+  enoughBalanceToCoverFee: enoughBalanceToCoverFeeLayerzero,
+  estimateFee: estimateLayerzeroFee,
+  resetFee: resetLayerzeroFee,
+} = useLayerzeroFee(availableTokens, balanceWithAdditionalTokens);
+
+// Computed properties to select between default and layerzero fees
+const feeValues = computed(() => (selectedToken.value?.isOft ? feeValuesLayerzero.value : feeValuesDefault.value));
+const fee = computed(() =>
+  selectedToken.value?.isOft ? (feeLayerzero.value ? feeLayerzero.value.toString() : undefined) : feeDefault.value
+);
+const feeInProgress = computed(() =>
+  selectedToken.value?.isOft ? feeInProgressLayerzero.value : feeInProgressDefault.value
+);
+const feeError = computed(() => (selectedToken.value?.isOft ? feeErrorLayerzero.value : feeErrorDefault.value));
+const recommendedBalance = computed(() =>
+  selectedToken.value?.isOft ? recommendedBalanceLayerzero.value : recommendedBalanceDefault.value
+);
+const feeToken = computed(() => (selectedToken.value?.isOft ? feeTokenLayerzero.value : feeTokenDefault.value));
+const enoughBalanceToCoverFee = computed(() =>
+  selectedToken.value?.isOft ? enoughBalanceToCoverFeeLayerzero.value : enoughBalanceToCoverFeeDefault.value
+);
+const estimateFee = async (to: string, tokenAddress: string) => {
+  if (selectedToken.value?.isOft && totalComputeAmount.value) {
+    await estimateLayerzeroFee(
+      {
+        ...selectedToken.value,
+        amount: totalComputeAmount.value.toString(),
+      } as TokenAmount,
+      to as Address
+    );
+  } else {
+    await estimateFeeDefault(to, tokenAddress);
+  }
+};
+const resetFee = () => {
+  if (selectedToken.value?.isOft) {
+    resetLayerzeroFee();
+  } else {
+    resetFeeDefault();
+  }
+};
 
 const queryAddress = useRouteQuery<string | undefined>("address", undefined, {
   transform: String,
@@ -642,7 +709,7 @@ watch(
 // Add a watcher to re-estimate fees when allowance changes
 watch(
   [allowance, setAllowanceStatus, () => selectedToken.value?.address],
-  async ([newAllowance, newTokenAddress], [oldAllowance, oldTokenAddress]) => {
+  async ([newAllowance, _newStatus, newTokenAddress], [oldAllowance, _oldStatus, oldTokenAddress]) => {
     if (setAllowanceStatus.value !== "done") return;
     if (newAllowance && oldAllowance && !newAllowance.eq(oldAllowance) && newTokenAddress === oldTokenAddress) {
       await resetFee();
@@ -731,12 +798,18 @@ const {
   error: transactionError,
   commitTransaction,
 } = useTransaction(eraWalletStore.getL1Signer);
+const {
+  status: transactionStatusLayerzero,
+  error: transactionErrorLayerzero,
+  commitTransaction: commitLayerzeroTransaction,
+} = useLayerzeroTransaction();
 const { recentlyBridged } = useEcosystemBanner();
 const { saveTransaction, waitForCompletion } = useZkSyncTransactionStatusStore();
 
 watch(step, (newStep) => {
   if (newStep === "form") {
     transactionError.value = undefined;
+    transactionErrorLayerzero.value = undefined;
   }
 });
 
@@ -744,16 +817,26 @@ const transactionInfo = ref<TransactionInfo | undefined>();
 const makeTransaction = async () => {
   if (continueButtonDisabled.value) return;
 
-  const tx = await commitTransaction(
-    {
-      to: transaction.value!.to.address,
-      tokenAddress: transaction.value!.token.address,
-      amount: transaction.value!.token.amount,
-    },
-    feeValues.value!
-  );
+  let tx: string | undefined;
+  if (transaction.value?.token.isOft) {
+    tx = await commitLayerzeroTransaction({
+      token: transaction.value.token,
+      to: account.value.address,
+      nativeFee: fee.value ? BigInt(fee.value) : BigInt(0),
+      fee: feeValues.value!,
+    });
+  } else {
+    tx = await commitTransaction(
+      {
+        to: transaction.value!.to.address,
+        tokenAddress: transaction.value!.token.address,
+        amount: transaction.value!.token.amount,
+      },
+      feeValues.value!
+    );
+  }
 
-  if (transactionStatus.value === "done") {
+  if (transactionStatus.value === "done" || transactionStatusLayerzero.value === "done") {
     step.value = "submitted";
     previousTransactionAddress.value = transaction.value!.to.address;
     recentlyBridged.value = true;
@@ -764,7 +847,7 @@ const makeTransaction = async () => {
     zkSyncEthereumBalance.deductBalance(transaction.value!.token.address!, transaction.value!.token.amount);
     transactionInfo.value = {
       type: "deposit",
-      transactionHash: tx.hash,
+      transactionHash: tx,
       timestamp: new Date().toISOString(),
       token: transaction.value!.token,
       from: transaction.value!.from,
@@ -798,6 +881,7 @@ const makeTransaction = async () => {
       .catch((err) => {
         transactionError.value = err as Error;
         transactionStatus.value = "not-started";
+        transactionStatusLayerzero.value = "not-started";
       });
   }
 };

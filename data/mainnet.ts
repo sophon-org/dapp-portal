@@ -24,15 +24,15 @@ const MAINNET = {
   L1_GLOBAL_PAYMASTER,
   L2_GLOBAL_PAYMASTER,
   TOKENS: [CUSTOM_USDC_TOKEN],
+  LAYER_ZERO_CONFIG: {
+    sophonEid: 30334,
+    l1Eid: 30101, // Ethereum mainnet
+    oftHelperAddress: "0x88172F3041Bd0787520dbc9Bd33D3d48e1fb46dc",
+  },
   BLACKLISTED_TOKENS: [
     {
       address: "0xbe0ed4138121ecfc5c0e56b40517da27e6c5226b",
       name: "ATH",
-      reason: "Cannot bridge L0 tokens for now...",
-    },
-    {
-      address: "0xC1AA99c3881B26901aF70738A7C217dc32536d36",
-      name: "NOON",
       reason: "Cannot bridge L0 tokens for now...",
     },
   ],

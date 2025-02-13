@@ -295,15 +295,27 @@
                 </div>
               </transition>
               <CommonButton
-                :disabled="continueButtonDisabled || transactionStatus !== 'not-started'"
+                :disabled="
+                  continueButtonDisabled ||
+                  transactionStatus !== 'not-started' ||
+                  transactionStatusLayerzero !== 'not-started'
+                "
                 class="w-full"
                 size="lg"
                 variant="primary"
                 @click="buttonContinue()"
               >
                 <transition v-bind="TransitionPrimaryButtonText" mode="out-in">
-                  <span v-if="transactionStatus === 'processing'">Processing...</span>
-                  <span v-else-if="transactionStatus === 'waiting-for-signature'">Waiting for confirmation</span>
+                  <span v-if="transactionStatus === 'processing' || transactionStatusLayerzero === 'processing'"
+                    >Processing...</span
+                  >
+                  <span
+                    v-else-if="
+                      transactionStatus === 'waiting-for-signature' ||
+                      transactionStatusLayerzero === 'waiting-for-signature'
+                    "
+                    >Waiting for confirmation</span
+                  >
                   <span v-else>
                     {{ type === "withdrawal" ? "Bridge now" : "Send now" }}
                   </span>
@@ -324,6 +336,8 @@ import { useRouteQuery } from "@vueuse/router";
 import { BigNumber } from "ethers";
 import { isAddress } from "ethers/lib/utils";
 
+import useLayerzeroFee from "@/composables/layerzero/useFee";
+import useLayerzeroTransaction from "@/composables/layerzero/useTransaction";
 import useFee from "@/composables/zksync/useFee";
 import useTransaction, { isWithdrawalManualFinalizationRequired } from "@/composables/zksync/useTransaction";
 import { customBridgeTokens } from "@/data/customBridgeTokens";
@@ -331,12 +345,11 @@ import { isCustomNode, isMainnet } from "@/data/networks";
 import TransferSubmitted from "@/views/transactions/TransferSubmitted.vue";
 import WithdrawalSubmitted from "@/views/transactions/WithdrawalSubmitted.vue";
 import useWithdrawalAllowance from "~/composables/transaction/useWithdrawalAllowance";
-import { MAINNET } from "~/data/mainnet";
-import { TESTNET } from "~/data/testnet";
 
 import type { FeeEstimationParams } from "@/composables/zksync/useFee";
 import type { Token, TokenAmount } from "@/types";
 import type { BigNumberish } from "ethers";
+import type { TransactionResponse } from "zksync-ethers/build/types";
 
 // TODO(@consvic): Remove this after some time
 const FILTERED_TOKENS = computed(() => {
@@ -363,7 +376,6 @@ const { destinations } = storeToRefs(useDestinationsStore());
 const { tokens, tokensRequestInProgress, tokensRequestError } = storeToRefs(tokensStore);
 const { balance, balanceInProgress, balanceError } = storeToRefs(walletStore);
 const { selectedNetwork } = storeToRefs(useNetworkStore());
-const NETWORK_CONFIG = selectedNetwork.value.key === "sophon" ? MAINNET : TESTNET;
 const refetchingAllowance = ref(false);
 
 const toNetworkModalOpened = ref(false);
@@ -466,7 +478,7 @@ const {
   providerStore.requestProvider,
   computed(() => account.value.address),
   computed(() => selectedToken.value?.address),
-  async () => await NETWORK_CONFIG.CUSTOM_USDC_TOKEN.address
+  computed(() => selectedToken.value?.isOft)
 );
 
 const enoughAllowance = computed(() => {
@@ -488,8 +500,8 @@ const setTokenAllowance = async () => {
 };
 
 const {
-  gasLimit,
-  gasPrice,
+  gasLimit: gasLimitDefault,
+  gasPrice: gasPriceDefault,
   result: fee,
   inProgress: feeInProgress,
   error: feeError,
@@ -498,6 +510,16 @@ const {
   estimateFee,
   resetFee,
 } = useFee(providerStore.requestProvider, tokens, balance, totalComputeAmount);
+
+const {
+  gasLimit: gasLimitLayerzero,
+  gasPrice: gasPriceLayerzero,
+  result: feeLayerzero,
+  estimateFee: estimateLayerzeroFee,
+} = useLayerzeroFee(walletStore.getSigner, providerStore.requestProvider);
+
+const gasLimit = computed(() => (selectedToken.value?.isOft ? gasLimitLayerzero.value : gasLimitDefault.value));
+const gasPrice = computed(() => (selectedToken.value?.isOft ? gasPriceLayerzero.value : gasPriceDefault.value));
 
 const queryAddress = useRouteQuery<string | undefined>("address", undefined, {
   transform: String,
@@ -582,7 +604,8 @@ const withdrawalManualFinalizationRequired = computed(() => {
   if (!transaction.value) return false;
   return (
     props.type === "withdrawal" &&
-    isWithdrawalManualFinalizationRequired(transaction.value.token, eraNetwork.value.l1Network?.id || -1)
+    isWithdrawalManualFinalizationRequired(transaction.value.token, eraNetwork.value.l1Network?.id || -1) &&
+    !selectedToken.value?.isOft
   );
 });
 
@@ -598,12 +621,22 @@ const estimate = async () => {
   ) {
     return;
   }
-  await estimateFee({
-    type: props.type,
-    from: transaction.value.from.address,
-    to: transaction.value.to.address,
-    tokenAddress: selectedToken.value.address,
-  });
+  if (transaction.value?.token.isOft) {
+    await estimateLayerzeroFee({
+      type: props.type,
+      token: transaction.value.token,
+      amount: totalComputeAmount.value,
+      from: transaction.value.from.address,
+      to: transaction.value.to.address,
+    });
+  } else {
+    await estimateFee({
+      type: props.type,
+      from: transaction.value.from.address,
+      to: transaction.value.to.address,
+      tokenAddress: selectedToken.value.address,
+    });
+  }
 };
 watch(
   [() => selectedToken.value?.address, () => tokenBalance.value?.toString(), () => enoughAllowance.value],
@@ -672,6 +705,11 @@ const {
   commitTransaction,
 } = useTransaction(walletStore.getSigner, providerStore.requestProvider);
 const { saveTransaction, waitForCompletion } = useZkSyncTransactionStatusStore();
+const {
+  status: transactionStatusLayerzero,
+  error: transactionErrorLayerzero,
+  commitTransaction: commitLayerzeroTransaction,
+} = useLayerzeroTransaction(walletStore.getSigner);
 
 watch(step, (newStep) => {
   if (newStep === "form") {
@@ -682,21 +720,33 @@ watch(step, (newStep) => {
 const transactionInfo = ref<TransactionInfo | undefined>();
 const makeTransaction = async () => {
   if (continueButtonDisabled.value) return;
-
-  const tx = await commitTransaction(
-    {
-      type: props.type,
+  let tx: TransactionResponse | undefined;
+  if (transaction.value?.token.isOft) {
+    tx = await commitLayerzeroTransaction({
+      token: transaction.value.token,
+      amount: transaction.value.token.amount,
+      from: account.value.address!,
       to: transaction.value!.to.address,
-      tokenAddress: transaction.value!.token.address,
-      amount: transaction.value!.token.amount,
-    },
-    {
+      nativeFee: feeLayerzero.value!.nativeFee,
       gasLimit: gasLimit.value!,
       gasPrice: gasPrice.value!,
-    }
-  );
+    });
+  } else {
+    tx = await commitTransaction(
+      {
+        type: props.type,
+        to: transaction.value!.to.address,
+        tokenAddress: transaction.value!.token.address,
+        amount: transaction.value!.token.amount,
+      },
+      {
+        gasLimit: gasLimit.value!,
+        gasPrice: gasPrice.value!,
+      }
+    );
+  }
 
-  if (transactionStatus.value === "done") {
+  if (transactionStatus.value === "done" || transactionStatusLayerzero.value === "done") {
     step.value = "submitted";
     previousTransactionAddress.value = transaction.value!.to.address;
   }
@@ -744,6 +794,8 @@ const makeTransaction = async () => {
       .catch((err) => {
         transactionError.value = err as Error;
         transactionStatus.value = "not-started";
+        transactionErrorLayerzero.value = err as Error;
+        transactionStatusLayerzero.value = "not-started";
       });
   }
 };

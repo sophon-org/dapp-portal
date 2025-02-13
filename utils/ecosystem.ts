@@ -189,15 +189,6 @@ export const cards = [
     iconStyling: "bg-white",
   },
   {
-    category: "NFT",
-    title: "Mintify",
-    description: "NFT Marketplace",
-    link: "https://mintify.xyz/",
-    icon: "/img/home/mintify.svg",
-    isComingSoon: true,
-    iconStyling: "p-1",
-  },
-  {
     category: "Casino",
     title: "Decentra Degens",
     description: "Online cash poker tournaments",
@@ -213,5 +204,15 @@ export const cards = [
     isComingSoon: true,
     icon: "/img/home/brutal.png",
     iconStyling: "bg-white",
+  },
+  {
+    category: "NFT",
+    title: "Mintify",
+    description:
+      "Mintify is the best consumer experience to trade every asset, every network, and every market directly onchain",
+    link: "https://mintify.xyz/",
+    icon: "/img/home/mintify.svg",
+    isComingSoon: true,
+    iconStyling: "p-1",
   },
 ];

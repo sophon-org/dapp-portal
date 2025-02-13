@@ -9,8 +9,14 @@
           Your funds will be available on <span class="font-medium">{{ transaction.to.destination.label }}</span> after
           you claim the withdrawal.
         </template>
-        <template v-else-if="isCustomNode">
+        <template v-else-if="isCustomNode && !canSkipClaim">
           Your funds will be available for claiming after the transaction is processed on
+          <span class="font-medium">{{ eraNetwork.name }}</span> and executed on the
+          <span class="font-medium">{{ eraNetwork.l1Network?.name }}</span
+          >.
+        </template>
+        <template v-else-if="canSkipClaim">
+          Your funds will be available after the transaction is processed on
           <span class="font-medium">{{ eraNetwork.name }}</span> and executed on the
           <span class="font-medium">{{ eraNetwork.l1Network?.name }}</span
           >.
@@ -38,7 +44,7 @@
         <CommonAlert v-else-if="isCustomBridgeToken" variant="warning" :icon="ExclamationTriangleIcon" class="mb-4">
           <p>This withdrawal was made through a third-party bridge. Please use that bridge to claim your withdrawal.</p>
         </CommonAlert>
-        <CommonAlert v-else variant="warning" :icon="ExclamationTriangleIcon" class="mb-4">
+        <CommonAlert v-else-if="!canSkipClaim" variant="warning" :icon="ExclamationTriangleIcon" class="mb-4">
           <p>
             You will have to claim your withdrawal once it's processed. Claiming will require paying the fee on the
             {{ eraNetwork.l1Network?.name }} network.
@@ -54,7 +60,11 @@
       :from-explorer-link="blockExplorerUrl"
       :from-transaction-hash="transaction.transactionHash"
       :to-transaction-hash="finalizeTransactionHash || transaction.info.toTransactionHash"
-      :to-explorer-link="finalizeTransactionHash || transaction.info.toTransactionHash ? l1BlockExplorerUrl : undefined"
+      :to-explorer-link="
+        finalizeTransactionHash || transaction.info.toTransactionHash || l1BlockExplorerUrl
+          ? l1BlockExplorerUrl
+          : undefined
+      "
       :token="transaction.token"
       :completed="transaction.info.completed"
       :failed="transaction.info.failed"
@@ -62,6 +72,7 @@
       :expected-complete-timestamp="
         withdrawalFinalizationAvailable || isCustomBridgeToken ? undefined : transaction.info.expectedCompleteTimestamp
       "
+      :transaction-info="transaction"
     >
       <template v-if="withdrawalFinalizationAvailable" #to-button>
         <template v-if="!isCorrectNetworkSet">
@@ -181,6 +192,10 @@ const { eraNetwork, blockExplorerUrl } = storeToRefs(useZkSyncProviderStore());
 const { l1BlockExplorerUrl, selectedNetwork } = storeToRefs(useNetworkStore());
 const { connectorName, isCorrectNetworkSet } = storeToRefs(onboardStore);
 const NETWORK_CONFIG = selectedNetwork.value.key === "sophon" ? MAINNET : TESTNET;
+
+const canSkipClaim = computed(() => {
+  return props.transaction.token.isOft;
+});
 
 const isCustomBridgeToken = computed(
   () =>

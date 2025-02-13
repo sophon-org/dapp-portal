@@ -21,6 +21,11 @@
           "symbol": "ETH",
           "decimals": 18
         },
+        "blockExplorers": {
+          "default": {
+            "url": "https://etherscan.io"
+          }
+        },
         "rpcUrls": {
           "default": {
             "http": ["https://eth-mainnet.g.alchemy.com/v2/aWaUjYiknNQrFwU8r8agl-R9bye7XX2u"]
@@ -136,6 +141,22 @@
         "symbol": "stAZUR",
         "decimals": 18,
         "iconUrl": "/img/tokens/stazur.svg"
+      },
+      {
+        "address": "0xC1AA99c3881B26901aF70738A7C217dc32536d36",
+        "l1Address": "0xdA67B4284609d2d48e5d10cfAc411572727dc1eD",
+        "symbol": "USN",
+        "decimals": 18,
+        "iconUrl": "/img/tokens/usn.svg",
+        "isOft": true
+      },
+      {
+        "address": "0xb87DbE27Db932baCAAA96478443b6519D52C5004",
+        "l1Address": "0xE24a3DC889621612422A64E6388927901608B91D",
+        "symbol": "sUSN",
+        "decimals": 18,
+        "iconUrl": "/img/tokens/susn.svg",
+        "isOft": true
       }
     ]
   },
@@ -160,6 +181,11 @@
           "name": "Ether",
           "symbol": "ETH",
           "decimals": 18
+        },
+        "blockExplorers": {
+          "default": {
+            "url": "https://sepolia.etherscan.io"
+          }
         },
         "rpcUrls": {
           "default": {

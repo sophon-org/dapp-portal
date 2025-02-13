@@ -12,7 +12,7 @@ export default (
   getProvider: () => Provider,
   accountAddress: Ref<string | undefined>,
   tokenAddress: Ref<string | undefined>,
-  getContractAddress: () => Promise<string | undefined>
+  isOft: Ref<boolean | undefined>
 ) => {
   const { getSigner } = useZkSyncWalletStore();
   const approvalNeeded = ref(false);
@@ -20,8 +20,14 @@ export default (
   const NETWORK_CONFIG = selectedNetwork.value.key === "sophon" ? MAINNET : TESTNET;
   let approvalAmount: BigNumberish | undefined;
 
-  const fetchAllowance = async (owner: string, spender: string): Promise<BigNumber> => {
+  const fetchAllowance = async (owner: string): Promise<BigNumber> => {
     if (!tokenAddress.value) throw new Error("Token address is not available");
+    let spender;
+    if (isOft.value) {
+      spender = NETWORK_CONFIG.LAYER_ZERO_CONFIG.oftHelperAddress;
+    } else {
+      spender = NETWORK_CONFIG.CUSTOM_USDC_TOKEN.l2BridgeAddress;
+    }
     const provider = getProvider();
     const tokenContract = new ethers.Contract(tokenAddress.value, IERC20, provider);
     const allowance = await tokenContract.allowance(owner, spender);
@@ -35,7 +41,7 @@ export default (
     error,
     execute: getAllowance,
     reset,
-  } = usePromise(() => fetchAllowance(accountAddress.value!, NETWORK_CONFIG.CUSTOM_USDC_TOKEN.l2BridgeAddress!), {
+  } = usePromise(() => fetchAllowance(accountAddress.value!), {
     cache: false,
   });
 
@@ -60,13 +66,12 @@ export default (
         if (tokenAddress.value === NETWORK_CONFIG.CUSTOM_USDC_TOKEN.address) {
           contractAddress = NETWORK_CONFIG.CUSTOM_USDC_TOKEN.l2BridgeAddress;
         } else {
-          contractAddress = await getContractAddress();
+          contractAddress = NETWORK_CONFIG.LAYER_ZERO_CONFIG.oftHelperAddress;
         }
         if (!contractAddress) throw new Error("Contract address is not available");
 
         setAllowanceStatus.value = "waiting-for-signature";
         const signer = await getSigner();
-        const provider = getProvider();
         const tokenContract = new ethers.Contract(tokenAddress.value!, IERC20, signer);
 
         setAllowanceStatus.value = "sending";
@@ -79,7 +84,7 @@ export default (
             gasPerPubdata: utils.DEFAULT_GAS_PER_PUBDATA_LIMIT,
           },
         });
-        const receipt = await provider.getTransactionReceipt(tx.hash);
+        const receipt = await tx.wait();
 
         await requestAllowance();
 
@@ -94,7 +99,11 @@ export default (
   );
 
   const requestAllowance = async () => {
-    if (accountAddress.value && tokenAddress.value && tokenAddress.value === NETWORK_CONFIG.CUSTOM_USDC_TOKEN.address) {
+    if (
+      accountAddress.value &&
+      tokenAddress.value &&
+      (tokenAddress.value === NETWORK_CONFIG.CUSTOM_USDC_TOKEN.address || isOft.value)
+    ) {
       await getAllowance();
     } else {
       reset();

@@ -12,6 +12,7 @@
       </p>
     </CommonHeightTransition>
     <TransactionProgress
+      :transaction-info="transaction"
       :from-address="transaction!.from.address"
       :from-destination="transaction!.from.destination"
       :from-explorer-link="l1BlockExplorerUrl"

@@ -100,7 +100,7 @@ export const cards = [
     title: "SPHNX",
     description: "Gamified AI red teaming platform",
     link: "https://SPHNX.ai",
-    icon: "/img/home/sphnx.svg",
+    icon: "/img/home/sphnx.png",
   },
   {
     category: "Developers",

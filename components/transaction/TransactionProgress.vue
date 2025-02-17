@@ -91,7 +91,12 @@
         v-if="expectedCompleteTimestamp && !token.isOft && !completed"
         class="flex flex-col items-center justify-center gap-[2px]"
       >
-        <div>
+        <div v-if="transactionInfo.type === 'withdrawal' && !token.isOft">
+          <span class="text-gray"
+            >Withdrawals are usually processed in 3 hours, but can take longer in some occasions.</span
+          >
+        </div>
+        <div v-else>
           <span class="text-gray">Processing time: </span>
           <CommonTimer format="human-readable" :future-date="expectedCompleteTimestamp">
             <template #default="{ timer, isTimerFinished }">

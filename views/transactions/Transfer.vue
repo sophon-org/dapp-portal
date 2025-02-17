@@ -128,19 +128,14 @@
       </template>
       <template v-else-if="step === 'withdrawal-finalization-warning'">
         <CommonAlert variant="warning" :icon="ExclamationTriangleIcon" class="mb-block-padding-1/2 sm:mb-block-gap">
-          <p v-if="!isCustomNode">
-            After a
-            <a class="underline underline-offset-2" :href="ZKSYNC_WITHDRAWAL_DELAY" target="_blank"
-              >24-hour withdrawal delay</a
-            >, you will need to manually claim your funds which requires paying another transaction fee on
+          <p>
+            After the withdraw is processed and finalized (which takes
+            <a class="underline underline-offset-2" :href="ZKSYNC_WITHDRAWAL_DELAY" target="_blank">3 or more hours</a
+            >), you will need to manually claim your funds which requires paying another transaction fee on
             {{ eraNetwork.l1Network?.name }}. Alternatively you can use
             <a href="https://layerswap.io/app" target="_blank" class="underline underline-offset-2"
               >third-party bridges</a
             >.
-          </p>
-          <p v-else>
-            After transaction is executed on {{ eraNetwork.l1Network?.name }}, you will need to manually claim your
-            funds which requires paying another transaction fee on {{ eraNetwork.l1Network?.name }}.
           </p>
         </CommonAlert>
         <CommonButton size="lg" variant="primary" class="mx-auto mt-block-gap w-full" @click="buttonContinue()">
@@ -149,17 +144,17 @@
       </template>
       <template v-else-if="step === 'confirm'">
         <CommonAlert
-          v-if="type === 'withdrawal' && !isCustomNode"
+          v-if="type === 'withdrawal'"
           variant="warning"
           :icon="ExclamationTriangleIcon"
           class="mb-block-padding-1/2 sm:mb-block-gap"
         >
           <p v-if="withdrawalManualFinalizationRequired">
-            You will be able to claim your withdrawal only after a 24-hour withdrawal delay.
+            You will be able to claim your withdrawal only after it is finalized (which takes 3 or more hours).
             <a class="underline underline-offset-2" :href="ZKSYNC_WITHDRAWAL_DELAY" target="_blank">Learn more</a>
           </p>
           <p v-else>
-            You will receive funds only after a 24-hour withdrawal delay.
+            You will receive your funds once withdraw is finalized, which takes 3 or more hours.
             <a class="underline underline-offset-2" :href="ZKSYNC_WITHDRAWAL_DELAY" target="_blank">Learn more</a>
           </p>
         </CommonAlert>
@@ -210,13 +205,13 @@
             />
           </transition>
           <CommonButtonLabel
-            v-if="type === 'withdrawal' && !isCustomNode"
+            v-if="type === 'withdrawal' && !selectedToken?.isOft"
             as="a"
             :href="ZKSYNC_WITHDRAWAL_DELAY"
             target="_blank"
             class="ml-auto text-right"
           >
-            Up to 24 hours
+            3 or more hours to be finalized
           </CommonButtonLabel>
           <CommonButtonLabel v-else-if="type === 'transfer'" as="span" class="ml-auto text-right">
             Almost instant
@@ -341,7 +336,7 @@ import useLayerzeroTransaction from "@/composables/layerzero/useTransaction";
 import useFee from "@/composables/zksync/useFee";
 import useTransaction, { isWithdrawalManualFinalizationRequired } from "@/composables/zksync/useTransaction";
 import { customBridgeTokens } from "@/data/customBridgeTokens";
-import { isCustomNode, isMainnet } from "@/data/networks";
+import { isMainnet } from "@/data/networks";
 import TransferSubmitted from "@/views/transactions/TransferSubmitted.vue";
 import WithdrawalSubmitted from "@/views/transactions/WithdrawalSubmitted.vue";
 import useWithdrawalAllowance from "~/composables/transaction/useWithdrawalAllowance";

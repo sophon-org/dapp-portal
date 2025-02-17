@@ -103,6 +103,7 @@
           </CommonTimer>
         </div>
         <a
+          v-if="transactionInfo.type === 'withdrawal'"
           href="https://docs.sophon.xyz/discover/bridging/withdrawal-delay"
           target="_blank"
           class="text-xs text-gray underline"

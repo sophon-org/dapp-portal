@@ -69,7 +69,7 @@
     "*.{vue,js,ts,html}": "npm run lint"
   },
   "dependencies": {
-    "@ankr.com/ankr.js": "^0.5.0",
+    "alchemy-sdk": "^3.1.2",
     "@chenfengyuan/vue-qrcode": "^2.0.0",
     "@vitejs/plugin-vue": "^3.2.0",
     "@vueuse/router": "^10.9.0",

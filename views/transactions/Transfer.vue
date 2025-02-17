@@ -144,17 +144,13 @@
       </template>
       <template v-else-if="step === 'confirm'">
         <CommonAlert
-          v-if="type === 'withdrawal'"
+          v-if="type === 'withdrawal' && withdrawalManualFinalizationRequired"
           variant="warning"
           :icon="ExclamationTriangleIcon"
           class="mb-block-padding-1/2 sm:mb-block-gap"
         >
-          <p v-if="withdrawalManualFinalizationRequired">
+          <p>
             You will be able to claim your withdrawal only after it is finalized (which takes 3 or more hours).
-            <a class="underline underline-offset-2" :href="ZKSYNC_WITHDRAWAL_DELAY" target="_blank">Learn more</a>
-          </p>
-          <p v-else>
-            You will receive your funds once withdraw is finalized, which takes 3 or more hours.
             <a class="underline underline-offset-2" :href="ZKSYNC_WITHDRAWAL_DELAY" target="_blank">Learn more</a>
           </p>
         </CommonAlert>

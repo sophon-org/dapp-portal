@@ -150,7 +150,7 @@ declare global {
     "##runtimeConfig"?: {
       nodeType?: string;
       walletConnectProjectId?: string;
-      ankrToken?: string;
+      alchemyApiKey?: string;
       screeningApiUrl?: string;
       analytics?: {
         rudder?: {

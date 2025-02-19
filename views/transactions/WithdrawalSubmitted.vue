@@ -9,7 +9,7 @@
           Your funds will be available on <span class="font-medium">{{ transaction.to.destination.label }}</span> after
           you claim the withdrawal.
         </template>
-        <template v-else-if="isCustomNode && !canSkipClaim">
+        <template v-else-if="!canSkipClaim">
           Your funds will be available for claiming after the transaction is processed on
           <span class="font-medium">{{ eraNetwork.name }}</span> and executed on the
           <span class="font-medium">{{ eraNetwork.l1Network?.name }}</span
@@ -111,7 +111,7 @@
         <TransactionFeeDetails
           v-else
           label="Claiming fee:"
-          :fee-token="feeToken"
+          :fee-token="feeToken.value"
           :fee-amount="fee"
           :loading="feeLoading"
           class="mt-4"
@@ -171,7 +171,6 @@
 import { ExclamationTriangleIcon } from "@heroicons/vue/24/outline";
 
 import useWithdrawalFinalization from "@/composables/zksync/useWithdrawalFinalization";
-import { isCustomNode } from "@/data/networks";
 import { MAINNET } from "~/data/mainnet";
 import { TESTNET } from "~/data/testnet";
 

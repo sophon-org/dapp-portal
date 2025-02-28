@@ -2,7 +2,7 @@ import { $fetch } from "ofetch";
 
 import type { Api } from "@/types";
 
-const FETCH_TIME_LIMIT = 31 * 24 * 60 * 60 * 1000; // 31 days
+const FETCH_TIME_LIMIT = 180 * 24 * 60 * 60 * 1000; // 180 days (6 months)
 
 export const useZkSyncWithdrawalsStore = defineStore("zkSyncWithdrawals", () => {
   const onboardStore = useOnboardStore();

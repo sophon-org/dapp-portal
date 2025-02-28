@@ -44,6 +44,15 @@ export const cards = [
     icon: "/img/home/guardian.svg",
   },
   {
+    category: "Sophon Essentials",
+    title: "Orbiter",
+    description: "ZK-tech based cross-chain protocol offers fast, secure, and instant transfer",
+    isComingSoon: false,
+    link: "https://www.orbiter.finance",
+    iconStyling: "bg-white",
+    icon: "/img/home/Orbiter_Icon_Black.svg",
+  },
+  {
     category: "Events",
     title: "OPEN",
     description:

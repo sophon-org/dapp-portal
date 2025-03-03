@@ -64,6 +64,13 @@ export const cards = [
   },
   {
     category: "Gaming",
+    title: "SPHNX",
+    description: "Gamified AI red teaming platform",
+    link: "https://SPHNX.ai",
+    icon: "/img/home/sphnx.png",
+  },
+  {
+    category: "Gaming",
     title: "GAMP",
     description: "Compete with players around the world across a wide range of games",
     isComingSoon: false,
@@ -103,13 +110,6 @@ export const cards = [
     link: "https://t.me/animix_game_bot",
     icon: "/img/home/animix.svg",
     iconStyling: "bg-white",
-  },
-  {
-    category: "Gaming",
-    title: "SPHNX",
-    description: "Gamified AI red teaming platform",
-    link: "https://SPHNX.ai",
-    icon: "/img/home/sphnx.png",
   },
   {
     category: "Developers",

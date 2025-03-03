@@ -5,7 +5,7 @@ export const usePortalRuntimeConfig = () => {
   return {
     nodeType: runtimeConfig?.nodeType || (process.env.NODE_TYPE as undefined | "memory" | "dockerized" | "hyperchain"),
     walletConnectProjectId: runtimeConfig?.walletConnectProjectId || process.env.WALLET_CONNECT_PROJECT_ID,
-    ankrToken: runtimeConfig?.ankrToken || process.env.ANKR_TOKEN,
+    alchemyApiKey: runtimeConfig?.alchemyApiKey || process.env.ALCHEMY_API_KEY,
     screeningApiUrl: runtimeConfig?.screeningApiUrl || process.env.SCREENING_API_URL,
     analytics: {
       rudder: runtimeConfig?.analytics?.rudder

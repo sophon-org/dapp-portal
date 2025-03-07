@@ -23,6 +23,7 @@
         },
         "blockExplorers": {
           "default": {
+            "name": "Etherscan",
             "url": "https://etherscan.io"
           }
         },
@@ -184,6 +185,7 @@
         },
         "blockExplorers": {
           "default": {
+            "name": "Etherscan Sepolia",
             "url": "https://sepolia.etherscan.io"
           }
         },

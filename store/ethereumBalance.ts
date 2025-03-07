@@ -1,18 +1,20 @@
-import { AnkrProvider } from "@ankr.com/ankr.js";
+import { Alchemy, Network } from "alchemy-sdk";
 import { BigNumber } from "ethers";
 import { utils } from "zksync-ethers";
 
 import { l1Networks } from "@/data/networks";
 
 import type { TokenAmount } from "@/types";
-import type { Blockchain as AnkrSupportedChains } from "@ankr.com/ankr.js";
 
 export const useEthereumBalanceStore = defineStore("ethereumBalance", () => {
   const portalRuntimeConfig = usePortalRuntimeConfig();
+  const { l1Network } = storeToRefs(useNetworkStore());
 
   const onboardStore = useOnboardStore();
   const { account } = storeToRefs(onboardStore);
   const { eraNetwork } = storeToRefs(useZkSyncProviderStore());
+
+  const alchemyApiKey = portalRuntimeConfig.alchemyApiKey ?? l1Network.value?.rpcUrls.public.http[0].split("/").pop();
 
   const {
     result: balance,
@@ -24,34 +26,48 @@ export const useEthereumBalanceStore = defineStore("ethereumBalance", () => {
     async () => {
       if (!account.value.address) throw new Error("Account is not available");
       if (!eraNetwork.value.l1Network) throw new Error(`L1 network is not available on ${eraNetwork.value.name}`);
-      if (!portalRuntimeConfig.ankrToken) throw new Error("Ankr token is not available");
+      if (!alchemyApiKey) throw new Error("Alchemy API key is not available");
 
-      const ankrProvider = new AnkrProvider(`https://rpc.ankr.com/multichain/${portalRuntimeConfig.ankrToken}`);
-      const networkIdToAnkr = new Map<number, AnkrSupportedChains | "eth_sepolia">([
-        [l1Networks.mainnet.id, "eth"],
-        [l1Networks.sepolia.id, "eth_sepolia"],
+      const networkIdToAlchemy = new Map<number, Network>([
+        [l1Networks.mainnet.id, Network.ETH_MAINNET],
+        [l1Networks.sepolia.id, Network.ETH_SEPOLIA],
       ]);
-      if (!networkIdToAnkr.has(eraNetwork.value.l1Network.id)) {
-        throw new Error(`Ankr does not support ${eraNetwork.value.l1Network.name}`);
+
+      if (!networkIdToAlchemy.has(eraNetwork.value.l1Network.id)) {
+        throw new Error(`Alchemy does not support ${eraNetwork.value.l1Network.name}`);
       }
-      const balances = await ankrProvider.getAccountBalance({
-        blockchain: [networkIdToAnkr.get(eraNetwork.value.l1Network.id)!] as AnkrSupportedChains[],
-        walletAddress: account.value.address,
-        onlyWhitelisted: false,
+
+      const alchemy = new Alchemy({
+        apiKey: alchemyApiKey,
+        network: networkIdToAlchemy.get(eraNetwork.value.l1Network.id)!,
       });
-      return balances.assets
-        .filter((e) => e.contractAddress || e.tokenType === "NATIVE")
-        .map((e) => {
-          return {
-            address: e.tokenType === "NATIVE" ? utils.ETH_ADDRESS : checksumAddress(e.contractAddress!),
-            symbol: e.tokenSymbol,
-            name: e.tokenName,
-            decimals: e.tokenDecimals,
-            iconUrl: e.thumbnail,
-            price: e.tokenPrice === "0" ? undefined : parseFloat(e.tokenPrice),
-            amount: e.balanceRawInteger,
-          } as TokenAmount;
-        });
+
+      const [tokenBalances, ethBalance] = await Promise.all([
+        alchemy.core.getTokensForOwner(account.value.address),
+        alchemy.core.getBalance(account.value.address),
+      ]);
+
+      const tokens: TokenAmount[] = tokenBalances.tokens
+        .filter((token) => BigNumber.from(token.rawBalance).gt(0))
+        .map((token) => ({
+          address: checksumAddress(token.contractAddress),
+          symbol: token.symbol || "",
+          name: token.name || "",
+          decimals: token.decimals || 18,
+          iconUrl: token.logo || undefined,
+          amount: token.rawBalance || "0",
+        }));
+
+      // Add ETH balance
+      tokens.unshift({
+        address: utils.ETH_ADDRESS,
+        symbol: "ETH",
+        name: "Ethereum",
+        decimals: 18,
+        amount: ethBalance.toString(),
+      });
+
+      return tokens;
     },
     { cache: false }
   );

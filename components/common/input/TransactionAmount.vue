@@ -83,6 +83,7 @@
           :toggled="selectTokenModalOpened"
           variant="light"
           size="md"
+          :disabled="loading"
           @click="selectTokenModalOpened = true"
         >
           <template #left-icon>
@@ -99,10 +100,8 @@
 
 <script lang="ts" setup>
 import { LockClosedIcon } from "@heroicons/vue/24/outline";
-import { BigNumber } from "ethers";
 
 import type { Token, TokenAmount } from "@/types";
-import type { BigNumberish } from "ethers";
 
 const props = defineProps({
   modelValue: {
@@ -130,7 +129,7 @@ const props = defineProps({
     type: String,
   },
   maxAmount: {
-    type: String as PropType<BigNumberish>,
+    type: String,
   },
   error: {
     type: String,
@@ -183,11 +182,11 @@ const inputted = computed({
 const totalComputeAmount = computed(() => {
   try {
     if (!inputted.value || !selectedToken.value) {
-      return BigNumber.from("0");
+      return 0n;
     }
     return decimalToBigNumber(inputted.value, selectedToken.value.decimals);
   } catch (error) {
-    return BigNumber.from("0");
+    return 0n;
   }
 });
 const totalAmountPrice = computed(() => {
@@ -214,7 +213,7 @@ const isMaxAmountSet = computed(() => {
   if (!props.maxAmount) {
     return false;
   }
-  return totalComputeAmount.value.eq(props.maxAmount);
+  return totalComputeAmount.value === BigInt(props.maxAmount);
 });
 const setMaxAmount = () => {
   if (!maxDecimalAmount.value) return;
@@ -224,11 +223,11 @@ const setMaxAmount = () => {
 const amountError = computed(() => {
   if (!selectedToken.value) return;
   if (!props.isCorrectNetwork) return;
-  if (tokenBalance.value && totalComputeAmount.value.gt(tokenBalance.value.amount)) {
+  if (tokenBalance.value && totalComputeAmount.value > BigInt(tokenBalance.value.amount)) {
     return "exceeds_balance";
   }
-  if (props.maxAmount && totalComputeAmount.value.gt(props.maxAmount)) {
-    if (BigNumber.from(props.maxAmount).isZero()) {
+  if (props.maxAmount && totalComputeAmount.value > BigInt(props.maxAmount)) {
+    if (BigInt(props.maxAmount) === BigInt(0)) {
       return "insufficient_balance";
     }
     return "exceeds_max_amount";

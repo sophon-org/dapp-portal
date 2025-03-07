@@ -1,6 +1,6 @@
-import { BigNumber, ethers } from "ethers";
+import { ethers } from "ethers";
 import { $fetch } from "ofetch";
-import { L1Signer, L1VoidSigner, Web3Provider } from "zksync-ethers";
+import { L1Signer, L1VoidSigner, BrowserProvider, Signer } from "zksync-ethers";
 
 import type { Api, TokenAmount } from "@/types";
 import type { BigNumberish } from "ethers";
@@ -22,8 +22,10 @@ export const useZkSyncWalletStore = defineStore("zkSyncWallet", () => {
       );
     }
 
-    const web3Provider = new Web3Provider((await onboardStore.getWallet(eraNetwork.value.id)) as any, "any");
-    const eraL2Signer = web3Provider.getSigner();
+    const web3Provider = new BrowserProvider((await onboardStore.getWallet(eraNetwork.value.id)) as any, "any");
+    const rawEthersSigner = await web3Provider.getSigner();
+    const eraL2Signer = Signer.from(rawEthersSigner, Number(eraNetwork.value.id), providerStore.requestProvider());
+
     return eraL2Signer;
   });
   const { execute: getL1Signer, reset: resetL1Signer } = usePromise(async () => {
@@ -36,14 +38,14 @@ export const useZkSyncWalletStore = defineStore("zkSyncWallet", () => {
       );
     }
 
-    const web3Provider = new ethers.providers.Web3Provider((await onboardStore.getWallet()) as any, "any");
-    const eraL1Signer = L1Signer.from(web3Provider.getSigner(), providerStore.requestProvider());
+    const web3Provider = new ethers.BrowserProvider((await onboardStore.getWallet()) as any, "any");
+    const eraL1Signer = L1Signer.from(await web3Provider.getSigner(), providerStore.requestProvider());
     return eraL1Signer;
   });
   const getL1VoidSigner = (anyAddress = false) => {
     if (!account.value.address && !anyAddress) throw new Error("Address is not available");
 
-    const web3Provider = new ethers.providers.Web3Provider(onboardStore.getPublicClient() as any, "any");
+    const web3Provider = new ethers.BrowserProvider(onboardStore.getPublicClient() as any, "any");
     return new L1VoidSigner(
       account.value.address || L2_BASE_TOKEN_ADDRESS,
       web3Provider,
@@ -127,8 +129,8 @@ export const useZkSyncWalletStore = defineStore("zkSyncWallet", () => {
         return { ...token, amount };
       })
       .sort((a, b) => {
-        if (a.address === L2_BASE_TOKEN_ADDRESS) return -1; // Always bring ETH to the beginning
-        if (b.address === L2_BASE_TOKEN_ADDRESS) return 1; // Keep ETH at the beginning if comparing with any other token
+        if (a.address.toUpperCase() === L2_BASE_TOKEN_ADDRESS.toUpperCase()) return -1; // Always bring ETH to the beginning
+        if (b.address.toUpperCase() === L2_BASE_TOKEN_ADDRESS.toUpperCase()) return 1; // Keep ETH at the beginning if comparing with any other token
         return 0; // Keep other tokens' order unchanged
       });
     const knownTokenAddresses = new Set(knownTokens.map((token) => token.address));
@@ -145,8 +147,8 @@ export const useZkSyncWalletStore = defineStore("zkSyncWallet", () => {
     if (!balance.value) return;
     const tokenBalance = balance.value.find((balance) => balance.address === tokenAddress);
     if (!tokenBalance) return;
-    const newBalance = BigNumber.from(tokenBalance.amount).sub(amount);
-    tokenBalance.amount = newBalance.isNegative() ? "0" : newBalance.toString();
+    const newBalance = BigInt(tokenBalance.amount) - BigInt(amount);
+    tokenBalance.amount = newBalance < 0n ? "0" : newBalance.toString();
   };
 
   const isCorrectNetworkSet = computed(() => {

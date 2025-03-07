@@ -22,7 +22,7 @@ export type TransactionInfo = {
 };
 
 export const ESTIMATED_DEPOSIT_DELAY = 15 * 60 * 1000; // 15 minutes
-export const WITHDRAWAL_DELAY = 24 * 60 * 60 * 1000; // 24 hours
+export const WITHDRAWAL_DELAY = 5 * 60 * 60 * 1000; // 5 hours
 
 export const useZkSyncTransactionStatusStore = defineStore("zkSyncTransactionStatus", () => {
   const onboardStore = useOnboardStore();
@@ -52,9 +52,11 @@ export const useZkSyncTransactionStatusStore = defineStore("zkSyncTransactionSta
 
   const getDepositL2TransactionHash = async (l1TransactionHash: string) => {
     const publicClient = onboardStore.getPublicClient();
-    const transaction = await publicClient.waitForTransactionReceipt({
-      hash: l1TransactionHash as Hash,
-    });
+    const transaction = await retry(() =>
+      publicClient.waitForTransactionReceipt({
+        hash: l1TransactionHash as Hash,
+      })
+    );
     for (const log of transaction.logs) {
       try {
         const { args, eventName } = decodeEventLog({

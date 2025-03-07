@@ -81,7 +81,7 @@ export const useZkSyncWalletStore = defineStore("zkSyncWallet", () => {
           decimals: tokenInfo!.decimals,
           iconUrl: tokenInfo!.iconUrl || undefined,
           price: tokenInfo?.price || undefined,
-          amount: balance,
+          amount: BigInt(balance),
         };
       });
   };
@@ -96,7 +96,7 @@ export const useZkSyncWalletStore = defineStore("zkSyncWallet", () => {
         const amount = await provider.getBalance(onboardStore.account.address!, undefined, token.address);
         return {
           ...token,
-          amount: amount.toString(),
+          amount,
         };
       })
     );
@@ -125,7 +125,7 @@ export const useZkSyncWalletStore = defineStore("zkSyncWallet", () => {
 
     const knownTokens: TokenAmount[] = Object.entries(tokens.value ?? {})
       .map(([, token]) => {
-        const amount = balancesResult.value!.find((e) => e.address === token.address)?.amount ?? "0";
+        const amount = balancesResult.value!.find((e) => e.address === token.address)?.amount ?? 0n;
         return { ...token, amount };
       })
       .sort((a, b) => {
@@ -148,7 +148,7 @@ export const useZkSyncWalletStore = defineStore("zkSyncWallet", () => {
     const tokenBalance = balance.value.find((balance) => balance.address === tokenAddress);
     if (!tokenBalance) return;
     const newBalance = BigInt(tokenBalance.amount) - BigInt(amount);
-    tokenBalance.amount = newBalance < 0n ? "0" : newBalance.toString();
+    tokenBalance.amount = newBalance < 0n ? 0n : newBalance;
   };
 
   const isCorrectNetworkSet = computed(() => {

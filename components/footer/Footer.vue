@@ -36,7 +36,6 @@ const addNetworkToWallet = async () => {
 const showAddNetworkButton = computed(() => {
   return isConnected.value && !isCorrectNetworkSet.value && connectorName.value !== "WalletConnect";
 });
-
 </script>
 
 <style lang="scss" scoped>

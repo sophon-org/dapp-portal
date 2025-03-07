@@ -1,5 +1,4 @@
-import { BigNumber, ethers } from "ethers";
-import { parseEther } from "ethers/lib/utils";
+import { parseEther } from "ethers";
 import { type Address, getAddress, pad } from "viem";
 import { utils } from "zksync-ethers";
 
@@ -17,12 +16,12 @@ export type LayerZeroFeeValues = {
 };
 
 export type DepositFeeValues = {
-  maxFeePerGas?: BigNumber;
-  maxPriorityFeePerGas?: BigNumber;
-  gasPrice?: BigNumber;
-  baseCost?: BigNumber;
-  l1GasLimit: BigNumber;
-  l2GasLimit?: BigNumber;
+  maxFeePerGas?: bigint;
+  maxPriorityFeePerGas?: bigint;
+  gasPrice?: bigint;
+  baseCost?: bigint;
+  l1GasLimit: bigint;
+  l2GasLimit?: bigint;
 };
 
 export default (tokens: Ref<Token[]>, balances: Ref<TokenAmount[] | undefined>) => {
@@ -50,7 +49,7 @@ export default (tokens: Ref<Token[]>, balances: Ref<TokenAmount[] | undefined>) 
     }
     const feeTokenBalance = balances.value.find((e) => e.address === feeToken.value!.address);
     if (!feeTokenBalance) return true;
-    if (totalFee.value && BigNumber.from(totalFee.value).gt(feeTokenBalance.amount)) {
+    if (totalFee.value && BigInt(totalFee.value) > feeTokenBalance.amount) {
       return false;
     }
     return true;
@@ -61,10 +60,7 @@ export default (tokens: Ref<Token[]>, balances: Ref<TokenAmount[] | undefined>) 
   };
 
   const getGasPrice = async () => {
-    const web3Provider = new ethers.providers.Web3Provider((await onboardStore.getWallet()) as any, "any");
-    return BigNumber.from(await retry(() => web3Provider.getGasPrice()))
-      .mul(110)
-      .div(100);
+    return (BigInt(await retry(() => onboardStore.getPublicClient().getGasPrice())) * 110n) / 100n;
   };
 
   const {
@@ -127,10 +123,10 @@ export default (tokens: Ref<Token[]>, balances: Ref<TokenAmount[] | undefined>) 
     const publicClient = onboardStore.getPublicClient();
     const feeData = await publicClient.estimateFeesPerGas();
 
-    const l1GasLimit = 500000;
+    const l1GasLimit = 500000n;
 
-    const maxFeePerGas = BigNumber.from(feeData.maxFeePerGas || 0);
-    const maxPriorityFeePerGas = BigNumber.from(feeData.maxPriorityFeePerGas || 0);
+    const maxFeePerGas = feeData.maxFeePerGas || 0n;
+    const maxPriorityFeePerGas = feeData.maxPriorityFeePerGas || 0n;
 
     const gasPrice = await getGasPrice();
 
@@ -138,19 +134,19 @@ export default (tokens: Ref<Token[]>, balances: Ref<TokenAmount[] | undefined>) 
       maxFeePerGas,
       maxPriorityFeePerGas,
       gasPrice,
-      l1GasLimit: BigNumber.from(l1GasLimit),
+      l1GasLimit,
     };
   };
 
   const totalFee = computed(() => {
     if (!quoteFee.value || !gasFee.value?.maxFeePerGas || !gasFee.value?.l1GasLimit) return undefined;
 
-    const gasCost = gasFee.value.l1GasLimit.mul(gasFee.value.maxFeePerGas);
+    let gasCost = gasFee.value.l1GasLimit * gasFee.value.maxFeePerGas;
     if (gasFee.value.maxPriorityFeePerGas) {
-      gasCost.add(gasFee.value.l1GasLimit.mul(gasFee.value.maxPriorityFeePerGas));
+      gasCost += gasFee.value.l1GasLimit * gasFee.value.maxPriorityFeePerGas;
     }
 
-    return quoteFee.value + gasCost.toBigInt();
+    return quoteFee.value + gasCost;
   });
 
   return {

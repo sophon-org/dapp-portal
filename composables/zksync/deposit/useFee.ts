@@ -88,7 +88,7 @@ export default (tokens: Ref<Token[]>, balances: Ref<TokenAmount[] | undefined>) 
 
       try {
         if (isEthBasedChain && params.tokenAddress === feeToken.value?.address) {
-          fee.value = await getEthTransactionFee(); // TODO: fix type issue by updating zksync-ethers
+          fee.value = await getEthTransactionFee();
         } else {
           fee.value = getERC20TransactionFee();
         }

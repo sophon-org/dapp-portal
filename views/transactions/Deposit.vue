@@ -386,8 +386,7 @@ import {
 } from "@heroicons/vue/24/outline";
 import { computedAsync } from "@vueuse/core";
 import { useRouteQuery } from "@vueuse/router";
-import { isAddress } from "ethers/lib/utils";
-import { type Address } from "viem";
+import { type Address, isAddress } from "viem";
 
 import EthereumTransactionFooter from "@/components/transaction/EthereumTransactionFooter.vue";
 import useLayerzeroFee from "@/composables/layerzero/deposit/useFee";
@@ -648,7 +647,6 @@ const maxAmount = computed(() => {
   }
   if (feeToken.value?.address === selectedToken.value.address && account.value.chainId === l1Network?.value?.id) {
     if (BigInt(tokenBalance.value) === 0n) {
-
       return "0";
     }
     if (!fee.value) {

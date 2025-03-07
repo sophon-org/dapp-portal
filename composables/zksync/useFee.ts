@@ -60,9 +60,7 @@ export default (
 
   async function checkApproval(tokenAddress: string, owner: string, spender: string): Promise<boolean> {
     const provider = getProvider();
-    const tokenContract = new ethers.Contract(tokenAddress, IERC20, {
-      provider: provider as unknown as ethers.Provider, // TODO: check if this is correct
-    });
+    const tokenContract = new ethers.Contract(tokenAddress, IERC20, provider);
     const allowance = await tokenContract.allowance(owner, spender);
     allowanceValue.value = BigInt(allowance);
 

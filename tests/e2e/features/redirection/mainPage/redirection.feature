@@ -6,7 +6,7 @@ Feature: External Redirection on the Main Page
     Given Connect Metamask extension with login action
 
   @id1410
-  Scenario Outline: Check redirection for the "View on Explorer" links (zkSync Era∎)
+  Scenario Outline: Check redirection for the "View on Explorer" links (ZKsync Era∎)
     Given I am on the Main page
     When I select the "<Network Name>" network
     When I click by "testId" with "account-dropdown" value
@@ -18,13 +18,13 @@ Feature: External Redirection on the Main Page
 
     Examples:
       | Network Name       | Modal card network                | url                                                                                  |
-      | zkSync Era Mainnet | //*[text()='zkSync Era∎ Mainnet'] | https://explorer.zksync.io/address/0x2CF4F78917A16C9584AeB5d4c5bD2713d724C75d        |
-      | zkSync Era Mainnet | //*[text()='Ethereum Mainnet']    | https://etherscan.io/address/0x2CF4F78917A16C9584AeB5d4c5bD2713d724C75d              |
-      | zkSync Era Testnet | //*[text()='zkSync Era∎ Goerli']  | https://goerli.explorer.zksync.io/address/0x2CF4F78917A16C9584AeB5d4c5bD2713d724C75d |
-      | zkSync Era Testnet | //*[text()='Ethereum Goerli Testnet']     | https://goerli.etherscan.io/address/0x2CF4F78917A16C9584AeB5d4c5bD2713d724C75d       |
+      | ZKsync Era Mainnet | //*[text()='ZKsync Era∎ Mainnet'] | https://explorer.zksync.io/address/0x2CF4F78917A16C9584AeB5d4c5bD2713d724C75d        |
+      | ZKsync Era Mainnet | //*[text()='Ethereum Mainnet']    | https://etherscan.io/address/0x2CF4F78917A16C9584AeB5d4c5bD2713d724C75d              |
+      | ZKsync Era Testnet | //*[text()='ZKsync Era∎ Goerli']  | https://goerli.explorer.zksync.io/address/0x2CF4F78917A16C9584AeB5d4c5bD2713d724C75d |
+      | ZKsync Era Testnet | //*[text()='Ethereum Goerli Testnet']     | https://goerli.etherscan.io/address/0x2CF4F78917A16C9584AeB5d4c5bD2713d724C75d       |
 
   @id1582
-  Scenario Outline: Check redirection for the "View on Explorer" links (zkSync Lite∎)
+  Scenario Outline: Check redirection for the "View on Explorer" links (ZKsync Lite∎)
     Given I am on the Main page
     When I select the "<Network Name>" network
     When I click by "testId" with "account-dropdown" value
@@ -36,10 +36,10 @@ Feature: External Redirection on the Main Page
 
     Examples:
       | Network Name        | Modal card network                | url                                                                                   |
-      | zkSync Lite Mainnet | //*[text()='zkSync Lite Mainnet'] | https://zkscan.io/explorer/accounts/0x2CF4F78917A16C9584AeB5d4c5bD2713d724C75d        |
-      | zkSync Lite Mainnet | //*[text()='Ethereum Mainnet']    | https://etherscan.io/address/0x2CF4F78917A16C9584AeB5d4c5bD2713d724C75d               |
-      | zkSync Lite Goerli  | //*[text()='zkSync Lite Goerli']  | https://goerli.zkscan.io/explorer/accounts/0x2CF4F78917A16C9584AeB5d4c5bD2713d724C75d |
-      | zkSync Lite Goerli  | //*[text()='Ethereum Goerli Testnet']     | https://goerli.etherscan.io/address/0x2CF4F78917A16C9584AeB5d4c5bD2713d724C75d        |
+      | ZKsync Lite Mainnet | //*[text()='ZKsync Lite Mainnet'] | https://zkscan.io/explorer/accounts/0x2CF4F78917A16C9584AeB5d4c5bD2713d724C75d        |
+      | ZKsync Lite Mainnet | //*[text()='Ethereum Mainnet']    | https://etherscan.io/address/0x2CF4F78917A16C9584AeB5d4c5bD2713d724C75d               |
+      | ZKsync Lite Goerli  | //*[text()='ZKsync Lite Goerli']  | https://goerli.zkscan.io/explorer/accounts/0x2CF4F78917A16C9584AeB5d4c5bD2713d724C75d |
+      | ZKsync Lite Goerli  | //*[text()='Ethereum Goerli Testnet']     | https://goerli.etherscan.io/address/0x2CF4F78917A16C9584AeB5d4c5bD2713d724C75d        |
 
   @id1535:I
   Scenario Outline: Check redirection for the Header links
@@ -103,9 +103,9 @@ Feature: External Redirection on the Main Page
     Given I hover the "text" element with " Build " value
     When I click by text " Hardhat plugins "
     Then New page has "https://era.zksync.io/docs/tools/hardhat/" address
-    #Tools: zkSync Era CLI
+    #Tools: ZKsync Era CLI
     Given I hover the "text" element with " Build " value
-    When I click by text " zkSync Era CLI "
+    When I click by text " ZKsync Era CLI "
     Then New page has "https://era.zksync.io/docs/tools/zksync-cli/" address
 
   @id1533
@@ -129,9 +129,9 @@ Feature: External Redirection on the Main Page
 
   @id1536
   Scenario: Check redirection for the Upper navigation menu - Network
-    #ZKSYNC ERA (V2): Intro to zkSync Era
+    #ZKSYNC ERA (V2): Intro to ZKsync Era
     Given I hover the "text" element with " Network " value
-    When I click by text " Intro to zkSync Era "
+    When I click by text " Intro to ZKsync Era "
     Then New page has "https://era.zksync.io/docs/reference/concepts/zkSync.html" address
     #ZKSYNC ERA (V2): Wallet Portal
     Given I hover the "text" element with " Network " value
@@ -141,9 +141,9 @@ Feature: External Redirection on the Main Page
     Given I hover the "text" element with " Network " value
     When I click by text " Block Explorer "
     Then New page has "https://explorer.zksync.io/" address
-#    ZKSYNC LITE (V1): Intro to zkSync Lite
+#    ZKSYNC LITE (V1): Intro to ZKsync Lite
     Given I hover the "text" element with " Network " value
-    When I click by text " Intro to zkSync Lite "
+    When I click by text " Intro to ZKsync Lite "
     Then New page has "https://docs.zksync.io/userdocs/intro/" address
     #ZKSYNC LITE (V1): Wallet Portal
     Given I hover the "text" element with " Network " value
@@ -224,9 +224,9 @@ Feature: External Redirection on the Main Page
     Given I hover the "text" element with " Build " value
     When I click by text " Hardhat plugins "
     Then New page has "https://era.zksync.io/docs/tools/hardhat/" address
-    #Tools: zkSync Era CLI
+    #Tools: ZKsync Era CLI
     Given I hover the "text" element with " Build " value
-    When I click by text " zkSync Era CLI "
+    When I click by text " ZKsync Era CLI "
     Then New page has "https://era.zksync.io/docs/tools/zksync-cli/" address
 
   @id1533
@@ -250,9 +250,9 @@ Feature: External Redirection on the Main Page
 
   @id1536
   Scenario: Check redirection for the Upper navigation menu - Network
-    #ZKSYNC ERA (V2): Intro to zkSync Era
+    #ZKSYNC ERA (V2): Intro to ZKsync Era
     Given I hover the "text" element with " Network " value
-    When I click by text " Intro to zkSync Era "
+    When I click by text " Intro to ZKsync Era "
     Then New page has "https://era.zksync.io/docs/reference/concepts/zkSync.html" address
     #ZKSYNC ERA (V2): Wallet Portal
     Given I hover the "text" element with " Network " value
@@ -262,9 +262,9 @@ Feature: External Redirection on the Main Page
     Given I hover the "text" element with " Network " value
     When I click by text " Block Explorer "
     Then New page has "https://explorer.zksync.io/" address
-#    ZKSYNC LITE (V1): Intro to zkSync Lite
+#    ZKSYNC LITE (V1): Intro to ZKsync Lite
     Given I hover the "text" element with " Network " value
-    When I click by text " Intro to zkSync Lite "
+    When I click by text " Intro to ZKsync Lite "
     Then New page has "https://docs.zksync.io/userdocs/intro/" address
     #ZKSYNC LITE (V1): Wallet Portal
     Given I hover the "text" element with " Network " value
@@ -311,9 +311,9 @@ Feature: External Redirection on the Main Page
     Given I go to page "/transaction/zksync/era/withdraw"
     When I click by "text" with "Your account" value
     When I confirm the network switching
-    Then Element with "text" " Arriving in ~24 hours " should be "visible"
-    When I click by "text" with " Arriving in ~24 hours " value
-    Then Element with "text" " Arriving in ~24 hours " should be "clickable"
+    Then Element with "text" " Arriving in ~5+ hours " should be "visible"
+    When I click by "text" with " Arriving in ~5+ hours " value
+    Then Element with "text" " Arriving in ~5+ hours " should be "clickable"
     Then New page has "https://era.zksync.io/docs/reference/troubleshooting/withdrawal-delay.html#withdrawal-delay" address
     
   @id1565
@@ -324,7 +324,7 @@ Feature: External Redirection on the Main Page
     When I choose "ETH" as token and insert "0.0001" as amount
     When I click by text " Continue "
     Then Element with "text" "Confirm transaction" should be "visible"
-    Then Modal card element with the "//*[text()=' Arriving in ~24 hours ']" xpath should be "visible"
-    When I click by the "//*[text()=' Arriving in ~24 hours ']" text element on the Modal card
+    Then Modal card element with the "//*[text()=' Arriving in ~5+ hours ']" xpath should be "visible"
+    When I click by the "//*[text()=' Arriving in ~5+ hours ']" text element on the Modal card
     Then New page has "https://era.zksync.io/docs/reference/troubleshooting/withdrawal-delay.html#withdrawal-delay" address
     

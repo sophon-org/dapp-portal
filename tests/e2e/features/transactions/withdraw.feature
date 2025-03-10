@@ -19,7 +19,7 @@ Feature: Withdraw
 
   @id1274
   Scenario: Withdraw - Send - [Transaction] 0 funds
-    # Given I click by "text" with "zkSync Era∎" value
+    # Given I click by "text" with "ZKsync Era∎" value
     When I go to "Withdraw" transaction section
     When I click by "text" with "Your account" value
     When I insert "0" as amount
@@ -85,7 +85,7 @@ Feature: Withdraw
     Then Element with "text" " Your funds will be available on the " should be "visible"
     Then Element with "text" "Ethereum Goerli Testnet" should be "visible"
     Then Element with "text" " after a " should be "visible"
-    Then Element with "text" "~24-hour delay" should be "visible"
+    Then Element with "text" "~5+ hour delay" should be "visible"
     Then Element with "text" ". During this time, the transaction will be processed and finalized. You are free to close this page. " should be "visible"
     Then Element with "text" " Learn more " should be "visible"
     Then Element with "text" " Learn more " should be "clickable"

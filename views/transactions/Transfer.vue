@@ -477,7 +477,7 @@ const enoughAllowance = computed(() => {
   if (!allowance.value || !selectedToken.value || transaction.value?.type === "transfer") {
     return true;
   }
-  return !allowance.value.isZero() && allowance.value.gte(totalComputeAmount.value);
+  return allowance.value !== 0n && allowance.value >= totalComputeAmount.value;
 });
 
 const setTokenAllowance = async () => {

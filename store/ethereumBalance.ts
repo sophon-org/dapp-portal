@@ -54,7 +54,7 @@ export const useEthereumBalanceStore = defineStore("ethereumBalance", () => {
           name: token.name || "",
           decimals: token.decimals || 18,
           iconUrl: token.logo || undefined,
-          amount: token.rawBalance || "0",
+          amount: BigInt(token.rawBalance || 0n),
         }));
 
       // Add ETH balance
@@ -63,7 +63,7 @@ export const useEthereumBalanceStore = defineStore("ethereumBalance", () => {
         symbol: "ETH",
         name: "Ethereum",
         decimals: 18,
-        amount: ethBalance.toString(),
+        amount: ethBalance.toBigInt(),
       });
 
       return tokens;
@@ -76,7 +76,7 @@ export const useEthereumBalanceStore = defineStore("ethereumBalance", () => {
     const tokenBalance = balance.value.find((balance) => balance.address === tokenL1Address);
     if (!tokenBalance) return;
     const newBalance = BigInt(tokenBalance.amount) - BigInt(amount);
-    tokenBalance.amount = newBalance < 0n ? "0" : newBalance.toString();
+    tokenBalance.amount = newBalance < 0n ? 0n : newBalance;
   };
 
   onboardStore.subscribeOnAccountChange(() => {

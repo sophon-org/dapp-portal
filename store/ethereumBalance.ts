@@ -33,6 +33,8 @@ export const useEthereumBalanceStore = defineStore("ethereumBalance", () => {
         [l1Networks.sepolia.id, Network.ETH_SEPOLIA],
       ]);
 
+      const configTokens = (await eraNetwork.value.getTokens?.()) ?? [];
+
       if (!networkIdToAlchemy.has(eraNetwork.value.l1Network.id)) {
         throw new Error(`Alchemy does not support ${eraNetwork.value.l1Network.name}`);
       }
@@ -56,6 +58,9 @@ export const useEthereumBalanceStore = defineStore("ethereumBalance", () => {
           decimals: token.decimals || 18,
           iconUrl: token.logo || undefined,
           amount: token.rawBalance || "0",
+          isOft: !!configTokens.find(
+            (e) => e.l1Address?.toLowerCase() === token.contractAddress.toLowerCase() && e.isOft
+          ),
         }));
 
       // Add ETH balance

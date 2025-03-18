@@ -58,7 +58,9 @@ export const useEthereumBalanceStore = defineStore("ethereumBalance", () => {
           decimals: token.decimals || 18,
           iconUrl: token.logo || undefined,
           amount: token.rawBalance || "0",
-          isOft: configTokens.some((e) => e.l1Address?.toLowerCase() === token.contractAddress.toLowerCase()),
+          isOft: !!configTokens.find(
+            (e) => e.l1Address?.toLowerCase() === token.contractAddress.toLowerCase() && e.isOft
+          ),
         }));
 
       // Add ETH balance

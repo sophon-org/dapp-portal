@@ -18,7 +18,7 @@ type DepositParams = {
   l2GasLimit?: BigNumberish;
   gasPerPubdataByte?: BigNumberish;
   refundRecipient?: Address;
-  overrides?: ethers.PayableOverrides;
+  overrides?: ethers.Overrides;
   approveOverrides?: Overrides;
   approveBaseOverrides?: Overrides;
   customBridgeData?: BytesLike;

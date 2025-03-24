@@ -41,8 +41,6 @@
 </template>
 
 <script lang="ts" setup>
-import { BigNumber } from "ethers";
-
 import type { TokenPrice } from "@/types";
 import type { BigNumberish } from "ethers";
 
@@ -88,7 +86,7 @@ const props = defineProps({
 
 const shouldShowAddToWallet = computed(() => route.path !== "/bridge");
 
-const isZeroAmount = computed(() => BigNumber.from(props.amount).isZero());
+const isZeroAmount = computed(() => BigInt(props.amount) === 0n);
 
 const fullAmount = computed(() => parseTokenAmount(props.amount, props.decimals));
 const displayedAmount = computed(() => {

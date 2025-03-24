@@ -7,6 +7,14 @@
       <ConnectWalletBlock>Connect wallet to view your latest transfers on {{ eraNetwork.name }}</ConnectWalletBlock>
     </template>
     <template v-else>
+      <CommonAlert variant="warning" class="mb-block-padding-1/2 max-w-[90vw] sm:mb-block-gap">
+        <p>
+          ⚠️ During the
+          <a className="underline" href="https://x.com/zkSyncDevs/status/1899492978495721698">mainnet upgrade</a>
+          scheduled for March 24th, deposits and withdrawals will remain available, but processing times may be longer
+          than usual.
+        </p>
+      </CommonAlert>
       <template v-if="!loading && recentBridgeOperations.length">
         <TypographyCategoryLabel>Recent bridge operations</TypographyCategoryLabel>
         <div v-if="actionRequiredBridgeTransactions.length" class="space-y-block-gap">

@@ -23,7 +23,6 @@
         <a
           className="underline"
           target="_blank"
-          and
           rel="noopener noreferrer"
           href="https://x.com/zkSyncDevs/status/1899492978495721698"
           >mainnet upgrade</a

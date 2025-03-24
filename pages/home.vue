@@ -6,6 +6,15 @@
       </h1>
     </div>
 
+    <CommonAlert variant="warning" class="mb-block-padding-1/2 max-w-[90vw] sm:mb-block-gap">
+      <p>
+        ⚠️ During the
+        <a className="underline" href="https://x.com/zkSyncDevs/status/1899492978495721698">mainnet upgrade</a>
+        scheduled for March 24th, deposits and withdrawals will remain available, but processing times may be longer
+        than usual.
+      </p>
+    </CommonAlert>
+
     <!-- Category Filter Buttons -->
     <div class="lg:overflow-x-unset scrollbar flex max-w-[90vw] gap-4 overflow-x-auto py-1 lg:max-w-none lg:py-0">
       <button

@@ -67,7 +67,7 @@ export default (tokens: Ref<Token[]>, balances: Ref<TokenAmount[] | undefined>) 
   };
   const getERC20TransactionFee = () => {
     return {
-      l1GasLimit: BigInt(utils.L1_RECOMMENDED_MIN_ERC20_DEPOSIT_GAS_LIMIT),
+      l1GasLimit: BigInt(1000000), // TODO: replace for zksync-ethers value when we have updated the package
     };
   };
   const getGasPrice = async () => {

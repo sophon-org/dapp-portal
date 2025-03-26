@@ -380,7 +380,6 @@ import {
   ExclamationTriangleIcon,
   LockClosedIcon,
 } from "@heroicons/vue/24/outline";
-import { computedAsync } from "@vueuse/core";
 import { useRouteQuery } from "@vueuse/router";
 import { type Address, isAddress } from "viem";
 
@@ -512,7 +511,6 @@ const {
   setAllowanceError,
   setAllowance,
   resetSetAllowance,
-  getApprovalAmounts,
 } = useAllowance(
   computed(() => account.value.address),
   computed(() => selectedToken.value?.address),
@@ -520,17 +518,16 @@ const {
   eraWalletStore.getL1Signer,
   onboardStore.getWallet
 );
-const enoughAllowance = computedAsync(async () => {
+const enoughAllowance = computed(() => {
   if (allowance?.value === undefined || !selectedToken.value) {
     return true;
   }
   if (selectedToken.value.isOft) {
     return true;
   }
-  const approvalAmounts = await getApprovalAmounts(totalComputeAmount.value, feeValues.value!);
-  const approvalAllowance = approvalAmounts.length ? approvalAmounts[0]?.allowance : 0;
-  return allowance.value !== 0n && allowance?.value >= BigInt(approvalAllowance);
-}, false);
+
+  return allowance.value !== 0n && allowance.value >= totalComputeAmount.value;
+});
 const setAmountToCurrentAllowance = () => {
   if (!allowance.value || !selectedToken.value) {
     return;

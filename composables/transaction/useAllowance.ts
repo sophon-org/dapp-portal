@@ -4,12 +4,14 @@ import IERC20 from "zksync-ethers/abi/IERC20.json";
 import type { DepositFeeValues } from "../zksync/deposit/useFee";
 import type { Hash, TokenAllowance } from "@/types";
 import type { BigNumberish } from "ethers";
+import type { WalletClient } from "viem";
 
 export default (
   accountAddress: Ref<string | undefined>,
   tokenAddress: Ref<string | undefined>,
   getContractAddress: () => Promise<string | undefined>,
-  getL1Signer: () => Promise<L1Signer | undefined>
+  getL1Signer: () => Promise<L1Signer | undefined>,
+  getWallet: () => Promise<WalletClient | undefined>
 ) => {
   const { getPublicClient } = useOnboardStore();
   const {
@@ -49,10 +51,10 @@ export default (
   const setAllowanceStatus = ref<"not-started" | "processing" | "waiting-for-signature" | "sending" | "done">(
     "not-started"
   );
-  const setAllowanceTransactionHashes = ref<(Hash | undefined)[]>([]);
+  const setAllowanceTransactionHash = ref<Hash | undefined>(undefined);
 
   const {
-    result: setAllowanceReceipts,
+    result: setAllowanceReceipt,
     inProgress: setAllowanceInProgress,
     error: setAllowanceError,
     execute: executeSetAllowance,
@@ -66,39 +68,30 @@ export default (
         const contractAddress = await getContractAddress();
         if (!contractAddress) throw new Error("Contract address is not available");
 
-        const wallet = await getL1Signer();
+        const wallet = await getWallet();
         setAllowanceStatus.value = "waiting-for-signature";
 
-        const receipts = [];
+        setAllowanceTransactionHash.value = await wallet?.writeContract({
+          address: tokenAddress.value as Hash,
+          abi: IERC20,
+          functionName: "approve",
+          args: [contractAddress, approvalAmounts[1].allowance],
+          chain: getPublicClient().chain,
+          account: accountAddress.value as `0x${string}`,
+        });
 
-        for (let i = 0; i < approvalAmounts.length; i++) {
-          const txResponse = await wallet?.approveERC20(approvalAmounts[i].token, approvalAmounts[i].allowance);
-
-          setAllowanceTransactionHashes.value.push(txResponse?.hash as Hash);
-
-          setAllowanceStatus.value = "sending";
-
-          const receipt = await retry(
-            () =>
-              getPublicClient().waitForTransactionReceipt({
-                hash: setAllowanceTransactionHashes.value[i]!,
-                onReplaced: (replacement) => {
-                  setAllowanceTransactionHashes.value[i] = replacement.transaction.hash;
-                },
-              }),
-            {
-              retries: 3,
-              delay: 5_000,
-            }
-          );
-
-          receipts.push(receipt);
-        }
+        setAllowanceStatus.value = "sending";
+        const receipt = await getPublicClient().waitForTransactionReceipt({
+          hash: setAllowanceTransactionHash.value!,
+          onReplaced: (replacement) => {
+            setAllowanceTransactionHash.value = replacement.transaction.hash;
+          },
+        });
 
         await requestAllowance();
 
         setAllowanceStatus.value = "done";
-        return receipts;
+        return receipt;
       } catch (err) {
         setAllowanceStatus.value = "not-started";
         throw err;
@@ -138,7 +131,7 @@ export default (
   const resetSetAllowance = () => {
     approvalAmounts = [];
     setAllowanceStatus.value = "not-started";
-    setAllowanceTransactionHashes.value = [];
+    setAllowanceTransactionHash.value = undefined;
     resetExecuteSetAllowance();
   };
 
@@ -157,8 +150,8 @@ export default (
     error: computed(() => error.value),
     requestAllowance,
 
-    setAllowanceTransactionHashes,
-    setAllowanceReceipts,
+    setAllowanceTransactionHash,
+    setAllowanceReceipt,
     setAllowanceStatus,
     setAllowanceInProgress,
     setAllowanceError,

@@ -210,20 +210,19 @@
         </CommonErrorBlock>
         <CommonHeightTransition
           v-if="step === 'form'"
-          :opened="(!enoughAllowance && !continueButtonDisabled) || !!setAllowanceReceipts?.length"
+          :opened="(!enoughAllowance && !continueButtonDisabled) || !!setAllowanceReceipt"
         >
           <CommonCardWithLineButtons class="mt-4">
             <DestinationItem
-              v-if="enoughAllowance && setAllowanceReceipts?.length"
+              v-if="enoughAllowance && setAllowanceReceipt"
               as="div"
               :description="`You can now proceed to deposit`"
             >
               <template #label>
                 {{ selectedToken?.symbol }} allowance approved
-                <template v-for="allowanceReceipt in setAllowanceReceipts" :key="allowanceReceipt.transactionHash">
+                <template v-if="l1BlockExplorerUrl && setAllowanceReceipt">
                   <a
-                    v-if="l1BlockExplorerUrl"
-                    :href="`${l1BlockExplorerUrl}/tx/${allowanceReceipt.transactionHash}`"
+                    :href="`${l1BlockExplorerUrl}/tx/${setAllowanceReceipt.transactionHash}`"
                     target="_blank"
                     class="inline-flex items-center gap-1 underline underline-offset-2"
                   >
@@ -241,13 +240,10 @@
             <DestinationItem v-else as="div">
               <template #label>
                 Approve {{ selectedToken?.symbol }} allowance
-                <template
-                  v-for="allowanceTransactionHash in setAllowanceTransactionHashes"
-                  :key="allowanceTransactionHash"
-                >
+                <template v-if="setAllowanceTransactionHash">
                   <a
-                    v-if="l1BlockExplorerUrl && allowanceTransactionHash"
-                    :href="`${l1BlockExplorerUrl}/tx/${allowanceTransactionHash}`"
+                    v-if="l1BlockExplorerUrl && setAllowanceTransactionHash"
+                    :href="`${l1BlockExplorerUrl}/tx/${setAllowanceTransactionHash}`"
                     target="_blank"
                     class="inline-flex items-center gap-1 underline underline-offset-2"
                   >
@@ -509,8 +505,8 @@ const {
   error: allowanceRequestError,
   requestAllowance,
 
-  setAllowanceTransactionHashes,
-  setAllowanceReceipts,
+  setAllowanceTransactionHash,
+  setAllowanceReceipt,
   setAllowanceStatus,
   setAllowanceInProgress,
   setAllowanceError,
@@ -521,7 +517,8 @@ const {
   computed(() => account.value.address),
   computed(() => selectedToken.value?.address),
   async () => await NETWORK_CONFIG.L1_GLOBAL_PAYMASTER.address,
-  eraWalletStore.getL1Signer
+  eraWalletStore.getL1Signer,
+  onboardStore.getWallet
 );
 const enoughAllowance = computedAsync(async () => {
   if (allowance?.value === undefined || !selectedToken.value) {

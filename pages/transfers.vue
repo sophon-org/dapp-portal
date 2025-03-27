@@ -17,7 +17,7 @@
             href="https://x.com/zkSyncDevs/status/1899492978495721698"
             >mainnet upgrade</a
           >
-          scheduled for March 24th, deposits and withdrawals will remain available, but processing times may be longer
+          scheduled for March 27th, deposits and withdrawals will remain available, but processing times may be longer
           than usual.
         </p>
       </CommonAlert>

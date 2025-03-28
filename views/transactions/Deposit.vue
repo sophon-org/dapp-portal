@@ -51,7 +51,7 @@
           :balances="availableBalances"
           :max-amount="maxAmount"
           :approve-required="!enoughAllowance && (!tokenCustomBridge || !tokenCustomBridge.bridgingDisabled)"
-          :loading="tokensRequestInProgress || balanceInProgress"
+          :loading="tokensRequestInProgress || balanceInProgress || feeLoading"
           :is-correct-network="account.chainId === l1Network?.id"
           class="mb-block-padding-1/2 sm:mb-block-gap"
           @additional-token-found="handleAdditionalToken"
@@ -219,15 +219,16 @@
             >
               <template #label>
                 {{ selectedToken?.symbol }} allowance approved
-                <a
-                  v-if="l1BlockExplorerUrl"
-                  :href="`${l1BlockExplorerUrl}/tx/${setAllowanceReceipt.transactionHash}`"
-                  target="_blank"
-                  class="inline-flex items-center gap-1 underline underline-offset-2"
-                >
-                  View on Explorer
-                  <ArrowTopRightOnSquareIcon class="h-6 w-6" aria-hidden="true" />
-                </a>
+                <template v-if="l1BlockExplorerUrl && setAllowanceReceipt">
+                  <a
+                    :href="`${l1BlockExplorerUrl}/tx/${setAllowanceReceipt.transactionHash}`"
+                    target="_blank"
+                    class="inline-flex items-center gap-1 underline underline-offset-2"
+                  >
+                    View on Explorer
+                    <ArrowTopRightOnSquareIcon class="h-6 w-6" aria-hidden="true" />
+                  </a>
+                </template>
               </template>
               <template #image>
                 <div class="aspect-square h-full w-full rounded-full bg-success-400 p-3 text-black">
@@ -238,20 +239,22 @@
             <DestinationItem v-else as="div">
               <template #label>
                 Approve {{ selectedToken?.symbol }} allowance
-                <a
-                  v-if="l1BlockExplorerUrl && setAllowanceTransactionHash"
-                  :href="`${l1BlockExplorerUrl}/tx/${setAllowanceTransactionHash}`"
-                  target="_blank"
-                  class="inline-flex items-center gap-1 underline underline-offset-2"
-                >
-                  View on Explorer
-                  <ArrowTopRightOnSquareIcon class="h-6 w-6" aria-hidden="true" />
-                </a>
+                <template v-if="setAllowanceTransactionHash">
+                  <a
+                    v-if="l1BlockExplorerUrl && setAllowanceTransactionHash"
+                    :href="`${l1BlockExplorerUrl}/tx/${setAllowanceTransactionHash}`"
+                    target="_blank"
+                    class="inline-flex items-center gap-1 underline underline-offset-2"
+                  >
+                    View on Explorer
+                    <ArrowTopRightOnSquareIcon class="h-6 w-6" aria-hidden="true" />
+                  </a>
+                </template>
               </template>
               <template #underline>
                 Before depositing you need to give our bridge permission to spend specified amount of
                 {{ selectedToken?.symbol }}.
-                <span v-if="allowance && !allowance.isZero()"
+                <span v-if="allowance && allowance !== 0n"
                   >You can deposit up to
                   <CommonButtonLabel variant="light" @click="setAmountToCurrentAllowance()">
                     {{ parseTokenAmount(allowance!, selectedToken!.decimals) }}
@@ -377,9 +380,7 @@ import {
   LockClosedIcon,
 } from "@heroicons/vue/24/outline";
 import { useRouteQuery } from "@vueuse/router";
-import { BigNumber } from "ethers";
-import { isAddress } from "ethers/lib/utils";
-import { type Address } from "viem";
+import { type Address, isAddress } from "viem";
 
 import EthereumTransactionFooter from "@/components/transaction/EthereumTransactionFooter.vue";
 import useLayerzeroFee from "@/composables/layerzero/deposit/useFee";
@@ -395,7 +396,6 @@ import { MAINNET } from "~/data/mainnet";
 import { TESTNET } from "~/data/testnet";
 
 import type { BlacklistedToken, Token, TokenAmount } from "@/types";
-import type { BigNumberish } from "ethers";
 
 // TODO(@consvic): Add noon token to the blacklist
 const BLACKLISTED_TOKENS: globalThis.ComputedRef<BlacklistedToken[]> = computed(() => {
@@ -493,7 +493,7 @@ const amountInputTokenAddress = computed({
     selectedTokenAddress.value = address;
   },
 });
-const tokenBalance = computed<BigNumberish | undefined>(() => {
+const tokenBalance = computed<bigint | undefined>(() => {
   return balanceWithAdditionalTokens.value?.find((e) => e.address === selectedToken.value?.address)?.amount;
 });
 
@@ -513,16 +513,19 @@ const {
 } = useAllowance(
   computed(() => account.value.address),
   computed(() => selectedToken.value?.address),
-  async () => await NETWORK_CONFIG.L1_GLOBAL_PAYMASTER.address
+  async () => await NETWORK_CONFIG.L1_GLOBAL_PAYMASTER.address,
+  eraWalletStore.getL1Signer,
+  onboardStore.getWallet
 );
 const enoughAllowance = computed(() => {
-  if (!allowance.value || !selectedToken.value) {
+  if (allowance?.value === undefined || !selectedToken.value) {
     return true;
   }
   if (selectedToken.value.isOft) {
     return true;
   }
-  return !allowance.value.isZero() && allowance.value.gte(totalComputeAmount.value);
+
+  return allowance.value !== 0n && allowance.value >= totalComputeAmount.value;
 });
 const setAmountToCurrentAllowance = () => {
   if (!allowance.value || !selectedToken.value) {
@@ -532,7 +535,7 @@ const setAmountToCurrentAllowance = () => {
 };
 const setTokenAllowance = async () => {
   try {
-    await setAllowance(totalComputeAmount.value);
+    await setAllowance(totalComputeAmount.value, feeValues.value!);
     // Wait for balances and blockchain state to update
     await new Promise((resolve) => setTimeout(resolve, 2000));
     // Reset all relevant states
@@ -598,7 +601,7 @@ const estimateFee = async (to: string, tokenAddress: string) => {
     await estimateLayerzeroFee(
       {
         ...selectedToken.value,
-        amount: totalComputeAmount.value.toString(),
+        amount: totalComputeAmount.value,
       } as TokenAmount,
       to as Address
     );
@@ -636,27 +639,27 @@ const maxAmount = computed(() => {
     return undefined;
   }
   if (feeToken.value?.address === selectedToken.value.address && account.value.chainId === l1Network?.value?.id) {
-    if (BigNumber.from(tokenBalance.value).isZero()) {
+    if (BigInt(tokenBalance.value) === 0n) {
       return "0";
     }
     if (!fee.value) {
       return undefined;
     }
-    if (BigNumber.from(fee.value).gt(tokenBalance.value)) {
+    if (BigInt(fee.value) > BigInt(tokenBalance.value)) {
       return "0";
     }
-    return BigNumber.from(tokenBalance.value).sub(fee.value).toString();
+    return String(BigInt(tokenBalance.value) - BigInt(fee.value));
   }
   return tokenBalance.value.toString();
 });
 const totalComputeAmount = computed(() => {
   try {
     if (!amount.value || !selectedToken.value) {
-      return BigNumber.from("0");
+      return 0n;
     }
     return decimalToBigNumber(amount.value, selectedToken.value.decimals);
   } catch (error) {
-    return BigNumber.from("0");
+    return 0n;
   }
 });
 const enoughBalanceForTransaction = computed(() => !amountError.value);
@@ -676,7 +679,7 @@ const transaction = computed<
   return {
     token: {
       ...selectedToken.value!,
-      amount: totalComputeAmount.value.toString(),
+      amount: totalComputeAmount.value,
     },
     from: {
       address: account.value.address!,
@@ -710,7 +713,7 @@ watch(
   [allowance, setAllowanceStatus, () => selectedToken.value?.address],
   async ([newAllowance, _newStatus, newTokenAddress], [oldAllowance, _oldStatus, oldTokenAddress]) => {
     if (setAllowanceStatus.value !== "done") return;
-    if (newAllowance && oldAllowance && !newAllowance.eq(oldAllowance) && newTokenAddress === oldTokenAddress) {
+    if (newAllowance && oldAllowance && newAllowance !== oldAllowance && newTokenAddress === oldTokenAddress) {
       await resetFee();
       await estimate();
     }
@@ -758,7 +761,7 @@ const continueButtonDisabled = computed(() => {
     !transaction.value ||
     !enoughBalanceToCoverFee.value ||
     !(!amountError.value || amountError.value === "exceeds_max_amount") ||
-    BigNumber.from(transaction.value.token.amount).isZero()
+    BigInt(transaction.value.token.amount) === 0n
   )
     return true;
   if ((allowanceRequestInProgress.value && !allowance.value) || allowanceRequestError.value) return true;
@@ -843,7 +846,7 @@ const makeTransaction = async () => {
 
   if (tx) {
     zkSyncEthereumBalance.deductBalance(feeToken.value!.address!, fee.value!);
-    zkSyncEthereumBalance.deductBalance(transaction.value!.token.address!, transaction.value!.token.amount);
+    zkSyncEthereumBalance.deductBalance(transaction.value!.token.address!, String(transaction.value!.token.amount));
     transactionInfo.value = {
       type: "deposit",
       transactionHash: tx,

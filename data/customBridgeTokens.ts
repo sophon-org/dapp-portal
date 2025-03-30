@@ -31,7 +31,6 @@ export const customBridgeTokens: CustomBridgeToken[] = [
     symbol: "wstETH",
     bridgedSymbol: "wstETH",
     name: "Wrapped liquid staked Ether 2.0",
-    bridgingDisabled: true,
   },
   {
     chainId: 1,

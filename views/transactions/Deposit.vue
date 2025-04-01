@@ -17,20 +17,6 @@
     >
       Confirm transaction
     </PageTitle>
-    <CommonAlert variant="warning" class="mb-block-padding-1/2 max-w-[90vw] sm:mb-block-gap">
-      <p>
-        ⚠️ During the
-        <a
-          className="underline"
-          target="_blank"
-          rel="noopener noreferrer"
-          href="https://x.com/zkSyncDevs/status/1899492978495721698"
-          >mainnet upgrade</a
-        >
-        scheduled for March 31st, deposits and withdrawals will remain available, but processing times may be longer
-        than usual.
-      </p>
-    </CommonAlert>
     <NetworkSelectModal
       v-model:opened="fromNetworkModalOpened"
       title="From"

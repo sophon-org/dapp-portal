@@ -5,6 +5,8 @@ import { customBridgeTokens } from "@/data/customBridgeTokens";
 
 import type { Api, Token } from "@/types";
 
+const enableApiTokens = false;
+
 export const useZkSyncTokensStore = defineStore("zkSyncTokens", () => {
   const providerStore = useZkSyncProviderStore();
   const { eraNetwork } = storeToRefs(providerStore);
@@ -24,7 +26,7 @@ export const useZkSyncTokensStore = defineStore("zkSyncTokens", () => {
     let explorerTokens: Token[] = [];
     let configTokens: Token[] = [];
 
-    if (eraNetwork.value.blockExplorerApi) {
+    if (eraNetwork.value.blockExplorerApi && enableApiTokens) {
       const responses: Api.Response.Collection<Api.Response.Token>[] = await Promise.all([
         $fetch(`${eraNetwork.value.blockExplorerApi}/tokens?minLiquidity=0&limit=100&page=1`),
         $fetch(`${eraNetwork.value.blockExplorerApi}/tokens?minLiquidity=0&limit=100&page=2`),

@@ -5,8 +5,6 @@ import { customBridgeTokens } from "@/data/customBridgeTokens";
 
 import type { Api, Token } from "@/types";
 
-const enableApiTokens = false;
-
 export const useZkSyncTokensStore = defineStore("zkSyncTokens", () => {
   const providerStore = useZkSyncProviderStore();
   const { eraNetwork } = storeToRefs(providerStore);
@@ -26,7 +24,7 @@ export const useZkSyncTokensStore = defineStore("zkSyncTokens", () => {
     let explorerTokens: Token[] = [];
     let configTokens: Token[] = [];
 
-    if (eraNetwork.value.blockExplorerApi && enableApiTokens) {
+    if (eraNetwork.value.blockExplorerApi) {
       const responses: Api.Response.Collection<Api.Response.Token>[] = await Promise.all([
         $fetch(`${eraNetwork.value.blockExplorerApi}/tokens?minLiquidity=0&limit=100&page=1`),
         $fetch(`${eraNetwork.value.blockExplorerApi}/tokens?minLiquidity=0&limit=100&page=2`),
@@ -68,8 +66,19 @@ export const useZkSyncTokensStore = defineStore("zkSyncTokens", () => {
       };
     }
 
-    const tokens = explorerTokens.length ? explorerTokens : configTokens;
-    const nonBaseOrEthExplorerTokens = tokens.filter(
+    // Merge tokens, preferring configTokens over explorerTokens
+    const mergedTokens = [...configTokens];
+    const configTokenAddresses = new Set(configTokens.map((token) => token.address));
+    const configTokenL1Addresses = new Set(configTokens.map((token) => token.l1Address));
+
+    // Add explorer tokens that aren't in config tokens
+    explorerTokens.forEach((token) => {
+      if (!configTokenAddresses.has(token.address) && !configTokenL1Addresses.has(token.l1Address)) {
+        mergedTokens.push(token);
+      }
+    });
+
+    const nonBaseOrEthExplorerTokens = mergedTokens.filter(
       (token) => token.address !== L2_BASE_TOKEN_ADDRESS && token.address !== ethL2TokenAddress
     );
     return [

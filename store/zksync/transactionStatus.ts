@@ -32,7 +32,18 @@ export const useZkSyncTransactionStatusStore = defineStore("zkSyncTransactionSta
 
   const storageSavedTransactions = useStorage<{ [networkKey: string]: TransactionInfo[] }>(
     "zksync-bridge-transactions",
-    {}
+    {},
+    undefined,
+    {
+      serializer: {
+        read: (v: any) => (v ? JSON.parse(v) : null),
+        write: (v: any) =>
+          JSON.stringify(
+            v,
+            (_, value) => (typeof value === "bigint" ? value.toString() : value) // return everything else unchanged
+          ),
+      },
+    }
   );
   const savedTransactions = computed<TransactionInfo[]>({
     get: () => {

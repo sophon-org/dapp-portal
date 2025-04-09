@@ -31,7 +31,7 @@
         <template #underline>
           <div class="token-balance-price">
             <template v-if="price && !isZeroAmount">
-              {{ formatTokenPrice(amount, decimals, price) }}
+              {{ formatTokenPrice(amount.toString(), decimals, price) }}
             </template>
           </div>
         </template>
@@ -42,7 +42,6 @@
 
 <script lang="ts" setup>
 import type { TokenPrice } from "@/types";
-import type { BigNumberish } from "ethers";
 
 const route = useRoute();
 
@@ -73,7 +72,7 @@ const props = defineProps({
     type: String,
   },
   amount: {
-    type: String as PropType<BigNumberish>,
+    type: BigInt as unknown as PropType<bigint>,
     required: true,
   },
   price: {

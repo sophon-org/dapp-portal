@@ -66,8 +66,19 @@ export const useZkSyncTokensStore = defineStore("zkSyncTokens", () => {
       };
     }
 
-    const tokens = explorerTokens.length ? explorerTokens : configTokens;
-    const nonBaseOrEthExplorerTokens = tokens.filter(
+    // Merge tokens, preferring configTokens over explorerTokens
+    const mergedTokens = [...configTokens];
+    const configTokenAddresses = new Set(configTokens.map((token) => token.address));
+    const configTokenL1Addresses = new Set(configTokens.map((token) => token.l1Address));
+
+    // Add explorer tokens that aren't in config tokens
+    explorerTokens.forEach((token) => {
+      if (!configTokenAddresses.has(token.address) && !configTokenL1Addresses.has(token.l1Address)) {
+        mergedTokens.push(token);
+      }
+    });
+
+    const nonBaseOrEthExplorerTokens = mergedTokens.filter(
       (token) => token.address !== L2_BASE_TOKEN_ADDRESS && token.address !== ethL2TokenAddress
     );
     return [

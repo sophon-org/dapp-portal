@@ -35,6 +35,11 @@ const MAINNET = {
       name: "ATH",
       reason: "Cannot bridge L0 tokens for now...",
     },
+    {
+      address: "0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84",
+      name: "stETH",
+      reason: "We should not directly support stETH. Its inflationary and leaves dust behind on transfer",
+    },
   ],
 };
 

@@ -17,7 +17,6 @@
     >
       Confirm transaction
     </PageTitle>
-
     <NetworkSelectModal
       v-model:opened="fromNetworkModalOpened"
       title="From"

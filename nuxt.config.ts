@@ -94,4 +94,30 @@ export default defineNuxtConfig({
     },
   },
   devtools: { enabled: true },
+  nitro: {
+    routeRules: {
+      "/**": {
+        headers: {
+          // Prevents site from being embedded within frames/iframes on other domains
+          "Content-Security-Policy": "frame-ancestors 'none';",
+
+          // Prevents site from being displayed in frames/iframes (legacy header)
+          "X-Frame-Options": "DENY",
+
+          // Prevents MIME type sniffing which could lead to security vulnerabilities
+          "X-Content-Type-Options": "nosniff",
+
+          // Controls how much referrer information is included with requests
+          "Referrer-Policy": "strict-origin-when-cross-origin",
+
+          // Restricts which browser features and APIs the site can use
+          "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
+
+          // Forces browsers to use HTTPS for all future requests
+          // max-age is set to 1 year, includes all subdomains
+          "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
+        },
+      },
+    },
+  },
 });

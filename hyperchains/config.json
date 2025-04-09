@@ -29,10 +29,10 @@
         },
         "rpcUrls": {
           "default": {
-            "http": ["https://eth-mainnet.g.alchemy.com/v2/DKM52XsTNrCneFug8ceY8aS87i7VEzxh"]
+            "http": ["https://eth-mainnet.g.alchemy.com/v2/aWaUjYiknNQrFwU8r8agl-R9bye7XX2u"]
           },
           "public": {
-            "http": ["https://eth-mainnet.g.alchemy.com/v2/DKM52XsTNrCneFug8ceY8aS87i7VEzxh"]
+            "http": ["https://eth-mainnet.g.alchemy.com/v2/aWaUjYiknNQrFwU8r8agl-R9bye7XX2u"]
           }
         }
       }
@@ -206,10 +206,10 @@
         },
         "rpcUrls": {
           "default": {
-            "http": ["https://eth-sepolia.g.alchemy.com/v2/DKM52XsTNrCneFug8ceY8aS87i7VEzxh"]
+            "http": ["https://eth-sepolia.g.alchemy.com/v2/aWaUjYiknNQrFwU8r8agl-R9bye7XX2u"]
           },
           "public": {
-            "http": ["https://eth-sepolia.g.alchemy.com/v2/DKM52XsTNrCneFug8ceY8aS87i7VEzxh"]
+            "http": ["https://eth-sepolia.g.alchemy.com/v2/aWaUjYiknNQrFwU8r8agl-R9bye7XX2u"]
           }
         }
       }

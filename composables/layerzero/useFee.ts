@@ -1,6 +1,6 @@
 import { getAddress } from "@ethersproject/address";
 import { hexZeroPad } from "@ethersproject/bytes";
-import { BigNumber, type BigNumberish, Contract, ethers } from "ethers";
+import { type BigNumberish, Contract, ethers } from "ethers";
 import { ref } from "vue";
 import IERC20 from "zksync-ethers/abi/IERC20.json";
 
@@ -28,7 +28,7 @@ export type LayerZeroFeeParams = {
 };
 
 export default (getSigner: () => Promise<any>, getProvider: () => Provider) => {
-  const allowanceValue = ref<BigNumber | undefined>();
+  const allowanceValue = ref<bigint | undefined>();
   const approvalNeeded = ref(false);
   const { selectedNetwork } = storeToRefs(useNetworkStore());
   const NETWORK_CONFIG = selectedNetwork.value.key === "sophon" ? MAINNET : TESTNET;
@@ -49,11 +49,11 @@ export default (getSigner: () => Promise<any>, getProvider: () => Provider) => {
     const provider = getProvider();
     const tokenContract = new ethers.Contract(tokenAddress, IERC20, provider);
     const allowance = await tokenContract.allowance(owner, spender);
-    allowanceValue.value = BigNumber.from(allowance);
+    allowanceValue.value = BigInt(allowance);
 
-    if (allowanceValue.value.isZero()) return false;
+    if (allowanceValue.value === 0n) return false;
 
-    const isApproved = allowanceValue.value.gte(amount);
+    const isApproved = allowanceValue.value > BigInt(amount);
 
     approvalNeeded.value = !isApproved;
     return isApproved;
@@ -61,8 +61,8 @@ export default (getSigner: () => Promise<any>, getProvider: () => Provider) => {
 
   let currentParams: LayerZeroFeeParams | undefined;
   const result = ref<LayerZeroFeeValues | undefined>();
-  const gasLimit = ref<BigNumberish | undefined>();
-  const gasPrice = ref<BigNumberish | undefined>();
+  const gasLimit = ref<bigint | undefined>();
+  const gasPrice = ref<bigint | undefined>();
 
   const {
     inProgress,
@@ -100,7 +100,7 @@ export default (getSigner: () => Promise<any>, getProvider: () => Provider) => {
         helperContract.estimateGas.send(params.token.address, sendParam),
       ]);
       gasPrice.value = price;
-      gasLimit.value = limit;
+      gasLimit.value = BigInt(limit.toString());
       result.value = { nativeFee };
     },
     { cache: false }

@@ -1,4 +1,4 @@
-import { BigNumber, ethers } from "ethers";
+import { ethers } from "ethers";
 import { type Provider } from "zksync-ethers";
 import IERC20 from "zksync-ethers/abi/IERC20.json";
 
@@ -6,7 +6,6 @@ import { MAINNET } from "~/data/mainnet";
 import { TESTNET } from "~/data/testnet";
 
 import type { Token, TokenAmount } from "@/types";
-import type { BigNumberish } from "ethers";
 
 export type FeeEstimationParams = {
   type: "transfer" | "withdrawal";
@@ -19,13 +18,13 @@ export default (
   getProvider: () => Provider,
   tokens: Ref<{ [tokenSymbol: string]: Token } | undefined>,
   balances: Ref<TokenAmount[]>,
-  totalComputeAmount: Ref<BigNumber>
+  totalComputeAmount: Ref<bigint>
 ) => {
   let params: FeeEstimationParams | undefined;
-  const gasLimit = ref<BigNumberish | undefined>();
-  const gasPrice = ref<BigNumberish | undefined>();
+  const gasLimit = ref<bigint | undefined>();
+  const gasPrice = ref<bigint | undefined>();
   const approvalNeeded = ref(false);
-  const allowanceValue = ref<BigNumber | undefined>();
+  const allowanceValue = ref<bigint | undefined>();
   const { selectedNetwork } = storeToRefs(useNetworkStore());
   const NETWORK_CONFIG = selectedNetwork.value.key === "sophon" ? MAINNET : TESTNET;
 
@@ -45,7 +44,7 @@ export default (
     }
     const feeTokenBalance = balances.value.find((e) => e.address === feeToken.value!.address);
     if (!feeTokenBalance) return true;
-    if (totalFee.value && BigNumber.from(totalFee.value).gt(feeTokenBalance.amount)) {
+    if (totalFee.value && BigInt(totalFee.value) > feeTokenBalance.amount) {
       return false;
     }
     return true; */
@@ -53,9 +52,9 @@ export default (
 
   function checkFeeTokenBalance() {
     if (params?.type === "withdrawal" && params.tokenAddress === NETWORK_CONFIG.CUSTOM_USDC_TOKEN.address) {
-      return totalComputeAmount.value.isZero() ? allowanceValue.value : totalComputeAmount.value;
+      return totalComputeAmount.value === 0n ? allowanceValue.value : totalComputeAmount.value;
     } else {
-      return balances.value.find((e) => e.address === params!.tokenAddress)?.amount || "1";
+      return balances.value.find((e) => e.address === params!.tokenAddress)?.amount || 1n;
     }
   }
 
@@ -63,11 +62,11 @@ export default (
     const provider = getProvider();
     const tokenContract = new ethers.Contract(tokenAddress, IERC20, provider);
     const allowance = await tokenContract.allowance(owner, spender);
-    allowanceValue.value = BigNumber.from(allowance);
+    allowanceValue.value = BigInt(allowance);
 
-    if (allowanceValue.value.isZero()) return false;
+    if (allowanceValue.value === 0n) return false;
 
-    const isApproved = BigNumber.from(allowance).gte(totalComputeAmount.value);
+    const isApproved = BigInt(allowance) > totalComputeAmount.value;
 
     approvalNeeded.value = !isApproved;
     return isApproved;
@@ -94,15 +93,15 @@ export default (
             from: params!.from,
             to: params!.to,
             token: params!.tokenAddress,
-            amount: tokenBalance,
+            amount: tokenBalance ?? 1n,
             ...(params!.tokenAddress === NETWORK_CONFIG.CUSTOM_USDC_TOKEN.address
               ? { bridgeAddress: NETWORK_CONFIG.CUSTOM_USDC_TOKEN.l2BridgeAddress! }
               : {}),
           });
         }),
       ]);
-      gasPrice.value = price;
-      gasLimit.value = limit;
+      gasPrice.value = BigInt(price.toString());
+      gasLimit.value = BigInt(limit.toString());
     },
     { cache: false }
   );

@@ -46,10 +46,10 @@ export default () => {
 
     // Prepare fee overrides
     const overrides = {
-      gasPrice: fee.gasPrice?.toBigInt(),
-      gasLimit: fee.l1GasLimit.toBigInt(),
-      maxFeePerGas: fee.maxFeePerGas?.toBigInt(),
-      maxPriorityFeePerGas: fee.maxPriorityFeePerGas?.toBigInt(),
+      gasPrice: fee.gasPrice,
+      gasLimit: fee.l1GasLimit,
+      maxFeePerGas: fee.maxFeePerGas,
+      maxPriorityFeePerGas: fee.maxPriorityFeePerGas,
     };
 
     // Clear gasPrice if maxFeePerGas is set

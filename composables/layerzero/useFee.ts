@@ -80,7 +80,7 @@ export default (getSigner: () => Promise<any>, getProvider: () => Provider) => {
 
       const dstChainId = getEndpointId();
       const toAddressBytes32 = toBytes32Address(params.to);
-      // L2 to L1
+
       const helperContract = new Contract(NETWORK_CONFIG.LAYER_ZERO_CONFIG.oftHelperAddress, LZ_OFT_HELPER_ABI, wallet);
       const sendParam = {
         dstEid: dstChainId, // Ethereum mainnet
@@ -91,16 +91,25 @@ export default (getSigner: () => Promise<any>, getProvider: () => Provider) => {
         composeMsg: "0x",
         oftCmd: "0x",
       };
-      // Get quote first
+
       const { nativeFee } = await helperContract.quoteSend(params.token.address, sendParam);
-      const [price, limit] = await Promise.all([
-        // Get gas price
-        provider.getGasPrice(),
-        // Get gas limit
-        helperContract.estimateGas.send(params.token.address, sendParam),
-      ]);
+      const price = await provider.getGasPrice();
       gasPrice.value = price;
-      gasLimit.value = BigInt(limit.toString());
+
+      try {
+        const sendData = helperContract.interface.encodeFunctionData("send", [params.token.address, sendParam]);
+        const gasEstimate = await provider.estimateGas({
+          to: NETWORK_CONFIG.LAYER_ZERO_CONFIG.oftHelperAddress,
+          data: sendData,
+          from: params.from,
+          value: "0x0", // Set value to 0 for estimation purposes
+        });
+        gasLimit.value = BigInt(gasEstimate.toString());
+      } catch (err) {
+        // Fallback estimate
+        gasLimit.value = 300000n;
+      }
+
       result.value = { nativeFee };
     },
     { cache: false }

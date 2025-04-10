@@ -597,7 +597,7 @@ const enoughBalanceToCoverFee = computed(() =>
   selectedToken.value?.isOft ? enoughBalanceToCoverFeeLayerzero.value : enoughBalanceToCoverFeeDefault.value
 );
 const estimateFee = async (to: string, tokenAddress: string) => {
-  if (selectedToken.value?.isOft && totalComputeAmount.value) {
+  if (selectedToken.value?.isOft) {
     await estimateLayerzeroFee(
       {
         ...selectedToken.value,

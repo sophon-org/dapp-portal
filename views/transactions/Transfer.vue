@@ -474,7 +474,12 @@ const {
 );
 
 const enoughAllowance = computed(() => {
-  if (!allowance.value || !selectedToken.value || transaction.value?.type === "transfer") {
+  if (
+    allowance.value === undefined ||
+    allowance.value === null ||
+    !selectedToken.value ||
+    transaction.value?.type === "transfer"
+  ) {
     return true;
   }
   return allowance.value !== 0n && allowance.value >= totalComputeAmount.value;

@@ -597,7 +597,7 @@ const enoughBalanceToCoverFee = computed(() =>
   selectedToken.value?.isOft ? enoughBalanceToCoverFeeLayerzero.value : enoughBalanceToCoverFeeDefault.value
 );
 const estimateFee = async (to: string, tokenAddress: string) => {
-  if (selectedToken.value?.isOft && totalComputeAmount.value) {
+  if (selectedToken.value?.isOft) {
     await estimateLayerzeroFee(
       {
         ...selectedToken.value,
@@ -823,7 +823,7 @@ const makeTransaction = async () => {
   if (transaction.value?.token.isOft) {
     tx = await commitLayerzeroTransaction({
       token: transaction.value.token,
-      to: account.value.address,
+      to: transaction.value!.to.address as Address,
       nativeFee: fee.value ? BigInt(fee.value) : BigInt(0),
       fee: feeValues.value!,
     });

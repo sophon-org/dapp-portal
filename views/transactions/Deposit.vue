@@ -820,7 +820,7 @@ const makeTransaction = async () => {
   if (transaction.value?.token.isOft) {
     tx = await commitLayerzeroTransaction({
       token: transaction.value.token,
-      to: account.value.address,
+      to: transaction.value!.to.address as Address,
       nativeFee: fee.value ? BigInt(fee.value) : BigInt(0),
       fee: feeValues.value!,
     });

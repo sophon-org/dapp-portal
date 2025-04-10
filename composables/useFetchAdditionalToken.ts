@@ -29,7 +29,7 @@ export default () => {
       l1Address: additionalTokenAddress.value as Hash,
       symbol: balanceData.symbol,
       decimals: balanceData.decimals,
-      amount: balanceData.value.toString(),
+      amount: balanceData.value,
     };
 
     return additionalToken;

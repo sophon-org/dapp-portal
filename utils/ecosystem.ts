@@ -189,15 +189,6 @@ export const cards = [
     iconStyling: "bg-white",
   },
   {
-    category: "AI",
-    title: "Cod3x",
-    description: "Building a 'Giga Swarm' of Social codless Ai Agents",
-    link: "https://www.cod3x.org/",
-    icon: "/img/home/cod3x.svg",
-    isComingSoon: true,
-    iconStyling: "bg-white",
-  },
-  {
     category: "Casino",
     title: "Decentra Degens",
     description: "Online cash poker tournaments",

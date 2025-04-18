@@ -24,7 +24,7 @@ export const useZkSyncEthereumBalanceStore = defineStore("zkSyncEthereumBalances
 
     if (!ethereumBalance.value) throw new Error("Ethereum balances are not available");
 
-    // Get balances from Ankr API and merge them with tokens data from explorer
+    // Get balances from Alchemy SDK and merge them with tokens data from explorer
     return [
       ...ethereumBalance.value.map((e) => {
         const tokenFromExplorer = l1Tokens.value?.[e.address];
@@ -36,8 +36,8 @@ export const useZkSyncEthereumBalanceStore = defineStore("zkSyncEthereumBalances
           price: tokenFromExplorer?.price ?? e.price,
         };
       }),
-      ...Object.values(l1Tokens.value ?? []) // Add tokens that are not in Ankr API
-        .filter((token) => !ethereumBalance.value?.find((e) => e.address === token.address))
+      ...Object.values(l1Tokens.value ?? []) // Add tokens that are not in Alchemy SDK
+        .filter((token) => !ethereumBalance.value?.find((e) => e.address.toUpperCase() === token.address.toUpperCase()))
         .map((e) => ({
           ...e,
           amount: 0n,

@@ -70,7 +70,7 @@
       },
       {
         "address": "0xA96aD8EC6A83F23e0A75E5d8c9cE13C1042c4295",
-        "l1Address": "0xc28eb2250d1ae32c7e74cfb6d6b86afc9beb6509",
+        "l1Address": "0xc28eb2250d1AE32c7E74CFb6d6b86afC9BEb6509",
         "symbol": "OPN",
         "name": "Open Ecosystem Token",
         "decimals": 18,
@@ -78,7 +78,7 @@
       },
       {
         "address": "0x7A94dFb534ec790277Ad332EFB9B11687A130880",
-        "l1Address": "0x62d0a8458ed7719fdaf978fe5929c6d342b0bfce",
+        "l1Address": "0x62D0A8458eD7719FDAF978fe5929C6D342B0bFcE",
         "symbol": "BEAM",
         "name": "Beam",
         "decimals": 18,
@@ -86,7 +86,7 @@
       },
       {
         "address": "0x06432e41131B70708c1C46814c2fcE9e720edd8A",
-        "l1Address": "0x6982508145454ce325ddbe47a25d4ec3d2311933",
+        "l1Address": "0x6982508145454Ce325dDbE47a25d4ec3d2311933",
         "symbol": "PEPE",
         "name": "Pepe",
         "decimals": 18,
@@ -94,7 +94,7 @@
       },
       {
         "address": "0xF1f9E08a0818594FDe4713AE0Db1E46672Ca960E",
-        "l1Address": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
+        "l1Address": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
         "symbol": "wBTC",
         "name": "Wrapped BTC",
         "decimals": 8,
@@ -102,7 +102,7 @@
       },
       {
         "address": "0x351ca00C5B64C03CA6d1eB9ABe5355ed449ac19C",
-        "l1Address": "0x996d67aa9b37df96428ad3608cb21352bf1fdb90",
+        "l1Address": "0x996d67AA9b37df96428ad3608cb21352BF1FDB90",
         "symbol": "stZENT",
         "name": "Staked Zentry",
         "decimals": 18,
@@ -110,7 +110,7 @@
       },
       {
         "address": "0x42E5bFdC7032D1F8e4B4D3fea3Eb5dB9C01Ef997",
-        "l1Address": "0xc96aa65f31e41b4ca6924b86d93e25686019e59c",
+        "l1Address": "0xc96Aa65F31E41b4Ca6924B86D93e25686019E59C",
         "symbol": "stATH",
         "name": "Staked Aethir",
         "decimals": 18,
@@ -118,7 +118,7 @@
       },
       {
         "address": "0x60D02F185F80644e1A5ae35497736dd31d1b078B",
-        "l1Address": "0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0",
+        "l1Address": "0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0",
         "symbol": "wstETH",
         "name": "Wrapped liquid staked Ether 2.0",
         "decimals": 18,
@@ -126,7 +126,7 @@
       },
       {
         "address": "0x5E9Fc50b44988B66BA84500f8Bc32C0493fe8F8D",
-        "l1Address": "0xcd5fe23c85820f7b72d0926fc9b05b43e359b7ee",
+        "l1Address": "0xCd5fE23C85820F7B72D0926FC9b05b43E359b7ee",
         "symbol": "weETH",
         "name": "Wrapped eETH",
         "decimals": 18,
@@ -134,7 +134,7 @@
       },
       {
         "address": "0xeCcbb9360d235548473Cb8C752735F68e652439B",
-        "l1Address": "0x83f20f44975d03b1b09e64809b757c47f942beea",
+        "l1Address": "0x83F20F44975D03b1b09e64809B757c47f942BEeA",
         "symbol": "sDAI",
         "name": "Savings Dai",
         "decimals": 18,
@@ -142,7 +142,7 @@
       },
       {
         "address": "0xB2253e3D9A00e1471Ae7A3F77cBe7d81ec542A3e",
-        "l1Address": "0x3742f3fcc56b2d46c7b8ca77c23be60cd43ca80a",
+        "l1Address": "0x3742f3Fcc56B2d46c7B8CA77c23be60Cd43Ca80a",
         "symbol": "stAVAIL",
         "name": "Staked Avail",
         "decimals": 18,
@@ -150,7 +150,7 @@
       },
       {
         "address": "0x841bE23f3872309f50E0c955c8Cb4b660f733811",
-        "l1Address": "0x67f3228fd58f5a26d93a5dd0c6989b69c95618eb",
+        "l1Address": "0x67f3228fD58f5A26D93a5dd0c6989b69c95618eB",
         "symbol": "stAZUR",
         "name": "Staked Azur",
         "decimals": 18,

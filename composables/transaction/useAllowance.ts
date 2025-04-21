@@ -71,11 +71,15 @@ export default (
         const wallet = await getWallet();
         setAllowanceStatus.value = "waiting-for-signature";
 
+        const approvalAmount = approvalAmounts[1] ?? approvalAmounts[0];
+
+        if (!approvalAmount) throw new Error("Approval amount is not available");
+
         setAllowanceTransactionHash.value = await wallet?.writeContract({
           address: tokenAddress.value as Hash,
           abi: IERC20,
           functionName: "approve",
-          args: [contractAddress, approvalAmounts[1].allowance],
+          args: [contractAddress, approvalAmount.allowance],
           chain: getPublicClient().chain,
           account: accountAddress.value as `0x${string}`,
         });

@@ -612,14 +612,17 @@ const estimate = async () => {
   ) {
     return;
   }
-  if (transaction.value?.token.isOft) {
-    await estimateLayerzeroFee({
-      type: props.type,
-      token: transaction.value.token,
-      amount: totalComputeAmount.value,
-      from: transaction.value.from.address,
-      to: transaction.value.to.address,
-    });
+  if (transaction.value?.token.isOft && props.type === "withdrawal") {
+    await estimateLayerzeroFee(
+      {
+        type: props.type,
+        token: transaction.value.token,
+        amount: totalComputeAmount.value,
+        from: transaction.value.from.address,
+        to: transaction.value.to.address,
+      },
+      enoughAllowance.value
+    );
   } else {
     await estimateFee({
       type: props.type,
@@ -629,8 +632,14 @@ const estimate = async () => {
     });
   }
 };
+
 watch(
-  [() => selectedToken.value?.address, () => tokenBalance.value?.toString(), () => enoughAllowance.value],
+  [
+    () => selectedToken.value?.address,
+    () => tokenBalance.value?.toString(),
+    () => enoughAllowance.value,
+    () => setAllowanceStatus.value,
+  ],
   () => {
     resetFee();
     estimate();
@@ -712,7 +721,7 @@ const transactionInfo = ref<TransactionInfo | undefined>();
 const makeTransaction = async () => {
   if (continueButtonDisabled.value) return;
   let tx: TransactionResponse | undefined;
-  if (transaction.value?.token.isOft) {
+  if (transaction.value?.token.isOft && props.type === "withdrawal") {
     tx = await commitLayerzeroTransaction({
       token: transaction.value.token,
       amount: transaction.value.token.amount,

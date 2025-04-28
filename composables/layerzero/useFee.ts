@@ -112,15 +112,17 @@ export default (getSigner: () => Promise<any>, getProvider: () => Provider) => {
     result,
     inProgress,
     error,
-    estimateFee: async (estimationParams: LayerZeroFeeParams) => {
+    estimateFee: async (estimationParams: LayerZeroFeeParams, enoughAllowance: boolean) => {
       currentParams = estimationParams;
-      const isApproved = await checkApproval(
-        estimationParams.token.address,
-        estimationParams.from,
-        NETWORK_CONFIG.LAYER_ZERO_CONFIG.oftHelperAddress,
-        estimationParams.amount
-      );
-      if (!isApproved) return;
+      if (!enoughAllowance) {
+        const isApproved = await checkApproval(
+          estimationParams.token.address,
+          estimationParams.from,
+          NETWORK_CONFIG.LAYER_ZERO_CONFIG.oftHelperAddress,
+          estimationParams.amount
+        );
+        if (!isApproved) return;
+      }
       await executeEstimateFee();
     },
   };

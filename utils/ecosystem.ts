@@ -130,7 +130,7 @@ export const cards = [
   },
   {
     category: "DeFi",
-    title: "NooN",
+    title: "Noon",
     description: "The intelligent and fair yield-generating stablecoin",
     icon: "/img/home/noon.svg",
     link: "https://app.noon.capital",

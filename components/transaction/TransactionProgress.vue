@@ -205,7 +205,7 @@ const {
   status: lzStatus,
   error: lzError,
   destinationTxHash,
-} = useLayerZeroTransactionStatus(computed(() => props.transactionInfo));
+} = useLayerZeroTransactionStatus(computed(() => props.transactionInfo || {}));
 
 const transactionProgressAnimationState = computed<AnimationState>(() => {
   if (props.animationState) return props.animationState;

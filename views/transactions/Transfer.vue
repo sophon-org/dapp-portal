@@ -509,8 +509,12 @@ const {
   estimateFee: estimateLayerzeroFee,
 } = useLayerzeroFee(walletStore.getSigner, providerStore.requestProvider);
 
-const gasLimit = computed(() => (selectedToken.value?.isOft ? gasLimitLayerzero.value : gasLimitDefault.value));
-const gasPrice = computed(() => (selectedToken.value?.isOft ? gasPriceLayerzero.value : gasPriceDefault.value));
+const gasLimit = computed(() =>
+  selectedToken.value?.isOft && props.type === "withdrawal" ? gasLimitLayerzero.value : gasLimitDefault.value
+);
+const gasPrice = computed(() =>
+  selectedToken.value?.isOft && props.type === "withdrawal" ? gasPriceLayerzero.value : gasPriceDefault.value
+);
 
 const queryAddress = useRouteQuery<string | undefined>("address", undefined, {
   transform: String,

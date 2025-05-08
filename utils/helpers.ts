@@ -1,15 +1,12 @@
-import { BigNumber } from "ethers";
-
 import type { ZkSyncNetwork } from "@/data/networks";
 import type { TokenAmount } from "@/types";
-import type { BigNumberish } from "ethers";
 
 export function isOnlyZeroes(value: string) {
   return value.replace(/0/g, "").replace(/\./g, "").length === 0;
 }
 
-export function calculateFee(gasLimit: BigNumberish, gasPrice: BigNumberish) {
-  return BigNumber.from(gasLimit).mul(gasPrice);
+export function calculateFee(gasLimit: bigint, gasPrice: bigint) {
+  return gasLimit * gasPrice;
 }
 
 export const getNetworkUrl = (network: ZkSyncNetwork, routePath: string) => {
@@ -36,17 +33,22 @@ export const silentRouterChange = (location: string, mode: "push" | "replace" = 
 
 interface RetryOptions {
   retries?: number;
+  delay?: number;
 }
 const DEFAULT_RETRY_OPTIONS: RetryOptions = {
   retries: 2,
+  delay: 0,
 };
 export async function retry<T>(func: () => Promise<T>, options: RetryOptions = {}): Promise<T> {
-  const { retries } = Object.assign({}, DEFAULT_RETRY_OPTIONS, options);
+  const { retries, delay } = Object.assign({}, DEFAULT_RETRY_OPTIONS, options);
   try {
     return await func();
   } catch (error) {
     if (retries && retries > 0) {
-      return retry(func, { retries: retries - 1 });
+      if (delay) {
+        await new Promise((resolve) => setTimeout(resolve, delay));
+      }
+      return retry(func, { retries: retries - 1, delay });
     } else {
       throw error;
     }

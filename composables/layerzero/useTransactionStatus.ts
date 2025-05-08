@@ -116,7 +116,7 @@ export default (transactionInfo: ComputedRef<TransactionInfo>) => {
   };
 
   // Start checking status when the composable is created
-  if (transactionInfo.value?.token?.isOft) {
+  if (transactionInfo.value && transactionInfo.value.token?.isOft) {
     checkTransactionStatus();
   }
 

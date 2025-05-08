@@ -617,7 +617,7 @@ const estimate = async () => {
   ) {
     return;
   }
-  if (transaction.value?.token.isOft && props.type === "withdrawal") {
+  if (transaction.value?.token.isOft) {
     await estimateLayerzeroFee(
       {
         type: props.type,

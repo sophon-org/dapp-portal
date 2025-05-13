@@ -402,10 +402,6 @@ const BLACKLISTED_TOKENS: globalThis.ComputedRef<BlacklistedToken[]> = computed(
   return isMainnet(selectedNetwork.value.id) ? MAINNET.BLACKLISTED_TOKENS : [];
 });
 
-// TODO(@consvic): Remove this after some time
-const FILTERED_TOKENS = computed(() => {
-  return isMainnet(selectedNetwork.value.id) ? ["SOPH"] : [];
-});
 const route = useRoute();
 const router = useRouter();
 
@@ -450,12 +446,13 @@ const handleAdditionalToken = (token: TokenAmount) => {
 };
 
 const availableTokens = computed<Token[]>(() => {
-  if (balanceWithAdditionalTokens.value)
-    return balanceWithAdditionalTokens.value.filter((e) => !FILTERED_TOKENS.value.includes(e.symbol));
-  return Object.values(l1Tokens.value ?? []).filter((e) => !FILTERED_TOKENS.value.includes(e.symbol));
+  if (balanceWithAdditionalTokens.value) {
+    return balanceWithAdditionalTokens.value;
+  }
+  return Object.values(l1Tokens.value ?? []);
 });
 const availableBalances = computed<TokenAmount[]>(() => {
-  return balanceWithAdditionalTokens.value?.filter((e) => !FILTERED_TOKENS.value.includes(e.symbol)) ?? [];
+  return balanceWithAdditionalTokens.value ?? [];
 });
 const routeTokenAddress = computed(() => {
   if (!route.query.token || Array.isArray(route.query.token) || !isAddress(route.query.token)) {

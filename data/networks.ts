@@ -85,6 +85,15 @@ export const dockerizedNode: ZkSyncNetwork = {
 
 const publicChains: ZkSyncNetwork[] = [
   {
+    id: 260,
+    key: "sophon-testnet",
+    name: "Sophon Testnet",
+    rpcUrl: "https://rpc.testnet.sophon.xyz",
+    blockExplorerUrl: "https://explorer.testnet.sophon.xyz",
+    blockExplorerApi: "https://api-explorer.sophon.xyz",
+    l1Network: l1Networks.sepolia,
+  },
+  {
     id: 324,
     key: "mainnet",
     name: "ZKsync",

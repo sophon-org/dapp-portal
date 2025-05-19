@@ -11,7 +11,7 @@ import {
 import { createWeb3Modal } from "@web3modal/wagmi";
 
 import { wagmiConfig } from "@/data/wagmi";
-import { confirmedSupportedWallets, disabledWallets } from "@/data/wallets";
+// import { disabledWallets } from "@/data/wallets";
 import networks from "@/hyperchains/config.json";
 export const useOnboardStore = defineStore("onboard", () => {
   const portalRuntimeConfig = usePortalRuntimeConfig();
@@ -25,11 +25,11 @@ export const useOnboardStore = defineStore("onboard", () => {
   const connectorName = ref(account.value.connector?.name);
   const walletName = ref<string | undefined>();
   const walletWarningDisabled = useStorage("zksync-bridge-wallet-warning-disabled", false);
-  const walletNotSupported = computed(() => {
-    if (walletWarningDisabled.value) return false;
-    if (!walletName.value) return false;
-    return !confirmedSupportedWallets.find((wallet) => wallet === walletName.value);
-  });
+  // const walletNotSupported = computed(() => {
+  //   if (walletWarningDisabled.value) return false;
+  //   if (!walletName.value) return false;
+  //   return !confirmedSupportedWallets.find((wallet) => wallet === walletName.value);
+  // });
   const identifyWalletName = async () => {
     const { connector } = getAccount(wagmiConfig);
     const provider = await connector?.getProvider?.();
@@ -42,10 +42,10 @@ export const useOnboardStore = defineStore("onboard", () => {
       walletName.value = name?.replace(/ Wallet$/, "").trim();
     }
 
-    if (walletName.value && connector) {
-      const isWalletDisabled = !!disabledWallets.find((wallet) => wallet === walletName.value);
-      if (isWalletDisabled) throw new Error(`Unfortunately ${walletName.value} wallet is not supported at the moment!`);
-    }
+    // if (walletName.value && connector) {
+    //   const isWalletDisabled = !![].find((wallet) => wallet === walletName.value);
+    //   if (isWalletDisabled) throw new Error(`Unfortunately ${walletName.value} wallet is not supported at the moment!`);
+    // }
   };
 
   const web3modal = createWeb3Modal({
@@ -193,7 +193,7 @@ export const useOnboardStore = defineStore("onboard", () => {
     connectorName,
     walletName,
     walletWarningDisabled,
-    walletNotSupported,
+    // walletNotSupported,
     openModal,
     disconnect,
 

@@ -1,8 +1,10 @@
 import { fallback, http } from "@wagmi/core";
-import { zkSync, type Chain, zkSyncSepoliaTestnet } from "@wagmi/core/chains";
+import { type Chain, sophonTestnet, sophon } from "@wagmi/core/chains";
 import { defaultWagmiConfig } from "@web3modal/wagmi";
 
 import { chainList, l1Networks, type ZkSyncNetwork } from "@/data/networks";
+
+import "@sophon-labs/account-eip6963/testnet";
 
 const portalRuntimeConfig = usePortalRuntimeConfig();
 
@@ -18,7 +20,7 @@ if (!portalRuntimeConfig.walletConnectProjectId) {
 }
 
 const useExistingEraChain = (network: ZkSyncNetwork) => {
-  const existingNetworks = [zkSync, zkSyncSepoliaTestnet];
+  const existingNetworks = [sophonTestnet, sophon];
   return existingNetworks.find((existingNetwork) => existingNetwork.id === network.id);
 };
 const formatZkSyncChain = (network: ZkSyncNetwork) => {
@@ -69,11 +71,12 @@ const chainTransports = (chain: Chain) => {
 
 const chains = getAllChains();
 export const wagmiConfig = defaultWagmiConfig({
-  chains: getAllChains() as any,
+  chains: [sophonTestnet, sophon],
   transports: Object.fromEntries(chains.map((chain) => [chain.id, chainTransports(chain)])),
   projectId: portalRuntimeConfig.walletConnectProjectId,
   metadata,
   enableCoinbase: false,
+  enableEIP6963: true,
 });
 
 export const wagmiL1Config = defaultWagmiConfig({
@@ -84,4 +87,5 @@ export const wagmiL1Config = defaultWagmiConfig({
   projectId: portalRuntimeConfig.walletConnectProjectId,
   metadata,
   enableCoinbase: false,
+  enableEIP6963: true,
 });

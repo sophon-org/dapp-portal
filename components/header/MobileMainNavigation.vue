@@ -12,7 +12,7 @@
           >
             <template #image>
               <DestinationIconContainer>
-                <IconsEra aria-hidden="true" />
+                <IconsSophon aria-hidden="true" />
               </DestinationIconContainer>
             </template>
           </DestinationItem>
@@ -67,7 +67,7 @@
           >
             <template #image>
               <DestinationIconContainer>
-                <IconsEra aria-hidden="true" />
+                <IconsSophon aria-hidden="true" />
               </DestinationIconContainer>
             </template>
           </DestinationItem>

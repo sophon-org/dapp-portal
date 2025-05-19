@@ -1,8 +1,11 @@
 import { fallback, http } from "@wagmi/core";
-import { zkSync, type Chain, zkSyncSepoliaTestnet, zkSyncTestnet } from "@wagmi/core/chains";
+import { zkSync, type Chain, zkSyncSepoliaTestnet, sophonTestnet, sophon } from "@wagmi/core/chains";
 import { defaultWagmiConfig } from "@web3modal/wagmi";
 
 import { chainList, l1Networks, type ZkSyncNetwork } from "@/data/networks";
+
+import "@sophon-labs/account-eip6963/testnet";
+import "@sophon-labs/account-eip6963/mainnet";
 
 const portalRuntimeConfig = usePortalRuntimeConfig();
 
@@ -18,7 +21,7 @@ if (!portalRuntimeConfig.walletConnectProjectId) {
 }
 
 const useExistingEraChain = (network: ZkSyncNetwork) => {
-  const existingNetworks = [zkSync, zkSyncSepoliaTestnet, zkSyncTestnet];
+  const existingNetworks = [zkSync, zkSyncSepoliaTestnet];
   return existingNetworks.find((existingNetwork) => existingNetwork.id === network.id);
 };
 const formatZkSyncChain = (network: ZkSyncNetwork) => {
@@ -43,7 +46,7 @@ const formatZkSyncChain = (network: ZkSyncNetwork) => {
 };
 
 const getAllChains = () => {
-  const chains: Chain[] = [];
+  const chains: Chain[] = [sophonTestnet, sophon];
   const addUniqueChain = (chain: Chain) => {
     if (!chains.some((existingChain) => existingChain.id === chain.id)) {
       chains.push(chain);
@@ -61,14 +64,17 @@ const getAllChains = () => {
 };
 
 const chains = getAllChains();
+
 export const wagmiConfig = defaultWagmiConfig({
-  chains: getAllChains() as any,
+  chains: [sophonTestnet, sophon],
   transports: Object.fromEntries(
     chains.map((chain) => [chain.id, fallback(chain.rpcUrls.default.http.map((e) => http(e)))])
   ),
   projectId: portalRuntimeConfig.walletConnectProjectId,
   metadata,
   enableCoinbase: false,
+  enableEIP6963: true,
+  // enableInjected: true,
 });
 
 export const wagmiL1Config = defaultWagmiConfig({
@@ -79,4 +85,6 @@ export const wagmiL1Config = defaultWagmiConfig({
   projectId: portalRuntimeConfig.walletConnectProjectId,
   metadata,
   enableCoinbase: false,
+  enableEIP6963: true,
+  enableInjected: true,
 });

@@ -324,18 +324,21 @@
 <script lang="ts" setup>
 import { ExclamationTriangleIcon, InformationCircleIcon, LockClosedIcon } from "@heroicons/vue/24/outline";
 import { useRouteQuery } from "@vueuse/router";
+import { sendTransaction } from "@wagmi/core";
 import { BigNumber } from "ethers";
 import { isAddress } from "ethers/lib/utils";
+import { sophonTestnet } from "viem/chains";
 
 import useLayerzeroFee from "@/composables/layerzero/useFee";
 import useLayerzeroTransaction from "@/composables/layerzero/useTransaction";
 import useFee from "@/composables/zksync/useFee";
-import useTransaction, { isWithdrawalManualFinalizationRequired } from "@/composables/zksync/useTransaction";
+import { isWithdrawalManualFinalizationRequired } from "@/composables/zksync/useTransaction";
 import { customBridgeTokens } from "@/data/customBridgeTokens";
 import { isMainnet } from "@/data/networks";
 import TransferSubmitted from "@/views/transactions/TransferSubmitted.vue";
 import WithdrawalSubmitted from "@/views/transactions/WithdrawalSubmitted.vue";
 import useWithdrawalAllowance from "~/composables/transaction/useWithdrawalAllowance";
+import { wagmiConfig } from "~/data/wagmi";
 
 import type { FeeEstimationParams } from "@/composables/zksync/useFee";
 import type { Token, TokenAmount } from "@/types";
@@ -703,17 +706,11 @@ const buttonContinue = () => {
 /* Transaction signing and submitting */
 const transfersHistoryStore = useZkSyncTransfersHistoryStore();
 const { previousTransactionAddress } = storeToRefs(usePreferencesStore());
-const {
-  status: transactionStatus,
-  error: transactionError,
-  commitTransaction,
-} = useTransaction(walletStore.getSigner, providerStore.requestProvider);
+
 const { saveTransaction, waitForCompletion } = useZkSyncTransactionStatusStore();
-const {
-  status: transactionStatusLayerzero,
-  error: transactionErrorLayerzero,
-  commitTransaction: commitLayerzeroTransaction,
-} = useLayerzeroTransaction(walletStore.getSigner);
+const { status: transactionStatusLayerzero, commitTransaction: commitLayerzeroTransaction } = useLayerzeroTransaction(
+  walletStore.getSigner
+);
 
 watch(step, (newStep) => {
   if (newStep === "form") {
@@ -722,85 +719,86 @@ watch(step, (newStep) => {
 });
 
 const transactionInfo = ref<TransactionInfo | undefined>();
+const transactionError = ref<Error | undefined>();
+const transactionStatus = ref<"not-started" | "processing" | "waiting-for-signature" | "done">("not-started");
 const makeTransaction = async () => {
   if (continueButtonDisabled.value) return;
   let tx: TransactionResponse | undefined;
-  if (transaction.value?.token.isOft && props.type === "withdrawal") {
-    tx = await commitLayerzeroTransaction({
-      token: transaction.value.token,
-      amount: transaction.value.token.amount,
-      from: account.value.address!,
-      to: transaction.value!.to.address,
-      nativeFee: feeLayerzero.value!.nativeFee,
-      gasLimit: gasLimit.value!,
-      gasPrice: gasPrice.value!,
-    });
-  } else {
-    tx = await commitTransaction(
-      {
-        type: props.type,
+  try {
+    if (transaction.value?.token.isOft && props.type === "withdrawal") {
+      tx = await commitLayerzeroTransaction({
+        token: transaction.value.token,
+        amount: transaction.value.token.amount,
+        from: account.value.address!,
         to: transaction.value!.to.address,
-        tokenAddress: transaction.value!.token.address,
-        amount: transaction.value!.token.amount,
-      },
-      {
+        nativeFee: feeLayerzero.value!.nativeFee,
         gasLimit: gasLimit.value!,
         gasPrice: gasPrice.value!,
-      }
-    );
-  }
-
-  if (transactionStatus.value === "done" || transactionStatusLayerzero.value === "done") {
-    step.value = "submitted";
-    previousTransactionAddress.value = transaction.value!.to.address;
-  }
-
-  if (tx) {
-    const fee = calculateFee(gasLimit.value!, gasPrice.value!);
-    walletStore.deductBalance(feeToken.value!.address, fee);
-    walletStore.deductBalance(transaction.value!.token.address, transaction.value!.token.amount);
-    transactionInfo.value = {
-      type: transaction.value!.type,
-      transactionHash: tx.hash,
-      timestamp: new Date().toISOString(),
-      token: transaction.value!.token,
-      from: transaction.value!.from,
-      to: transaction.value!.to,
-      info: {
-        expectedCompleteTimestamp:
-          transaction.value?.type === "withdrawal"
-            ? new Date(new Date().getTime() + WITHDRAWAL_DELAY).toISOString()
-            : undefined,
-        completed: false,
-      },
-    };
-    saveTransaction(transactionInfo.value);
-    silentRouterChange(
-      router.resolve({
-        name: "transaction-hash",
-        params: { hash: transactionInfo.value.transactionHash },
-        query: { network: eraNetwork.value.key },
-      }).href
-    );
-    waitForCompletion(transactionInfo.value)
-      .then((completedTransaction) => {
-        transactionInfo.value = completedTransaction;
-        trackEvent(transaction.value!.type, {
-          token: transaction.value!.token.symbol,
-          amount: transaction.value!.token.amount,
-          to: transaction.value!.to.address,
-        });
-        setTimeout(() => {
-          transfersHistoryStore.reloadRecentTransfers().catch(() => undefined);
-          walletStore.requestBalance({ force: true }).catch(() => undefined);
-        }, 2000);
-      })
-      .catch((err) => {
-        transactionError.value = err as Error;
-        transactionStatus.value = "not-started";
-        transactionErrorLayerzero.value = err as Error;
-        transactionStatusLayerzero.value = "not-started";
       });
+    } else {
+      const txHash = await sendTransaction(wagmiConfig, {
+        account: account.value.address,
+        to: transaction.value!.to.address as `0x${string}`,
+        value: BigInt(transaction.value!.token.amount),
+        // gas: BigInt(gasLimit.value!.toString()),
+        // gasPrice: BigInt(gasPrice.value!.toString()),
+        chainId: sophonTestnet.id,
+      });
+      tx = { hash: txHash } as TransactionResponse;
+    }
+
+    if (tx) {
+      step.value = "submitted";
+      previousTransactionAddress.value = transaction.value!.to.address;
+    }
+
+    if (tx) {
+      const fee = calculateFee(gasLimit.value!, gasPrice.value!);
+      walletStore.deductBalance(feeToken.value!.address, fee);
+      walletStore.deductBalance(transaction.value!.token.address, transaction.value!.token.amount);
+      transactionInfo.value = {
+        type: transaction.value!.type,
+        transactionHash: tx.hash,
+        timestamp: new Date().toISOString(),
+        token: transaction.value!.token,
+        from: transaction.value!.from,
+        to: transaction.value!.to,
+        info: {
+          expectedCompleteTimestamp:
+            transaction.value?.type === "withdrawal"
+              ? new Date(new Date().getTime() + WITHDRAWAL_DELAY).toISOString()
+              : undefined,
+          completed: false,
+        },
+      };
+      saveTransaction(transactionInfo.value);
+      silentRouterChange(
+        router.resolve({
+          name: "transaction-hash",
+          params: { hash: transactionInfo.value.transactionHash },
+          query: { network: eraNetwork.value.key },
+        }).href
+      );
+      waitForCompletion(transactionInfo.value)
+        .then((completedTransaction) => {
+          transactionInfo.value = completedTransaction;
+          trackEvent(transaction.value!.type, {
+            token: transaction.value!.token.symbol,
+            amount: transaction.value!.token.amount,
+            to: transaction.value!.to.address,
+          });
+          setTimeout(() => {
+            transfersHistoryStore.reloadRecentTransfers().catch(() => undefined);
+            walletStore.requestBalance({ force: true }).catch(() => undefined);
+          }, 2000);
+        })
+        .catch((_err) => {
+          transactionStatusLayerzero.value = "not-started";
+        });
+    }
+  } catch (error) {
+    // console.error("Transaction failed:", error);
+    transactionStatusLayerzero.value = "not-started";
   }
 };
 
@@ -808,7 +806,6 @@ const resetForm = () => {
   address.value = "";
   amount.value = "";
   step.value = "form";
-  transactionStatus.value = "not-started";
   transactionInfo.value = undefined;
   silentRouterChange((route as unknown as { href: string }).href);
 };

@@ -7,7 +7,13 @@ export default defineNuxtConfig({
       htmlAttrs: {
         lang: "en",
       },
-      link: [],
+      link: [
+        { rel: "icon", type: "image/x-icon", href: "/favicon.ico" },
+        { rel: "icon", type: "image/png", href: "/favicon-logo@1x.png", sizes: "16x16" },
+        { rel: "icon", type: "image/png", href: "/favicon-logo@2x.png", sizes: "32x32" },
+        { rel: "icon", type: "image/png", href: "/favicon-logo@3x.png", sizes: "48x48" },
+        { rel: "icon", type: "image/png", href: "/favicon-logo@4x.png", sizes: "64x64" },
+      ],
       meta: [
         {
           property: "og:image",
@@ -27,7 +33,7 @@ export default defineNuxtConfig({
         },
         {
           property: "og:image:height",
-          content: "630",
+          content: "675",
         },
       ],
       script: [

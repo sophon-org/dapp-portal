@@ -9,6 +9,7 @@ import {
   watchAccount,
 } from "@wagmi/core";
 import { createWeb3Modal } from "@web3modal/wagmi";
+import { eip712WalletActions } from "viem/zksync";
 
 import { wagmiConfig } from "@/data/wagmi";
 import { confirmedSupportedWallets, disabledWallets } from "@/data/wallets";
@@ -181,8 +182,7 @@ export const useOnboardStore = defineStore("onboard", () => {
   const getWallet = async (chainId: number | undefined = l1Network.value?.id) => {
     const client = await getWalletClient(wagmiConfig, chainId ? { chainId } : undefined);
     if (!client) throw new Error("Wallet is not available");
-
-    return client;
+    return client.extend(eip712WalletActions());
   };
 
   return {

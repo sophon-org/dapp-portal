@@ -80,10 +80,10 @@ export default (getSigner: () => Promise<Signer | undefined>, getProvider: () =>
         },
       });
 
-      const txResponse = await signer.sendTransaction(txRequest);
-      const tx = getProvider()._wrapTransaction(txResponse);
+      const txResponse = await signer.eip712.sign(txRequest);
+      const tx = await getProvider().sendRawTransactionWithDetailedOutput(txResponse);
 
-      transactionHash.value = tx.hash;
+      transactionHash.value = tx.transactionHash;
       status.value = "done";
 
       return tx;

@@ -1,4 +1,5 @@
 import { getWalletClient } from "@wagmi/core";
+import { eip712WalletActions } from "viem/zksync";
 import { ref, onMounted } from "vue";
 
 import { wagmiConfig } from "@/data/wagmi";
@@ -10,7 +11,7 @@ export function useWalletClient() {
 
   onMounted(async () => {
     try {
-      walletClient.value = await getWalletClient(wagmiConfig);
+      walletClient.value = (await getWalletClient(wagmiConfig)).extend(eip712WalletActions());
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error("Failed to get wallet client:", error);

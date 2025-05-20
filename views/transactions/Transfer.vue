@@ -332,7 +332,6 @@ import useLayerzeroTransaction from "@/composables/layerzero/useTransaction";
 import useFee from "@/composables/zksync/useFee";
 import useTransaction, { isWithdrawalManualFinalizationRequired } from "@/composables/zksync/useTransaction";
 import { customBridgeTokens } from "@/data/customBridgeTokens";
-import { isMainnet } from "@/data/networks";
 import TransferSubmitted from "@/views/transactions/TransferSubmitted.vue";
 import WithdrawalSubmitted from "@/views/transactions/WithdrawalSubmitted.vue";
 import useWithdrawalAllowance from "~/composables/transaction/useWithdrawalAllowance";
@@ -341,11 +340,6 @@ import type { FeeEstimationParams } from "@/composables/zksync/useFee";
 import type { Token, TokenAmount } from "@/types";
 import type { BigNumberish } from "ethers";
 import type { TransactionResponse } from "zksync-ethers/build/types";
-
-// TODO(@consvic): Remove this after some time
-const FILTERED_TOKENS = computed(() => {
-  return isMainnet(selectedNetwork.value.id) ? [] : ["SOPH"];
-});
 
 const props = defineProps({
   type: {
@@ -366,7 +360,6 @@ const { eraNetwork } = storeToRefs(providerStore);
 const { destinations } = storeToRefs(useDestinationsStore());
 const { tokens, tokensRequestInProgress, tokensRequestError } = storeToRefs(tokensStore);
 const { balance, balanceInProgress, balanceError } = storeToRefs(walletStore);
-const { selectedNetwork } = storeToRefs(useNetworkStore());
 const refetchingAllowance = ref(false);
 
 const toNetworkModalOpened = ref(false);
@@ -388,14 +381,14 @@ const destination = computed(() => (props.type === "transfer" ? destinations.val
 const availableTokens = computed(() => {
   if (!tokens.value) return [];
   if (props.type === "withdrawal") {
-    return Object.values(tokens.value).filter((e) => e.l1Address && !FILTERED_TOKENS.value.includes(e.symbol));
+    return Object.values(tokens.value).filter((e) => e.l1Address);
   }
   return Object.values(tokens.value);
 });
 const availableBalances = computed(() => {
   if (props.type === "withdrawal") {
     if (!tokens.value) return [];
-    return balance.value.filter((e) => e.l1Address && !FILTERED_TOKENS.value.includes(e.symbol));
+    return balance.value.filter((e) => e.l1Address);
   }
   return balance.value;
 });

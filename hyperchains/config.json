@@ -43,7 +43,7 @@
         "l1Address": "0x6B7774CB12ed7573a7586E7D0e62a2A563dDd3f0",
         "symbol": "SOPH",
         "decimals": 18,
-        "iconUrl": "/img/sophon.svg"
+        "iconUrl": "/img/sophon_token.svg"
       },
       {
         "address": "0x72af9F169B619D85A47Dfa8fefbCD39dE55c567D",
@@ -220,7 +220,7 @@
         "l1Address": "0x06c03F9319EBbd84065336240dcc243bda9D8896",
         "symbol": "SOPH",
         "decimals": 18,
-        "iconUrl": "/img/sophon.svg"
+        "iconUrl": "/img/sophon_token.svg"
       },
       {
         "address": "0xa02dbfB2b65b4e13501d066Df432A39c6068Eded",

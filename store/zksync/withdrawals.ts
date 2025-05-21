@@ -34,12 +34,16 @@ export const useZkSyncWithdrawalsStore = defineStore("zkSyncWithdrawals", () => 
       );
 
       const withdrawalFinalizationAvailable = !!transactionDetails.ethExecuteTxHash;
-      const isFinalized = withdrawalFinalizationAvailable
+      let isFinalized = withdrawalFinalizationAvailable
         ? await useZkSyncWalletStore()
             .getL1VoidSigner(true)
             ?.isWithdrawalFinalized(withdrawal.transactionHash)
             .catch(() => false)
         : false;
+
+      if (withdrawalFinalizationAvailable && transactionDetails.status === "failed") {
+        isFinalized = false; // Allow claiming again if status is failed
+      }
 
       transactionStatusStore.saveTransaction({
         type: "withdrawal",

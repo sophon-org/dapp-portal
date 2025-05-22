@@ -48,6 +48,19 @@ export const useEthereumBalanceStore = defineStore("ethereumBalance", () => {
         alchemy.core.getBalance(account.value.address),
       ]);
 
+      let pageKey = tokenBalances.pageKey;
+
+      // Loop up to 2 more times to fetch subsequent pages if a pageKey exists
+      for (let i = 0; i < 2 && pageKey; i++) {
+        // Add a small delay to avoid rate limiting
+        await new Promise((resolve) => setTimeout(resolve, 250));
+        const nextTokenBalances = await alchemy.core.getTokensForOwner(account.value.address, {
+          pageKey,
+        });
+        tokenBalances.tokens.push(...nextTokenBalances.tokens);
+        pageKey = nextTokenBalances.pageKey;
+      }
+
       const tokens: TokenAmount[] = tokenBalances.tokens
         .filter((token) => BigInt(token.rawBalance || "0") > 0n)
         .map((token) => ({

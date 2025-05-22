@@ -63,16 +63,22 @@ export default (getSigner: () => Promise<Signer | undefined>, getProvider: () =>
       await validateAddress(transaction.to);
 
       status.value = "waiting-for-signature";
+
+      // Don't use paymaster for SOPH token transfers/withdrawals
+      const usePaymaster = transaction.tokenAddress !== L2_BASE_TOKEN_ADDRESS;
+
       const txRequest = await provider[transaction.type === "transfer" ? "getTransferTx" : "getWithdrawTx"]({
         from: await signer.getAddress(),
         to: transaction.to,
         token: transaction.tokenAddress,
         amount: transaction.amount,
         bridgeAddress,
-        paymasterParams: utils.getPaymasterParams(NETWORK_CONFIG.L2_GLOBAL_PAYMASTER.address, {
-          type: "General",
-          innerInput: new Uint8Array(),
-        }),
+        paymasterParams: usePaymaster
+          ? utils.getPaymasterParams(NETWORK_CONFIG.L2_GLOBAL_PAYMASTER.address, {
+              type: "General",
+              innerInput: new Uint8Array(),
+            })
+          : undefined,
         overrides: {
           gasPrice: fee.gasPrice,
           gasLimit: fee.gasLimit,

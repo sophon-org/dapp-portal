@@ -73,6 +73,7 @@
         <CommonInputTransactionAddress
           v-model="address"
           label="To"
+          :sns-support="true"
           :default-label="`To your account ${account.address ? shortenAddress(account.address) : ''}`"
           :address-input-hidden="tokenCustomBridge?.bridgingDisabled"
         >

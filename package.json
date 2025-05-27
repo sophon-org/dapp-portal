@@ -70,7 +70,7 @@
   },
   "dependencies": {
     "@chenfengyuan/vue-qrcode": "^2.0.0",
-    "@sophon-labs/account-core": "^1.1.22",
+    "@sophon-labs/account-core": "^1.2.1",
     "@vitejs/plugin-vue": "^3.2.0",
     "@vueuse/router": "^10.9.0",
     "@wagmi/connectors": "^4.1.14",

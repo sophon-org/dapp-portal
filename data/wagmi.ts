@@ -1,10 +1,8 @@
 import { fallback, http } from "@wagmi/core";
+import { zkSync, type Chain, zkSyncSepoliaTestnet } from "@wagmi/core/chains";
 import { defaultWagmiConfig } from "@web3modal/wagmi";
-import { zksync, zksyncSepoliaTestnet } from "viem/zksync";
 
 import { chainList, l1Networks, type ZkSyncNetwork } from "@/data/networks";
-
-import type { Chain } from "viem";
 
 const portalRuntimeConfig = usePortalRuntimeConfig();
 
@@ -20,7 +18,7 @@ if (!portalRuntimeConfig.walletConnectProjectId) {
 }
 
 const useExistingEraChain = (network: ZkSyncNetwork) => {
-  const existingNetworks = [zksync, zksyncSepoliaTestnet];
+  const existingNetworks = [zkSync, zkSyncSepoliaTestnet];
   return existingNetworks.find((existingNetwork) => existingNetwork.id === network.id);
 };
 const formatZkSyncChain = (network: ZkSyncNetwork) => {

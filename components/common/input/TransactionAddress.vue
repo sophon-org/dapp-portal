@@ -18,7 +18,7 @@
           id="transaction-address-input"
           v-model.trim="inputted"
           :has-error="!!addressError"
-          placeholder="Address or ENS"
+          :placeholder="snsSupport ? 'Address, Soph.id or ENS' : 'Address or ENS'"
           type="text"
           maxlength="42"
           spellcheck="false"
@@ -29,15 +29,16 @@
       </div>
       <transition v-bind="TransitionOpacity()">
         <CommonCardWithLineButtons v-if="selectAddressVisible" class="select-address-popover">
-          <AddressCardLoader v-if="ensParseInProgress" />
+          <AddressCardLoader v-if="ensParseInProgress || typing" />
           <AddressCard
-            v-else-if="ensAddress"
+            v-else-if="name.address && !typing"
             size="sm"
-            :name="inputted"
-            :address="ensAddress"
-            @click="inputted = ensAddress"
+            :name="inputted.replace('.soph.id', '')"
+            :address="name.address"
+            :type="name.type"
+            @click="inputted = name.address"
           />
-          <CommonErrorBlock v-else-if="ensParseError" @try-again="parseEns">
+          <CommonErrorBlock v-else-if="ensParseError" @try-again="parseNames">
             {{ ensParseError }}
           </CommonErrorBlock>
           <AddressCard
@@ -63,7 +64,9 @@
 </template>
 
 <script lang="ts" setup>
-import { isAddress } from "viem";
+import { useDebounceFn } from "@vueuse/core";
+
+import useNames from "~/composables/useNames";
 
 const props = defineProps({
   label: {
@@ -81,6 +84,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  snsSupport: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const emit = defineEmits<{
@@ -92,6 +99,8 @@ const inputted = computed({
   get: () => props.modelValue,
   set: (value: string) => emit("update:modelValue", value),
 });
+
+const typing = ref(false);
 
 const { isConnected } = storeToRefs(useOnboardStore());
 
@@ -112,35 +121,96 @@ const inputVisible = computed(() => {
   return !props.addressInputHidden && (!props.defaultLabel || usingCustomValue.value || inputted.value);
 });
 
-const isAddressValid = computed(() => isAddress(inputted.value));
+// Debounced input for name resolution to avoid too many API calls
+const debouncedInputForNames = ref(inputted.value);
+const updateDebouncedInput = useDebounceFn((value: string) => {
+  debouncedInputForNames.value = value;
+  typing.value = false;
+}, 500);
 
 const {
-  address: ensAddress,
-  isValidEnsFormat,
+  name,
   inProgress: ensParseInProgress,
   error: ensParseError,
-  parseEns,
-} = useEnsName(inputted);
+  parseNames,
+} = useNames(debouncedInputForNames, props.snsSupport);
 
 const { previousTransactionAddress } = storeToRefs(usePreferencesStore());
+
+// Watch for input changes and update debounced value
+watch(
+  inputted,
+  (value) => {
+    // For empty input, update immediately
+    if (!value) {
+      debouncedInputForNames.value = value;
+      return;
+    }
+    typing.value = true;
+
+    // For valid Ethereum addresses, update immediately (no need to resolve)
+    const ethAddressRegex = /^0x[a-fA-F0-9]{40}$/;
+    if (ethAddressRegex.test(value)) {
+      debouncedInputForNames.value = value;
+      return;
+    }
+
+    // For potential names (ENS/SNS), debounce the update
+    updateDebouncedInput(value);
+  },
+  { immediate: true }
+);
 
 const selectAddressVisible = computed(() => {
   return (
     (!inputted.value && previousTransactionAddress.value) ||
     ensParseInProgress.value ||
-    ensAddress.value ||
+    name.value?.address ||
     ensParseError.value
   );
 });
 
 const addressError = computed(() => {
-  if (inputted.value && !isAddressValid.value && !isValidEnsFormat.value) {
-    return "invalid_address";
-  } else if (isValidEnsFormat.value && !ensParseInProgress.value && !ensAddress.value) {
+  if (!inputted.value) {
+    return undefined;
+  }
+
+  // Check if it's a valid Ethereum address (42 chars, starts with 0x, valid hex)
+  const ethAddressRegex = /^0x[a-fA-F0-9]{40}$/;
+  if (ethAddressRegex.test(inputted.value)) {
+    return undefined;
+  }
+
+  // If ENS resolution is in progress, don't show error yet
+  if (ensParseInProgress.value) {
+    return undefined;
+  }
+
+  // If ENS resolved successfully, no error
+  if (name.value?.address) {
+    return undefined;
+  }
+
+  // If we have an ENS error, show appropriate message
+  if (ensParseError.value) {
     return "ens_not_found";
   }
+
+  // If it looks like an address but is invalid format
+  if (inputted.value.startsWith("0x")) {
+    return "invalid_address";
+  }
+
+  // For potential ENS names that haven't been resolved yet
+  // Only show error if we're not currently resolving and the debounced input matches current input
+  if (debouncedInputForNames.value === inputted.value) {
+    return "ens_not_found";
+  }
+
+  // Don't show error while user is still typing
   return undefined;
 });
+
 watch(
   addressError,
   (value) => {

@@ -109,7 +109,7 @@ Feature: Withdraw
     Then Element with "class" "arrow-icon" should be "clickable"
     #Search field
     Then Element with "class" "small-input-field" should be "visible"
-    Then Element with "placeholder" "Address or ENS or contact name" should be "visible"
+    Then Element with "placeholder" "Address, Soph.id or ENS or contact name" should be "visible"
     Then Element with "partial class" "small-input-icon" should be "visible"
     Then Element with "text" "0x2CF4...75d" should be "visible"
     Then Element with "text" "0x2CF4...75d" should be "clickable"
@@ -139,7 +139,7 @@ Feature: Withdraw
     When I click by text "Withdraw"
     When I click by "text" with "Your Ethereum Goerli Testnet account" value
     Then Element with "text" "Bridge to" should be "visible"
-    When I fill the input field contains "placeholder" type "Address or ENS or contact name" value with "0x9CC8DC9c4d73fC5647A4eE78A2e8EC49D447AeB8" text
+    When I fill the input field contains "placeholder" type "Address, Soph.id or ENS or contact name" value with "0x9CC8DC9c4d73fC5647A4eE78A2e8EC49D447AeB8" text
     When I click by text "0x9CC8...eB8"
     Then Element with "text" "Ethereum Goerli Testnet address" should be "visible"
     Then Element with "text" "0x9CC8...eB8" should be "visible"
@@ -201,7 +201,7 @@ Feature: Withdraw
       When I click by text "Deposit"
       When I click by "text" with "Your zkSync Era Testnet account" value
       Then Element with "text" "Bridge to" should be "visible"
-      When I fill the input field contains "placeholder" type "Address or ENS or contact name" value with "0x52B6d10d7d865B3d4103f8809AA3521288568f46" text
+      When I fill the input field contains "placeholder" type "Address, Soph.id or ENS or contact name" value with "0x52B6d10d7d865B3d4103f8809AA3521288568f46" text
       When I click by text "0x52B6...f46"
       Then Element with "text" "zkSync Era Testnet address" should be "visible"
       Then Element with "text" "0x52B6...f46" should be "visible"

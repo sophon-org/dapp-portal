@@ -101,7 +101,7 @@
             </CommonButtonDropdown>
           </template>
         </CommonInputTransactionAddress>
-        <CommonInputTransactionAddress v-else v-model="address" class="mt-6" />
+        <CommonInputTransactionAddress v-else v-model="address" class="mt-6" :sns-support="true" />
         <TransactionCustomBridge
           v-if="tokenCustomBridge"
           type="withdraw"

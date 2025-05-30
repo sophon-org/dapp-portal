@@ -30,7 +30,7 @@
           <path d="M9 22V12h6v10M2 10.6L12 2l10 8.6" />
         </svg>
 
-        Home
+        Start
       </NuxtLink>
       <NuxtLink
         class="link-item flex items-center gap-1 text-lg font-medium text-gray-2"

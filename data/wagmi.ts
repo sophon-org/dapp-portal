@@ -7,8 +7,8 @@ import { chainList, l1Networks, type ZkSyncNetwork } from "@/data/networks";
 const portalRuntimeConfig = usePortalRuntimeConfig();
 
 const metadata = {
-  name: "zkSync Portal",
-  description: "zkSync Portal - view balances, transfer and bridge tokens",
+  name: "ZKsync Portal",
+  description: "ZKsync Portal - view balances, transfer and bridge tokens",
   url: "https://portal.zksync.io",
   icons: ["https://portal.zksync.io/icon.png"],
 };
@@ -60,12 +60,17 @@ const getAllChains = () => {
   return chains;
 };
 
+// Creates a fallback transport for a particular chain.
+const chainTransports = (chain: Chain) => {
+  // We expect all the transports to support batch requests.
+  const httpTransports = chain.rpcUrls.default.http.map((e) => http(e, { batch: true }));
+  return fallback(httpTransports);
+};
+
 const chains = getAllChains();
 export const wagmiConfig = defaultWagmiConfig({
   chains: getAllChains() as any,
-  transports: Object.fromEntries(
-    chains.map((chain) => [chain.id, fallback(chain.rpcUrls.default.http.map((e) => http(e)))])
-  ),
+  transports: Object.fromEntries(chains.map((chain) => [chain.id, chainTransports(chain)])),
   projectId: portalRuntimeConfig.walletConnectProjectId,
   metadata,
   enableCoinbase: false,

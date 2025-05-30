@@ -1,17 +1,16 @@
-import { BigNumber, ethers } from "ethers";
-import { parseEther } from "ethers/lib/utils";
+import { parseEther } from "ethers";
 import { utils } from "zksync-ethers";
 
 import type { Token, TokenAmount } from "@/types";
 import type { BigNumberish } from "ethers";
 
 export type DepositFeeValues = {
-  maxFeePerGas?: BigNumber;
-  maxPriorityFeePerGas?: BigNumber;
-  gasPrice?: BigNumber;
-  baseCost?: BigNumber;
-  l1GasLimit: BigNumber;
-  l2GasLimit?: BigNumber;
+  maxFeePerGas?: bigint;
+  maxPriorityFeePerGas?: bigint;
+  gasPrice?: bigint;
+  baseCost?: bigint;
+  l1GasLimit: bigint;
+  l2GasLimit?: bigint;
 };
 
 export default (tokens: Ref<Token[]>, balances: Ref<TokenAmount[] | undefined>) => {
@@ -33,10 +32,7 @@ export default (tokens: Ref<Token[]>, balances: Ref<TokenAmount[] | undefined>) 
     if (!fee.value) return undefined;
 
     if (fee.value.l1GasLimit && fee.value.maxFeePerGas && fee.value.maxPriorityFeePerGas) {
-      return fee.value.l1GasLimit
-        .mul(fee.value.maxFeePerGas)
-        .add(fee.value.baseCost || "0")
-        .toString();
+      return String(fee.value.l1GasLimit * fee.value.maxFeePerGas + (fee.value.baseCost || 0n));
     } else if (fee.value.l1GasLimit && fee.value.gasPrice) {
       return calculateFee(fee.value.l1GasLimit, fee.value.gasPrice).toString();
     }
@@ -44,7 +40,7 @@ export default (tokens: Ref<Token[]>, balances: Ref<TokenAmount[] | undefined>) 
   });
 
   const feeToken = computed(() => {
-    return tokens.value.find((e) => e.address === utils.ETH_ADDRESS);
+    return tokens.value.find((e) => e.address.toUpperCase() === utils.ETH_ADDRESS.toUpperCase());
   });
   const enoughBalanceToCoverFee = computed(() => {
     if (!feeToken.value || !balances.value || inProgress.value) {
@@ -52,7 +48,7 @@ export default (tokens: Ref<Token[]>, balances: Ref<TokenAmount[] | undefined>) 
     }
     const feeTokenBalance = balances.value.find((e) => e.address === feeToken.value!.address);
     if (!feeTokenBalance) return true;
-    if (totalFee.value && BigNumber.from(totalFee.value).gt(feeTokenBalance.amount)) {
+    if (totalFee.value && BigInt(totalFee.value) > BigInt(feeTokenBalance.amount)) {
       return false;
     }
     return true;
@@ -71,14 +67,11 @@ export default (tokens: Ref<Token[]>, balances: Ref<TokenAmount[] | undefined>) 
   };
   const getERC20TransactionFee = () => {
     return {
-      l1GasLimit: BigNumber.from(1000000), // TODO: replace for zksync-ethers value when we have updated the package
+      l1GasLimit: BigInt(1000000), // TODO: replace for zksync-ethers value when we have updated the package
     };
   };
   const getGasPrice = async () => {
-    const web3Provider = new ethers.providers.Web3Provider((await onboardStore.getWallet()) as any, "any");
-    return BigNumber.from(await retry(() => web3Provider.getGasPrice()))
-      .mul(110)
-      .div(100);
+    return (BigInt(await retry(() => onboardStore.getPublicClient().getGasPrice())) * 110n) / 100n;
   };
   const {
     inProgress,

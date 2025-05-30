@@ -26,7 +26,7 @@
           :description="`Explore ecosystem of third party bridges`"
           :icon="ArrowTopRightOnSquareIcon"
           as="a"
-          href="https://layerswap.io/app"
+          href="https://docs.sophon.xyz/discover/bridging/bridging-intro"
           target="_blank"
         >
           <template #image>

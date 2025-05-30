@@ -30,7 +30,7 @@
           label="Bridge from other networks"
           description="Explore ecosystem of third party bridges"
           as="a"
-          href="https://layerswap.io/app"
+          href="https://docs.sophon.xyz/discover/bridging/bridging-intro"
           target="_blank"
           :icon="ArrowTopRightOnSquareIcon"
         >

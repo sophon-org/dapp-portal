@@ -25,7 +25,7 @@ Feature: Artifacts - UI
     Then Element with "text" "Add contact" should be "visible"
     Then Element with "text" "Add contact" should be "clickable"
     Then Element with "partial class" "small-input-container" should be "visible"
-    Then Element with "placeholder" "Address or ENS or contact name" should be "visible"
+    Then Element with "placeholder" "Address, Soph.id or ENS or contact name" should be "visible"
     #add new contact
     Given I click by "text" with "Add contact" value
     When I fill the input field contains "placeholder" type "Name of the contact" value with "My second contact" text

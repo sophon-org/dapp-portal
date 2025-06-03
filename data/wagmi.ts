@@ -7,10 +7,10 @@ import { chainList, l1Networks, type ZkSyncNetwork } from "@/data/networks";
 const portalRuntimeConfig = usePortalRuntimeConfig();
 
 const metadata = {
-  name: "ZKsync Portal",
-  description: "ZKsync Portal - view balances, transfer and bridge tokens",
-  url: "https://portal.zksync.io",
-  icons: ["https://portal.zksync.io/icon.png"],
+  name: "Sophon Portal",
+  description: "Sophon Portal - view balances, transfer and bridge tokens",
+  url: "https://portal.sophon.xyz",
+  icons: ["https://portal.sophon.xyz/icon.png"],
 };
 
 if (!portalRuntimeConfig.walletConnectProjectId) {

@@ -31,7 +31,7 @@
         <CommonCardWithLineButtons v-if="selectAddressVisible" class="select-address-popover">
           <AddressCardLoader v-if="ensParseInProgress || typing" />
           <AddressCard
-            v-else-if="name.address && !typing"
+            v-else-if="name?.address && !typing"
             size="sm"
             :name="inputted.replace('.soph.id', '')"
             :address="name.address"

@@ -45,5 +45,9 @@ const showAddNetworkButton = computed(() => {
   .links-container {
     @apply flex w-max flex-wrap items-center justify-center gap-x-8 gap-y-4 whitespace-nowrap;
   }
+
+  .github-link-content {
+    @apply flex items-center gap-1;
+  }
 }
 </style>

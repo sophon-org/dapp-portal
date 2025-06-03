@@ -4,7 +4,7 @@ import { MAINNET } from "~/data/mainnet";
 import { TESTNET } from "~/data/testnet";
 
 import type { DepositFeeValues } from "@/composables/zksync/deposit/useFee";
-import type { BigNumberish, BytesLike, ethers, Overrides } from "ethers";
+import type { BigNumberish, BytesLike, Overrides } from "ethers";
 import type { Address } from "zksync-ethers/build/types";
 
 type DepositParams = {
@@ -18,7 +18,7 @@ type DepositParams = {
   l2GasLimit?: BigNumberish;
   gasPerPubdataByte?: BigNumberish;
   refundRecipient?: Address;
-  overrides?: ethers.PayableOverrides;
+  overrides?: Overrides & { value?: BigNumberish };
   approveOverrides?: Overrides;
   approveBaseOverrides?: Overrides;
   customBridgeData?: BytesLike;

@@ -1,7 +1,7 @@
 <template>
   <CommonButtonLineWithImg :as="as" class="address-card">
     <template #image>
-      <AddressAvatar class="address-card-avatar" :address="address">
+      <AddressAvatar class="address-card-avatar" :address="type === 'sns' ? `${name}.soph.id` : name || address">
         <template v-if="$slots['address-icon']" #icon>
           <slot name="address-icon" />
         </template>
@@ -9,7 +9,7 @@
     </template>
     <template #default>
       <CommonButtonLineBodyInfo class="text-left">
-        <template v-if="name" #label>{{ name }}</template>
+        <template v-if="name" #label>{{ displayName }}</template>
         <template #underline>
           <span class="block break-all" :title="address">{{ address }}</span>
         </template>
@@ -22,7 +22,7 @@
 </template>
 
 <script lang="ts" setup>
-defineProps({
+const props = defineProps({
   as: {
     type: [String, Object] as PropType<string | Component>,
   },
@@ -33,6 +33,19 @@ defineProps({
     type: String,
     required: true,
   },
+  type: {
+    type: String as PropType<"ens" | "sns">,
+  },
+});
+
+const displayName = computed(() => {
+  if (props.type === "ens") {
+    return `${props.name} - From ENS`;
+  }
+  if (props.type === "sns") {
+    return `${props.name}.soph.id - From Sophon Name Service (SNS)`;
+  }
+  return props.name;
 });
 </script>
 

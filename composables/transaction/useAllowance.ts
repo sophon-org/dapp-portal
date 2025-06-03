@@ -1,16 +1,19 @@
-import { BigNumber } from "ethers";
-import { utils } from "zksync-ethers";
+import { L1Signer, utils } from "zksync-ethers";
 import IERC20 from "zksync-ethers/abi/IERC20.json";
 
-import type { Hash } from "@/types";
+import type { DepositFeeValues } from "../zksync/deposit/useFee";
+import type { Hash, TokenAllowance } from "@/types";
 import type { BigNumberish } from "ethers";
+import type { WalletClient } from "viem";
 
 export default (
   accountAddress: Ref<string | undefined>,
   tokenAddress: Ref<string | undefined>,
-  getContractAddress: () => Promise<string | undefined>
+  getContractAddress: () => Promise<string | undefined>,
+  getL1Signer: () => Promise<L1Signer | undefined>,
+  getWallet: () => Promise<WalletClient | undefined>
 ) => {
-  const { getPublicClient, getWallet } = useOnboardStore();
+  const { getPublicClient } = useOnboardStore();
   const {
     result,
     inProgress,
@@ -31,7 +34,7 @@ export default (
         functionName: "allowance",
         args: [accountAddress.value, contractAddress],
       })) as bigint;
-      return BigNumber.from(allowance);
+      return BigInt(allowance);
     },
     { cache: false }
   );
@@ -44,11 +47,12 @@ export default (
     }
   };
 
-  let approvalAmount: BigNumberish | undefined;
+  let approvalAmounts: TokenAllowance[] = [];
   const setAllowanceStatus = ref<"not-started" | "processing" | "waiting-for-signature" | "sending" | "done">(
     "not-started"
   );
-  const setAllowanceTransactionHash = ref<Hash | undefined>();
+  const setAllowanceTransactionHash = ref<Hash | undefined>(undefined);
+
   const {
     result: setAllowanceReceipt,
     inProgress: setAllowanceInProgress,
@@ -65,13 +69,19 @@ export default (
         if (!contractAddress) throw new Error("Contract address is not available");
 
         const wallet = await getWallet();
-
         setAllowanceStatus.value = "waiting-for-signature";
-        setAllowanceTransactionHash.value = await wallet.writeContract({
+
+        const approvalAmount = approvalAmounts[1] ?? approvalAmounts[0];
+
+        if (!approvalAmount) throw new Error("Approval amount is not available");
+
+        setAllowanceTransactionHash.value = await wallet?.writeContract({
           address: tokenAddress.value as Hash,
           abi: IERC20,
           functionName: "approve",
-          args: [contractAddress, approvalAmount!.toString()],
+          args: [contractAddress, approvalAmount.allowance],
+          chain: getPublicClient().chain,
+          account: accountAddress.value as `0x${string}`,
         });
 
         setAllowanceStatus.value = "sending";
@@ -81,6 +91,7 @@ export default (
             setAllowanceTransactionHash.value = replacement.transaction.hash;
           },
         });
+
         await requestAllowance();
 
         setAllowanceStatus.value = "done";
@@ -92,12 +103,37 @@ export default (
     },
     { cache: false }
   );
-  const setAllowance = async (amount: BigNumberish) => {
-    approvalAmount = amount;
+  const getApprovalAmounts = async (amount: BigNumberish, fee: DepositFeeValues) => {
+    const wallet = await getL1Signer();
+    if (!wallet) throw new Error("Wallet is not available");
+
+    // We need to pass the overrides in order to get the correct deposits allowance params
+    const overrides = {
+      gasPrice: fee.gasPrice,
+      gasLimit: fee.l1GasLimit,
+      maxFeePerGas: fee.maxFeePerGas,
+      maxPriorityFeePerGas: fee.maxPriorityFeePerGas,
+    };
+    if (overrides.gasPrice && overrides.maxFeePerGas) {
+      overrides.gasPrice = undefined;
+    }
+
+    approvalAmounts = (await wallet.getDepositAllowanceParams(
+      tokenAddress.value!,
+      amount,
+      overrides
+    )) as TokenAllowance[];
+
+    return approvalAmounts;
+  };
+
+  const setAllowance = async (amount: BigNumberish, fee: DepositFeeValues) => {
+    await getApprovalAmounts(amount, fee);
     await executeSetAllowance();
   };
+
   const resetSetAllowance = () => {
-    approvalAmount = undefined;
+    approvalAmounts = [];
     setAllowanceStatus.value = "not-started";
     setAllowanceTransactionHash.value = undefined;
     resetExecuteSetAllowance();
@@ -125,5 +161,6 @@ export default (
     setAllowanceError,
     setAllowance,
     resetSetAllowance,
+    getApprovalAmounts,
   };
 };

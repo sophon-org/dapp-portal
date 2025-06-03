@@ -11,7 +11,7 @@ Feature: Contacts
     Given Clipboard is not empty
     Given I go to page "/contacts"
     Given I click by "text" with "Add contact" value
-    When I fill the input field contains "placeholder" type "Address or ENS or contact name" value with "SameAddress" text
+    When I fill the input field contains "placeholder" type "Address, Soph.id or ENS or contact name" value with "SameAddress" text
     When I fill the input field contains "placeholder" type "Ethereum address" value with "clipboard" text
     When I click on the Save contact button
     Then Element with "text" "Can't add own account to contacts" should be "visible"
@@ -53,7 +53,7 @@ Feature: Contacts
   Scenario: Check the adding a contact with ENS contact name
     Given I am on the Main page
     Given I click by "text" with "Contacts" value
-    When I fill the input field contains "placeholder" type "Address or ENS or contact name" value with "foundation.eth" text
+    When I fill the input field contains "placeholder" type "Address, Soph.id or ENS or contact name" value with "foundation.eth" text
     Then Element with "text" "0x47BC...e87" should be "visible"
     When I click on the Add contact button for found contact
     Then Element with "text" "Edit contact" should be "visible"

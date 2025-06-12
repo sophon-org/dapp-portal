@@ -31,7 +31,7 @@
         <template #underline>
           <div class="token-balance-price">
             <template v-if="price && !isZeroAmount">
-              {{ formatTokenPrice(amount, decimals, price) }}
+              {{ formatTokenPrice(amount.toString(), decimals, price) }}
             </template>
           </div>
         </template>
@@ -41,10 +41,7 @@
 </template>
 
 <script lang="ts" setup>
-import { BigNumber } from "ethers";
-
 import type { TokenPrice } from "@/types";
-import type { BigNumberish } from "ethers";
 
 const route = useRoute();
 
@@ -75,7 +72,7 @@ const props = defineProps({
     type: String,
   },
   amount: {
-    type: String as PropType<BigNumberish>,
+    type: BigInt as unknown as PropType<bigint>,
     required: true,
   },
   price: {
@@ -88,7 +85,7 @@ const props = defineProps({
 
 const shouldShowAddToWallet = computed(() => route.path !== "/bridge");
 
-const isZeroAmount = computed(() => BigNumber.from(props.amount).isZero());
+const isZeroAmount = computed(() => BigInt(props.amount) === 0n);
 
 const fullAmount = computed(() => parseTokenAmount(props.amount, props.decimals));
 const displayedAmount = computed(() => {

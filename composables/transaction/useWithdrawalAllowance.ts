@@ -1,4 +1,4 @@
-import { BigNumber, ethers, type BigNumberish } from "ethers";
+import { ethers, type BigNumberish } from "ethers";
 import { utils } from "zksync-ethers";
 import { type Provider } from "zksync-ethers";
 import IERC20 from "zksync-ethers/abi/IERC20.json";
@@ -20,7 +20,7 @@ export default (
   const NETWORK_CONFIG = selectedNetwork.value.key === "sophon" ? MAINNET : TESTNET;
   let approvalAmount: BigNumberish | undefined;
 
-  const fetchAllowance = async (owner: string): Promise<BigNumber> => {
+  const fetchAllowance = async (owner: string): Promise<bigint> => {
     if (!tokenAddress.value) throw new Error("Token address is not available");
     let spender;
     if (isOft.value) {
@@ -31,8 +31,8 @@ export default (
     const provider = getProvider();
     const tokenContract = new ethers.Contract(tokenAddress.value, IERC20, provider);
     const allowance = await tokenContract.allowance(owner, spender);
-    approvalNeeded.value = BigNumber.from(allowance).isZero();
-    return BigNumber.from(allowance);
+    approvalNeeded.value = allowance === 0n;
+    return allowance;
   };
 
   const {

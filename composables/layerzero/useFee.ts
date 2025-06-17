@@ -1,6 +1,6 @@
 import { getAddress } from "@ethersproject/address";
 import { hexZeroPad } from "@ethersproject/bytes";
-import { BigNumber, type BigNumberish, Contract, ethers } from "ethers";
+import { type BigNumberish, Contract, ethers } from "ethers";
 import { ref } from "vue";
 import IERC20 from "zksync-ethers/abi/IERC20.json";
 
@@ -28,7 +28,7 @@ export type LayerZeroFeeParams = {
 };
 
 export default (getSigner: () => Promise<any>, getProvider: () => Provider) => {
-  const allowanceValue = ref<BigNumber | undefined>();
+  const allowanceValue = ref<bigint | undefined>();
   const approvalNeeded = ref(false);
   const { selectedNetwork } = storeToRefs(useNetworkStore());
   const NETWORK_CONFIG = selectedNetwork.value.key === "sophon" ? MAINNET : TESTNET;
@@ -49,11 +49,11 @@ export default (getSigner: () => Promise<any>, getProvider: () => Provider) => {
     const provider = getProvider();
     const tokenContract = new ethers.Contract(tokenAddress, IERC20, provider);
     const allowance = await tokenContract.allowance(owner, spender);
-    allowanceValue.value = BigNumber.from(allowance);
+    allowanceValue.value = BigInt(allowance);
 
-    if (allowanceValue.value.isZero()) return false;
+    if (allowanceValue.value === 0n) return false;
 
-    const isApproved = allowanceValue.value.gte(amount);
+    const isApproved = allowanceValue.value > BigInt(amount);
 
     approvalNeeded.value = !isApproved;
     return isApproved;
@@ -61,8 +61,8 @@ export default (getSigner: () => Promise<any>, getProvider: () => Provider) => {
 
   let currentParams: LayerZeroFeeParams | undefined;
   const result = ref<LayerZeroFeeValues | undefined>();
-  const gasLimit = ref<BigNumberish | undefined>();
-  const gasPrice = ref<BigNumberish | undefined>();
+  const gasLimit = ref<bigint | undefined>();
+  const gasPrice = ref<bigint | undefined>();
 
   const {
     inProgress,
@@ -80,7 +80,7 @@ export default (getSigner: () => Promise<any>, getProvider: () => Provider) => {
 
       const dstChainId = getEndpointId();
       const toAddressBytes32 = toBytes32Address(params.to);
-      // L2 to L1
+
       const helperContract = new Contract(NETWORK_CONFIG.LAYER_ZERO_CONFIG.oftHelperAddress, LZ_OFT_HELPER_ABI, wallet);
       const sendParam = {
         dstEid: dstChainId, // Ethereum mainnet
@@ -91,16 +91,25 @@ export default (getSigner: () => Promise<any>, getProvider: () => Provider) => {
         composeMsg: "0x",
         oftCmd: "0x",
       };
-      // Get quote first
+
       const { nativeFee } = await helperContract.quoteSend(params.token.address, sendParam);
-      const [price, limit] = await Promise.all([
-        // Get gas price
-        provider.getGasPrice(),
-        // Get gas limit
-        helperContract.estimateGas.send(params.token.address, sendParam),
-      ]);
+      const price = await provider.getGasPrice();
       gasPrice.value = price;
-      gasLimit.value = limit;
+
+      try {
+        const sendData = helperContract.interface.encodeFunctionData("send", [params.token.address, sendParam]);
+        const gasEstimate = await provider.estimateGas({
+          to: NETWORK_CONFIG.LAYER_ZERO_CONFIG.oftHelperAddress,
+          data: sendData,
+          from: params.from,
+          value: "0x0", // Set value to 0 for estimation purposes
+        });
+        gasLimit.value = BigInt(gasEstimate.toString());
+      } catch (err) {
+        // Fallback estimate
+        gasLimit.value = 300000n;
+      }
+
       result.value = { nativeFee };
     },
     { cache: false }

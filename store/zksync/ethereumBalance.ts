@@ -40,11 +40,11 @@ export const useZkSyncEthereumBalanceStore = defineStore("zkSyncEthereumBalances
         .filter((token) => !ethereumBalance.value?.find((e) => e.address.toUpperCase() === token.address.toUpperCase()))
         .map((e) => ({
           ...e,
-          amount: "0",
+          amount: 0n,
         })),
     ].sort((a, b) => {
-      if (a.address === utils.ETH_ADDRESS) return -1; // Always bring ETH to the beginning
-      if (b.address === utils.ETH_ADDRESS) return 1; // Keep ETH at the beginning if comparing with any other token
+      if (a.address.toUpperCase() === utils.ETH_ADDRESS.toUpperCase()) return -1; // Always bring ETH to the beginning
+      if (b.address.toUpperCase() === utils.ETH_ADDRESS.toUpperCase()) return 1; // Keep ETH at the beginning if comparing with any other token
       return 0; // Keep other tokens' order unchanged
     });
   };
@@ -85,7 +85,8 @@ export const useZkSyncEthereumBalanceStore = defineStore("zkSyncEthereumBalances
           const balance = await getBalanceWithRetry(wagmiConfig, {
             address: account.value.address!,
             chainId: l1Network.value!.id,
-            token: token.address === utils.ETH_ADDRESS ? undefined : (token.address! as Hash),
+            token:
+              token.address.toUpperCase() === utils.ETH_ADDRESS.toUpperCase() ? undefined : (token.address! as Hash),
           });
 
           if (!balance) {
@@ -96,14 +97,14 @@ export const useZkSyncEthereumBalanceStore = defineStore("zkSyncEthereumBalances
             ...token,
             symbol: token.symbol ?? balance.symbol,
             decimals: token.decimals ?? balance.decimals,
-            amount: balance.value.toString(),
+            amount: balance.value,
           };
         } catch (error) {
           // eslint-disable-next-line no-console
           console.error(`Failed to fetch ${token.symbol} balance after retries:`, error);
           return {
             ...token,
-            amount: "0",
+            amount: 0n,
           };
         }
       })

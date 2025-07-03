@@ -1,13 +1,13 @@
 import { useMemoize } from "@vueuse/core";
 import { type BigNumberish } from "ethers";
-import { utils } from "zksync-ethers";
+import { utils, Provider } from "zksync-ethers";
 
 import { isCustomNode } from "@/data/networks";
 import { MAINNET } from "~/data/mainnet";
 import { TESTNET } from "~/data/testnet";
 
 import type { TokenAmount } from "@/types";
-import type { Provider, Signer } from "zksync-ethers";
+import type { Signer } from "zksync-ethers";
 
 type TransactionParams = {
   type: "transfer" | "withdrawal";
@@ -50,10 +50,33 @@ export default (getSigner: () => Promise<Signer | undefined>, getProvider: () =>
       };
       let bridgeAddress;
       let nonce;
+
       if (transaction.type === "withdrawal") {
         if (transaction.tokenAddress === NETWORK_CONFIG.CUSTOM_USDC_TOKEN.address) {
           bridgeAddress = NETWORK_CONFIG.CUSTOM_USDC_TOKEN.l2BridgeAddress!;
-          nonce = await provider.getTransactionCount(await signer.getAddress(), "pending");
+
+          try {
+            const signerAddress = await signer.getAddress();
+
+            if (!signerAddress) {
+              throw new Error("Signer address is null or undefined");
+            }
+
+            // Try using the signer's provider first as a fallback
+            try {
+              nonce = await provider.getTransactionCount(signerAddress, "pending");
+            } catch (providerError) {
+              // Use signer's provider as fallback
+              const signerProvider = signer.provider;
+              if (signerProvider && typeof signerProvider.getTransactionCount === "function") {
+                nonce = await signerProvider.getTransactionCount(signerAddress, "pending");
+              } else {
+                throw providerError; // Re-throw original error if no fallback available
+              }
+            }
+          } catch (err) {
+            throw new Error(`Failed to get transaction count: ${(err as Error).message}`);
+          }
         } else {
           bridgeAddress = await getRequiredBridgeAddress();
         }
@@ -85,6 +108,27 @@ export default (getSigner: () => Promise<Signer | undefined>, getProvider: () =>
           nonce,
         },
       });
+
+      // Manually get nonce if not set to avoid internal getTransactionCount call that causes viem error
+      if (txRequest.nonce === undefined || txRequest.nonce === null) {
+        try {
+          const signerAddress = await signer.getAddress();
+
+          try {
+            txRequest.nonce = await provider.getTransactionCount(signerAddress, "pending");
+          } catch (providerError) {
+            // Fallback to signer's provider
+            const signerProvider = signer.provider;
+            if (signerProvider && typeof signerProvider.getTransactionCount === "function") {
+              txRequest.nonce = await signerProvider.getTransactionCount(signerAddress, "pending");
+            } else {
+              throw providerError; // Re-throw original error if no fallback available
+            }
+          }
+        } catch (nonceError) {
+          throw new Error(`Failed to get transaction nonce: ${(nonceError as Error).message}`);
+        }
+      }
 
       const txResponse = await signer.sendTransaction(txRequest);
 

@@ -115,19 +115,24 @@ export const useZkSyncTransactionStatusStore = defineStore("zkSyncTransactionSta
     }
   };
   const getWithdrawalStatus = async (transaction: TransactionInfo) => {
+    console.log("checking getWithdrawalStatus in transactionStatus.ts");
     if (!transaction.info.withdrawalFinalizationAvailable) {
       const provider = await providerStore.requestProvider();
-      const transactionDetails = await provider.getTransactionDetails(transaction.transactionHash);
-      if (transactionDetails.status === "failed") {
-        transaction.info.withdrawalFinalizationAvailable = false;
+      const transactionDetails = await provider.getTransactionReceipt(transaction.transactionHash);
+      if (!transactionDetails) return transaction;
+      if (transactionDetails.status === 0) {
         transaction.info.failed = true;
         transaction.info.completed = true;
+        transaction.info.withdrawalFinalizationAvailable = false;
         return transaction;
       }
-      if (transactionDetails.status !== "verified") {
+
+      // continue if l2ToL1Logs exist
+      if (!(transactionDetails.l2ToL1Logs && transactionDetails.l2ToL1Logs.length > 0)) {
         return transaction;
       }
     }
+    console.log("checking finalization in transactionStatus.ts");
     const isFinalized = await useZkSyncWalletStore()
       .getL1VoidSigner(true)
       .then((signer) => signer.isWithdrawalFinalized(transaction.transactionHash))
@@ -137,11 +142,12 @@ export const useZkSyncTransactionStatusStore = defineStore("zkSyncTransactionSta
     return transaction;
   };
   const getTransferStatus = async (transaction: TransactionInfo) => {
+    console.log("checking getTransferStatus in transactionStatus.ts");
     const provider = await providerStore.requestProvider();
     const transactionReceipt = await provider.getTransactionReceipt(transaction.transactionHash);
     if (!transactionReceipt) return transaction;
-    const transactionDetails = await provider.getTransactionDetails(transaction.transactionHash);
-    if (transactionDetails.status === "failed") {
+    // TODO (zksyncos): ensure this is sufficient to check success
+    if (transactionReceipt.status === 0) {
       transaction.info.failed = true;
     }
     transaction.info.completed = true;

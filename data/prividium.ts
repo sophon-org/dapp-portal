@@ -4,20 +4,14 @@ import type { Transport } from "@wagmi/core";
 
 const prividiumTestnetInstance = createPrividiumChain({
   chain: {
-    id: 300,
-    name: "Prividium Testnet",
+    id: 270,
+    name: "Prividium Local",
     nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
-    blockExplorers: {
-      default: {
-        name: "Prividium Era Testnet Explorer",
-        url: "https://block-explorer.era-prividium.zksync.dev",
-      },
-    },
   },
   clientId: "portal",
-  rpcUrl: "https://proxy.era-prividium.zksync.dev/rpc",
-  authBaseUrl: "https://user-panel.era-prividium.zksync.dev",
-  permissionsApiBaseUrl: "https://permissions-api.era-prividium.zksync.dev",
+  rpcUrl: "http://localhost:8001",
+  authBaseUrl: "http://localhost:3002",
+  permissionsApiBaseUrl: "http://localhost:8000",
   redirectUrl: `${window.location.origin}/callback`,
   scope: ["wallet:required"],
   onAuthExpiry: () => {

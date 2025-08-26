@@ -1,7 +1,7 @@
 import { useMemoize } from "@vueuse/core";
-import { Wallet } from "zksync-ethers";
+import { Wallet, typechain } from "zksync-ethers";
 import IL1Nullifier from "zksync-ethers/abi/IL1Nullifier.json";
-import { IL1AssetRouter__factory as IL1AssetRouterFactory } from "zksync-ethers/build/typechain";
+// import { IL1AssetRouter__factory as IL1AssetRouterFactory } from "zksync-ethers/build/typechain";
 
 import { L1_BRIDGE_ABI } from "@/data/abis/l1BridgeAbi";
 import { customBridgeTokens } from "@/data/customBridgeTokens";
@@ -28,7 +28,12 @@ export default (transactionInfo: ComputedRef<TransactionInfo>) => {
   );
   const retrieveL1NullifierAddress = useMemoize(async () => {
     const providerL1 = await walletStore.getL1VoidSigner();
-    return await IL1AssetRouterFactory.connect((await retrieveBridgeAddresses()).sharedL1, providerL1).L1_NULLIFIER();
+    return await typechain.IL1AssetRouter__factory.connect(
+      (
+        await retrieveBridgeAddresses()
+      ).sharedL1,
+      providerL1
+    ).L1_NULLIFIER();
   });
 
   const gasLimit = ref<bigint | undefined>();

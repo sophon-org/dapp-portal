@@ -1,7 +1,7 @@
 import { readContract, writeContract } from "@wagmi/core";
 import { zeroAddress, type Address, type Hash } from "viem";
-import { L1Signer } from "zksync-ethers";
-import { getERC20DefaultBridgeData, REQUIRED_L1_TO_L2_GAS_PER_PUBDATA_LIMIT } from "zksync-ethers/build/utils";
+import { L1Signer, utils } from "zksync-ethers";
+// import { getERC20DefaultBridgeData, REQUIRED_L1_TO_L2_GAS_PER_PUBDATA_LIMIT } from "zksync-ethers/build/utils";
 
 import { useSentryLogger } from "@/composables/useSentryLogger";
 import { L1_BRIDGE_ABI } from "@/data/abis/l1BridgeAbi";
@@ -39,9 +39,9 @@ export default (getL1Signer: () => Promise<L1Signer | undefined>) => {
       abi: L1_BRIDGE_ABI,
       functionName: "l2Bridge",
     });
-    const bridgeData = await getERC20DefaultBridgeData(transaction.tokenAddress, l1Signer.provider);
+    const bridgeData = await utils.getERC20DefaultBridgeData(transaction.tokenAddress, l1Signer.provider);
 
-    const gasPerPubdata = transaction.gasPerPubdata ?? BigInt(REQUIRED_L1_TO_L2_GAS_PER_PUBDATA_LIMIT);
+    const gasPerPubdata = transaction.gasPerPubdata ?? BigInt(utils.REQUIRED_L1_TO_L2_GAS_PER_PUBDATA_LIMIT);
     const l2Value = 0n; // L2 value is not used in this context
     const l2GasLimit = await l1Signer.providerL2.estimateCustomBridgeDepositL2Gas(
       transaction.bridgeAddress,

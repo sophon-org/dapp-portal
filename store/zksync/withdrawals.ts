@@ -29,17 +29,11 @@ export const useZkSyncWithdrawalsStore = defineStore("zkSyncWithdrawals", () => 
       if (transactionFromStorage?.info.completed) continue;
 
       if (new Date(withdrawal.timestamp).getTime() < Date.now() - FETCH_TIME_LIMIT) break;
-      const transactionDetails = await retry(() =>
-        providerStore.requestProvider().getTransactionDetails(withdrawal.transactionHash!)
-      );
 
-      const withdrawalFinalizationAvailable = !!transactionDetails.ethExecuteTxHash;
-      const isFinalized = withdrawalFinalizationAvailable
-        ? await useZkSyncWalletStore()
-            .getL1VoidSigner(true)
-            ?.isWithdrawalFinalized(withdrawal.transactionHash)
-            .catch(() => false)
-        : false;
+      const isFinalized = await useZkSyncWalletStore()
+        .getL1VoidSigner(true)
+        ?.isWithdrawalFinalized(withdrawal.transactionHash)
+        .catch(() => false);
 
       transactionStatusStore.saveTransaction({
         type: "withdrawal",
@@ -62,7 +56,7 @@ export const useZkSyncWithdrawalsStore = defineStore("zkSyncWithdrawals", () => 
             new Date(withdrawal.timestamp).getTime() + WITHDRAWAL_DELAY
           ).toISOString(),
           completed: isFinalized,
-          withdrawalFinalizationAvailable,
+          withdrawalFinalizationAvailable: isFinalized,
         },
       });
     }

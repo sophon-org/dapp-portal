@@ -164,6 +164,19 @@ const publicChains: ZkSyncNetwork[] = [
     },
     nativeTokenBridgingOnly: true,
   },
+  {
+    id: 270,
+    key: "zksyncos-stage",
+    name: "ZKsyncOS Stage",
+    rpcUrl: "https://zksync-os-stage-api.zksync-nodes.com",
+    blockExplorerUrl: "https://sepolia-era.zksync.network", // TODO(@zksyncos): update to reflect ZKsyncOS
+    blockExplorerApi: "https://block-explorer-api.sepolia.zksync.dev", // TODO(@zksyncos): update to reflect ZKsyncOS
+    l1Network: l1Networks.sepolia,
+    hidden: false,
+    displaySettings: {
+      isTestnet: true,
+    },
+  },
 ];
 
 const getHyperchains = (): ZkSyncNetwork[] => {

@@ -1,7 +1,6 @@
 import { readContract, writeContract } from "@wagmi/core";
 import { zeroAddress, type Address, type Hash } from "viem";
 import { L1Signer, utils } from "zksync-ethers";
-// import { getERC20DefaultBridgeData, REQUIRED_L1_TO_L2_GAS_PER_PUBDATA_LIMIT } from "zksync-ethers/build/utils";
 
 import { useSentryLogger } from "@/composables/useSentryLogger";
 import { L1_BRIDGE_ABI } from "@/data/abis/l1BridgeAbi";

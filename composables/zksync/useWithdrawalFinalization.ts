@@ -1,7 +1,6 @@
 import { useMemoize } from "@vueuse/core";
 import { Wallet, typechain } from "zksync-ethers";
 import IL1Nullifier from "zksync-ethers/abi/IL1Nullifier.json";
-// import { IL1AssetRouter__factory as IL1AssetRouterFactory } from "zksync-ethers/build/typechain";
 
 import { L1_BRIDGE_ABI } from "@/data/abis/l1BridgeAbi";
 import { customBridgeTokens } from "@/data/customBridgeTokens";

@@ -1,14 +1,13 @@
 import { estimateGas } from "@wagmi/core";
 import { AbiCoder } from "ethers";
 import { encodeFunctionData } from "viem";
-import { EIP712_TX_TYPE } from "zksync-ethers/build/utils";
 
 import { wagmiConfig } from "@/data/wagmi";
 
 import type { Token, TokenAmount } from "@/types";
 import type { BigNumberish, ethers } from "ethers";
 import type { Provider } from "zksync-ethers";
-import type { Address, PaymasterParams } from "zksync-ethers/build/types";
+import type { Address } from "zksync-ethers/build/types";
 
 export type FeeEstimationParams = {
   type: "transfer" | "withdrawal";
@@ -58,7 +57,6 @@ export default (
     from?: Address;
     to?: Address;
     bridgeAddress?: Address;
-    paymasterParams?: PaymasterParams;
     overrides?: ethers.Overrides;
   }): Promise<bigint> => {
     const { ...tx } = transaction;
@@ -68,19 +66,10 @@ export default (
     tx.to ??= tx.from;
     tx.overrides ??= {};
     tx.overrides.from ??= tx.from;
-    tx.overrides.type ??= EIP712_TX_TYPE;
 
     const provider = await getProvider();
     const bridge = await provider.connectL2Bridge(tx.bridgeAddress!);
-    let populatedTx = await bridge.withdraw.populateTransaction(tx.to!, tx.token, tx.amount, tx.overrides);
-    if (tx.paymasterParams) {
-      populatedTx = {
-        ...populatedTx,
-        customData: {
-          paymasterParams: tx.paymasterParams,
-        },
-      };
-    }
+    const populatedTx = await bridge.withdraw.populateTransaction(tx.to!, tx.token, tx.amount, tx.overrides);
 
     const gasLimit = await provider.estimateGas(populatedTx);
 

@@ -1,6 +1,10 @@
 import { useStorage } from "@vueuse/core";
 import { decodeEventLog } from "viem";
+import { Wallet, typechain } from "zksync-ethers";
+import IL1Nullifier from "zksync-ethers/abi/IL1Nullifier.json";
 import IZkSyncHyperchain from "zksync-ethers/abi/IZkSyncHyperchain.json";
+
+import { selectL2ToL1LogIndex, isLocalRootIsZero } from "@/utils/helpers";
 
 import type { FeeEstimationParams } from "@/composables/zksync/useFee";
 import type { TokenAmount, Hash } from "@/types";
@@ -23,6 +27,13 @@ export type TransactionInfo = {
 
 export const ESTIMATED_DEPOSIT_DELAY = 15 * 60 * 1000; // 15 minutes
 export const WITHDRAWAL_DELAY = 6 * 60 * 60 * 1000; // 6 hours
+
+// @zksyncos ZKsyncOS does not include getTransactionDetails so using executeTxHash as an 
+// indicator of finalization readiness is not available. Instead (a bit hacky), we first check
+// tx receipt on L2 for success, query zks_getL1L2LogProofs to ensure tx is included in the batch
+// and then make an simulation attempt to `finalizeDeposit` to see if we hit `LocalRootIsZero()`
+// if so we know its not ready yet. If not we proceed to mark as ready.
+// This approach is not ideal and may need to be refined in the future.
 
 export const useZkSyncTransactionStatusStore = defineStore("zkSyncTransactionStatus", () => {
   const onboardStore = useOnboardStore();
@@ -115,34 +126,106 @@ export const useZkSyncTransactionStatusStore = defineStore("zkSyncTransactionSta
     }
   };
   const getWithdrawalStatus = async (transaction: TransactionInfo) => {
-    console.log("checking getWithdrawalStatus in transactionStatus.ts");
+    const provider = await providerStore.requestProvider();
+
+    // Fetch L2 tx receipt
+    const receipt = await provider.getTransactionReceipt(transaction.transactionHash);
+    if (!receipt) {
+      return transaction;
+    }
+
+    // If L2 tx failed, mark failed & completed and exit
+    if ((receipt as any).status === 0) {
+      transaction.info.withdrawalFinalizationAvailable = false;
+      transaction.info.failed = true;
+      transaction.info.completed = false;
+      return transaction;
+    }
+
+    // Check if we already decided finalization is available; if not, try to ensure inclusion
     if (!transaction.info.withdrawalFinalizationAvailable) {
-      const provider = await providerStore.requestProvider();
-      const transactionDetails = await provider.getTransactionReceipt(transaction.transactionHash);
-      if (!transactionDetails) return transaction;
-      if (transactionDetails.status === 0) {
-        transaction.info.failed = true;
-        transaction.info.completed = true;
-        transaction.info.withdrawalFinalizationAvailable = false;
+      const l2ToL1Logs = (receipt as any).l2ToL1Logs ?? (receipt as any).l2ToL1LogsRaw ?? [];
+
+      const logIndex = selectL2ToL1LogIndex(l2ToL1Logs);
+      if (logIndex === null) {
+        // No L2→L1 log yet → not provable, so not included in an L1 batch yet
         return transaction;
       }
 
-      // continue if l2ToL1Logs exist
-      if (!(transactionDetails.l2ToL1Logs && transactionDetails.l2ToL1Logs.length > 0)) {
+      // Ask provider for a proof; if present, tx is included in an L1 batch (not yet proved/executed)
+      let hasProof = false;
+      try {
+        const proof = await provider.getLogProof(transaction.transactionHash, logIndex);
+        hasProof = !!proof;
+      } catch {
+        hasProof = false;
+      }
+
+      if (!hasProof) {
+        // Not provable yet → wait
         return transaction;
       }
+
+      try {
+        // Build finalize params for the purpose of ensuring tx is ready for finalization
+        // This replaces the use zks_getTransactionDetails and checking if executeTxHash was present
+        // TODO (zksyncos) Hacky: can be improved upon
+        const wallet = new Wallet("0x7726827caac94a7f9e1b160f7ea819f172f7b6f9d2a97f992c38edeab82d4110", provider);
+        const p = await wallet.getFinalizeWithdrawalParams(transaction.transactionHash);
+
+        const l1Signer = await useZkSyncWalletStore().getL1VoidSigner(true);
+        const bridges = await provider.getDefaultBridgeAddresses();
+        const l1NullifierAddr = await typechain.IL1AssetRouter__factory.connect(
+          bridges.sharedL1,
+          l1Signer
+        ).L1_NULLIFIER();
+
+        const publicClient = useOnboardStore().getPublicClient();
+        const chainId = BigInt((await provider.getNetwork()).chainId);
+
+        const finalizeDepositParams = {
+          chainId,
+          l2BatchNumber: BigInt(p.l1BatchNumber ?? 0n),
+          l2MessageIndex: BigInt(p.l2MessageIndex),
+          l2Sender: p.sender as `0x${string}`,
+          l2TxNumberInBatch: Number(p.l2TxNumberInBlock),
+          message: p.message as `0x${string}`,
+          merkleProof: p.proof as readonly `0x${string}`[],
+        };
+
+        await publicClient.estimateContractGas({
+          address: l1NullifierAddr as `0x${string}`,
+          abi: IL1Nullifier,
+          functionName: "finalizeDeposit",
+          args: [finalizeDepositParams],
+        });
+
+        // If we got here, call is acceptable → finalization is available
+        transaction.info.withdrawalFinalizationAvailable = true;
+      } catch (err) {
+        // This will signal finalization is not yet available
+        if (isLocalRootIsZero(err)) {
+          // Batch not executed yet → keep finalization unavailable
+          transaction.info.withdrawalFinalizationAvailable = false;
+          transaction.info.completed = false;
+          transaction.info.failed = false;
+          return transaction;
+        }
+        // other revert (e.g., already finalized) will be handled below
+      }
     }
-    console.log("checking finalization in transactionStatus.ts");
+
+    // Finalization check on L1
     const isFinalized = await useZkSyncWalletStore()
       .getL1VoidSigner(true)
       .then((signer) => signer.isWithdrawalFinalized(transaction.transactionHash))
       .catch(() => false);
-    transaction.info.withdrawalFinalizationAvailable = true;
+
     transaction.info.completed = isFinalized;
+    transaction.info.failed = false;
     return transaction;
   };
   const getTransferStatus = async (transaction: TransactionInfo) => {
-    console.log("checking getTransferStatus in transactionStatus.ts");
     const provider = await providerStore.requestProvider();
     const transactionReceipt = await provider.getTransactionReceipt(transaction.transactionHash);
     if (!transactionReceipt) return transaction;

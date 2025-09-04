@@ -12,7 +12,7 @@ import { useSentryLogger } from "../useSentryLogger";
 
 import type { TokenAmount } from "@/types";
 import type { Provider, Signer } from "zksync-ethers";
-import type { Address, PaymasterParams } from "zksync-ethers/build/types";
+import type { Address } from "zksync-ethers/build/types";
 
 type TransactionParams = {
   type: "transfer" | "withdrawal";
@@ -25,6 +25,8 @@ type TransactionParams = {
 export const isWithdrawalManualFinalizationRequired = (_token: TokenAmount, l1NetworkId: number) => {
   return l1NetworkId === 1 || isCustomNode;
 };
+
+// @zksyncos removes use of 712 tx type, and paymaster usage (not supported in zksyncos)
 
 export default (getSigner: () => Promise<Signer | undefined>, getProvider: () => Promise<Provider>) => {
   const status = ref<"not-started" | "processing" | "waiting-for-signature" | "done">("not-started");
@@ -46,7 +48,6 @@ export default (getSigner: () => Promise<Signer | undefined>, getProvider: () =>
     from?: Address;
     to?: Address;
     bridgeAddress?: Address;
-    paymasterParams?: PaymasterParams;
     overrides?: ethers.Overrides;
   }): Promise<ContractTransaction> => {
     const { ...tx } = transaction;
@@ -56,19 +57,10 @@ export default (getSigner: () => Promise<Signer | undefined>, getProvider: () =>
     tx.to ??= tx.from;
     tx.overrides ??= {};
     tx.overrides.from ??= tx.from;
-    tx.overrides.type ??= EIP712_TX_TYPE;
 
     const provider = await getProvider();
     const bridge = await provider.connectL2Bridge(tx.bridgeAddress!);
-    let populatedTx = await bridge.withdraw.populateTransaction(tx.to!, tx.token, tx.amount, tx.overrides);
-    if (tx.paymasterParams) {
-      populatedTx = {
-        ...populatedTx,
-        customData: {
-          paymasterParams: tx.paymasterParams,
-        },
-      };
-    }
+    const populatedTx = await bridge.withdraw.populateTransaction(tx.to!, tx.token, tx.amount, tx.overrides);
 
     return populatedTx;
   };

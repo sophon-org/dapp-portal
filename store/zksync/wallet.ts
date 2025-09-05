@@ -1,4 +1,3 @@
-import { ethers } from "ethers";
 import { $fetch } from "ofetch";
 import { L1Signer, L1VoidSigner, BrowserProvider, Signer } from "zksync-ethers";
 
@@ -27,11 +26,7 @@ export const useZkSyncWalletStore = defineStore("zkSyncWallet", () => {
 
     const web3Provider = new BrowserProvider((await onboardStore.getWallet(eraNetwork.value.id)) as any, "any");
     const rawEthersSigner = await web3Provider.getSigner();
-    const eraL2Signer = Signer.from(
-      rawEthersSigner,
-      Number(eraNetwork.value.id),
-      await providerStore.requestProvider()
-    );
+    const eraL2Signer = Signer.from(rawEthersSigner, await providerStore.requestProvider());
 
     return eraL2Signer;
   });
@@ -45,19 +40,31 @@ export const useZkSyncWalletStore = defineStore("zkSyncWallet", () => {
       );
     }
 
-    const web3Provider = new ethers.BrowserProvider((await onboardStore.getWallet()) as any, "any");
-    const eraL1Signer = L1Signer.from(await web3Provider.getSigner(), await providerStore.requestProvider());
+    const web3Provider = new BrowserProvider((await onboardStore.getWallet()) as any, "any");
+    const rawL1Signer = (await web3Provider.getSigner()) as unknown as any;
+    const eraL1Signer = L1Signer.from(rawL1Signer, await providerStore.requestProvider());
     return eraL1Signer;
   });
   const getL1VoidSigner = async (anyAddress = false) => {
     if (!account.value.address && !anyAddress) throw new Error("Address is not available");
 
-    const web3Provider = new ethers.BrowserProvider(onboardStore.getPublicClient() as any, "any");
+    const web3Provider = new BrowserProvider(onboardStore.getPublicClient() as any, "any");
     return new L1VoidSigner(
       account.value.address || L2_BASE_TOKEN_ADDRESS,
       web3Provider,
       await providerStore.requestProvider()
     ) as unknown as L1Signer;
+  };
+
+  const getBaseToken = async (): Promise<string> => {
+    const l1VoidSigner = await getL1VoidSigner(true);
+    try {
+      const l1 = await getL1Signer();
+      if (l1) return await l1.getBaseToken();
+      return await l1VoidSigner.getBaseToken();
+    } catch {
+      return await l1VoidSigner.getBaseToken();
+    }
   };
 
   const {
@@ -223,6 +230,7 @@ export const useZkSyncWalletStore = defineStore("zkSyncWallet", () => {
     getSigner,
     getL1Signer,
     getL1VoidSigner,
+    getBaseToken,
 
     balance,
     balanceInProgress: computed(() => balanceInProgress.value),

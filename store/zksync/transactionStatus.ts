@@ -192,12 +192,13 @@ export const useZkSyncTransactionStatusStore = defineStore("zkSyncTransactionSta
           merkleProof: p.proof as readonly `0x${string}`[],
         };
 
-        await publicClient.estimateContractGas({
+        const res = await publicClient.estimateContractGas({
           address: l1NullifierAddr as `0x${string}`,
           abi: IL1Nullifier,
           functionName: "finalizeDeposit",
           args: [finalizeDepositParams],
         });
+        console.log("res", res);
 
         // If we got here, call is acceptable → finalization is available
         transaction.info.withdrawalFinalizationAvailable = true;
@@ -215,10 +216,8 @@ export const useZkSyncTransactionStatusStore = defineStore("zkSyncTransactionSta
     }
 
     // Finalization check on L1
-    const isFinalized = await useZkSyncWalletStore()
-      .getL1VoidSigner(true)
-      .then((signer) => signer.isWithdrawalFinalized(transaction.transactionHash))
-      .catch(() => false);
+    const l1signer = await useZkSyncWalletStore().getL1VoidSigner(true);
+    const isFinalized = await l1signer.isWithdrawalFinalized(transaction.transactionHash).catch(() => false);
 
     transaction.info.completed = isFinalized;
     transaction.info.failed = false;

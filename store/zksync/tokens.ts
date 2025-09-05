@@ -7,6 +7,8 @@ import type { Api, Token } from "@/types";
 
 export const useZkSyncTokensStore = defineStore("zkSyncTokens", () => {
   const providerStore = useZkSyncProviderStore();
+  const walletStore = useZkSyncWalletStore();
+
   const { eraNetwork } = storeToRefs(providerStore);
 
   const {
@@ -44,11 +46,11 @@ export const useZkSyncTokensStore = defineStore("zkSyncTokens", () => {
         ethToken = configTokens.find((token) => token.address.toUpperCase() === ethL2TokenAddress.toUpperCase());
       }
     }
-
+    // TODO: @zksyncos add helper for retrieving base token address for chainID
     if (!baseToken) {
       baseToken = {
         address: L2_BASE_TOKEN_ADDRESS,
-        l1Address: await provider.getBaseTokenContractAddress(),
+        l1Address: await walletStore.getBaseToken(),
         symbol: "BASETOKEN",
         name: "Base Token",
         decimals: 18,

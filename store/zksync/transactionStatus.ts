@@ -199,7 +199,7 @@ export const useZkSyncTransactionStatusStore = defineStore("zkSyncTransactionSta
           functionName: "finalizeDeposit",
           args: [finalizeDepositParams],
         });
-        console.log("res", res);
+        console.log("res", res); // eslint-disable-line no-console
 
         // If we got here, call is acceptable → finalization is available
         transaction.info.withdrawalFinalizationAvailable = true;

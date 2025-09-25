@@ -1,5 +1,8 @@
 import { $fetch } from "ofetch";
 
+import { MAINNET } from "~/data/mainnet";
+import { TESTNET } from "~/data/testnet";
+
 import type { Api } from "@/types";
 
 const FETCH_TIME_LIMIT = 180 * 24 * 60 * 60 * 1000; // 180 days (6 months)
@@ -34,12 +37,62 @@ export const useZkSyncWithdrawalsStore = defineStore("zkSyncWithdrawals", () => 
       );
 
       const withdrawalFinalizationAvailable = !!transactionDetails.ethExecuteTxHash;
-      let isFinalized = withdrawalFinalizationAvailable
-        ? await useZkSyncWalletStore()
-            .getL1VoidSigner(true)
-            ?.isWithdrawalFinalized(withdrawal.transactionHash)
-            .catch(() => false)
-        : false;
+
+      let isFinalized = false;
+      if (withdrawalFinalizationAvailable) {
+        // Check if this is a USDC withdrawal
+        const { selectedNetwork } = storeToRefs(useNetworkStore());
+        const NETWORK_CONFIG = selectedNetwork.value.key === "sophon" ? MAINNET : TESTNET;
+        const isUSDCWithdrawal =
+          withdrawal.token?.address.toLowerCase() === NETWORK_CONFIG.CUSTOM_USDC_TOKEN.address.toLowerCase();
+
+        try {
+          if (isUSDCWithdrawal) {
+            // For USDC, we need to check using the custom bridge contract
+            // The issue is that the SDK uses the wrong bridge address for USDC
+            // We need to call isWithdrawalFinalized on the correct bridge contract directly
+            const publicClient = onboardStore.getPublicClient();
+            const customBridgeAddress = NETWORK_CONFIG.CUSTOM_USDC_TOKEN.l1BridgeAddress;
+
+            // Get the withdrawal parameters from the transaction receipt
+            const provider = providerStore.requestProvider();
+            const receipt = await provider.getTransactionReceipt(withdrawal.transactionHash);
+            const l2ToL1Log = receipt?.l2ToL1Logs?.[0];
+            if (!l2ToL1Log) {
+              throw new Error("No L2ToL1Log found in transaction receipt");
+            }
+
+            // Call the isWithdrawalFinalized function on the correct bridge with proper parameters
+            isFinalized = await publicClient.readContract({
+              address: customBridgeAddress as `0x${string}`,
+              abi: [
+                {
+                  inputs: [
+                    { name: "chainId", type: "uint256" },
+                    { name: "l2BatchNumber", type: "uint256" },
+                    { name: "l2ToL1MessageNumber", type: "uint256" },
+                  ],
+                  name: "isWithdrawalFinalized",
+                  outputs: [{ name: "", type: "bool" }],
+                  stateMutability: "view",
+                  type: "function",
+                },
+              ],
+              functionName: "isWithdrawalFinalized",
+              args: [BigInt(eraNetwork.value.id), BigInt(receipt?.l1BatchNumber ?? 0), BigInt(l2ToL1Log.logIndex)],
+            });
+          } else {
+            // For non-USDC tokens, use the regular SDK method
+            isFinalized = await useZkSyncWalletStore()
+              .getL1VoidSigner(true)
+              ?.isWithdrawalFinalized(withdrawal.transactionHash)
+              .catch(() => false);
+          }
+        } catch (error) {
+          isFinalized = false;
+          logger.warn("Error checking withdrawal finalization:", error);
+        }
+      }
 
       if (withdrawalFinalizationAvailable && transactionDetails.status === "failed") {
         isFinalized = false; // Allow claiming again if status is failed
@@ -51,7 +104,7 @@ export const useZkSyncWithdrawalsStore = defineStore("zkSyncWithdrawals", () => 
         timestamp: withdrawal.timestamp,
         token: {
           ...withdrawal.token!,
-          amount: withdrawal.amount!,
+          amount: BigInt(withdrawal.amount!),
         },
         from: {
           address: withdrawal.from,

@@ -43,7 +43,8 @@ export const useZkSyncWithdrawalsStore = defineStore("zkSyncWithdrawals", () => 
         // Check if this is a USDC withdrawal
         const { selectedNetwork } = storeToRefs(useNetworkStore());
         const NETWORK_CONFIG = selectedNetwork.value.key === "sophon" ? MAINNET : TESTNET;
-        const isUSDCWithdrawal = withdrawal.token?.address === NETWORK_CONFIG.CUSTOM_USDC_TOKEN.address;
+        const isUSDCWithdrawal =
+          withdrawal.token?.address.toLowerCase() === NETWORK_CONFIG.CUSTOM_USDC_TOKEN.address.toLowerCase();
 
         try {
           if (isUSDCWithdrawal) {
@@ -89,6 +90,7 @@ export const useZkSyncWithdrawalsStore = defineStore("zkSyncWithdrawals", () => 
           }
         } catch (error) {
           isFinalized = false;
+          logger.warn("Error checking withdrawal finalization:", error);
         }
       }
 

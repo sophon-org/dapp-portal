@@ -184,6 +184,11 @@
       "rpcUrl": "https://rpc.testnet.sophon.xyz",
       "blockExplorerUrl": "https://explorer.testnet.sophon.xyz",
       "blockExplorerApi": "https://block-explorer-api.testnet.sophon.xyz",
+      "displaySettings": {
+        "isTestnet": true,
+        "onramp": false,
+        "showPartnerLinks": false
+      },
       "nativeCurrency": {
         "name": "Sophon",
         "symbol": "SOPH",
@@ -217,7 +222,7 @@
     "tokens": [
       {
         "address": "0x000000000000000000000000000000000000800A",
-        "l1Address": "0x06c03F9319EBbd84065336240dcc243bda9D8896",
+        "l1Address": "0xa9544a49d4aEa4c8E074431c89C79fA9592049d8",
         "symbol": "SOPH",
         "decimals": 18,
         "iconUrl": "/img/sophon_token.svg"

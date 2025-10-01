@@ -45,14 +45,6 @@
 
     <form v-else @submit.prevent="">
       <template v-if="step === 'form'">
-        <CommonAlert
-          v-if="!isMainnet(eraNetwork.id) && props.type === 'withdrawal'"
-          variant="error"
-          :icon="ExclamationTriangleIcon"
-          class="mb-4"
-        >
-          <p>Withdrawals are currently not available on Sophon testnet.</p>
-        </CommonAlert>
         <TransactionWithdrawalsAvailableForClaimAlert />
         <CommonInputTransactionAmount
           v-model="amount"
@@ -342,7 +334,6 @@ import { customBridgeTokens } from "@/data/customBridgeTokens";
 import TransferSubmitted from "@/views/transactions/TransferSubmitted.vue";
 import WithdrawalSubmitted from "@/views/transactions/WithdrawalSubmitted.vue";
 import useWithdrawalAllowance from "~/composables/transaction/useWithdrawalAllowance";
-import { isMainnet } from "~/data/networks";
 
 import type { FeeEstimationParams } from "@/composables/zksync/useFee";
 import type { Token, TokenAmount } from "@/types";
@@ -682,8 +673,7 @@ const continueButtonDisabled = computed(() => {
     !enoughBalanceToCoverFee.value ||
     !enoughBalanceForTransaction.value ||
     !!amountError.value ||
-    BigInt(transaction.value.token.amount) === 0n ||
-    (!isMainnet(eraNetwork.value.id) && props.type === "withdrawal") // disable withdrawal on testnet
+    BigInt(transaction.value.token.amount) === 0n
   ) {
     return true;
   }
@@ -760,6 +750,7 @@ const makeTransaction = async () => {
 
   if (transactionStatus.value === "done" || transactionStatusLayerzero.value === "done") {
     step.value = "submitted";
+    // @ts-expect-error
     previousTransactionAddress.value = transaction.value!.to.address;
   }
 

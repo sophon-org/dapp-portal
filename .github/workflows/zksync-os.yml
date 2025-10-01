@@ -36,10 +36,10 @@ jobs:
         run: |
           npm run generate
 
-      - name: Deploy to ZKsync OS Channel
+      - name: Deploy to ZKsync OS Site
         uses: matter-labs/action-hosting-deploy@main
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
           firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_ZKSYNC_DAPP_WALLET_V2 }}"
           projectId: zksync-dapp-wallet-v2
-          channelID: zksync-os
+          target: zksync-os

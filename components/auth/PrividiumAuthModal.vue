@@ -124,7 +124,7 @@ watch(
 </script>
 
 <style lang="scss" scoped>
-.prividium-auth-modal {
+/* .prividium-auth-modal {
   @apply space-y-6;
 
   .auth-steps {
@@ -210,5 +210,5 @@ watch(
   .retry-section {
     @apply flex justify-center;
   }
-}
+} */
 </style>

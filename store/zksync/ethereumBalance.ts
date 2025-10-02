@@ -87,7 +87,10 @@ export const useZkSyncEthereumBalanceStore = defineStore("zkSyncEthereumBalances
             address: account.value.address!,
             chainId: l1Network.value!.id,
             token:
-              token.address.toUpperCase() === utils.ETH_ADDRESS.toUpperCase() ? undefined : (token.address! as Hash),
+              token.address.toUpperCase() === utils.ETH_ADDRESS.toUpperCase() ||
+              token.address.toUpperCase() === utils.ETH_ADDRESS_IN_CONTRACTS.toUpperCase()
+                ? undefined
+                : (token.address! as Hash),
           });
 
           if (!balance) {

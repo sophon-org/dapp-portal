@@ -188,14 +188,7 @@
               :loading="feeLoading"
             />
           </transition>
-          <CommonButtonLabel
-            v-if="!isCustomNode"
-            as="span"
-            class="ml-auto text-right font-semibold text-gray-2"
-            variant="light"
-          >
-            ~15 minutes
-          </CommonButtonLabel>
+          <CommonButtonLabel v-if="!isCustomNode" as="span" class="ml-auto text-right">~15 seconds</CommonButtonLabel>
         </div>
         <transition v-bind="TransitionAlertScaleInOutTransition" mode="out-in">
           <CommonAlert
@@ -422,7 +415,7 @@ const tokensStore = useZkSyncTokensStore();
 const providerStore = useZkSyncProviderStore();
 const zkSyncEthereumBalance = useZkSyncEthereumBalanceStore();
 const eraWalletStore = useZkSyncWalletStore();
-const { account, isConnected, walletNotSupported, walletWarningDisabled } = storeToRefs(onboardStore);
+const { account, isConnected, walletWarningDisabled } = storeToRefs(onboardStore);
 const { eraNetwork } = storeToRefs(providerStore);
 const { destinations } = storeToRefs(useDestinationsStore());
 const { l1BlockExplorerUrl, l1Network } = storeToRefs(useNetworkStore());
@@ -534,7 +527,7 @@ const {
 } = useAllowance(
   computed(() => account.value.address),
   computed(() => selectedToken.value?.address),
-  async () => (await providerStore.requestProvider().then((provider) => provider.getDefaultBridgeAddresses())).sharedL1,
+  async () => (await providerStore.requestProvider().getDefaultBridgeAddresses()).sharedL1,
   eraWalletStore.getL1Signer,
   onboardStore.getWallet
 );
@@ -807,11 +800,7 @@ const buttonContinue = () => {
     return;
   }
   if (step.value === "form") {
-    if (walletNotSupported.value) {
-      step.value = "wallet-warning";
-    } else {
-      step.value = "confirm";
-    }
+    step.value = "confirm";
   } else if (step.value === "wallet-warning") {
     step.value = "confirm";
   } else if (step.value === "confirm") {

@@ -46,6 +46,12 @@ Array<{
     blockExplorerUrl?: string; // L2 Block Explorer URL
     blockExplorerApi?: string; // L2 Block Explorer API
     hidden?: boolean; // Hidden in the network selector
+    displaySettings?: {
+      isTestnet?: boolean;
+      onramp?: boolean;
+      showPartnerLinks?: boolean;
+    };
+    nativeCurrency?: { name: string; symbol: string; decimals: number };
     publicL1NetworkId?: number; // If you wish to use Ethereum Mainnet or Ethereum Sepolia Testnet with default configuration. Can be provided instead of `l1Network`
     l1Network?: { // @wagmi `Chain` structure https://wagmi.sh/core/chains#build-your-own
       // minimal required fields shown
@@ -56,10 +62,13 @@ Array<{
       rpcUrls: {
         default: { http: [ string ] },
         public: { http: [ string ] }
-      }
+      };
+      blockExplorers?: {
+        default: { name: string; url: string }
+      };
     };
   },
-  tokens: Array<{ // Should at least contain the `ETH` token (see `/hyperchains/example.config.json` for example)
+  tokens: Array<{ // Must include the base token for the chain so the UI can label balances correctly
     address: string;
     l1Address?: string;
     name?: string;
@@ -70,6 +79,8 @@ Array<{
   }>
 }>
 ```
+
+> ℹ️ **Heads up:** include `displaySettings` so your network appears in the selector, fill in `nativeCurrency` for accurate chain metadata, provide `blockExplorers.default.url` on both L2 and `l1Network` if you want explorer links in the UI, and list the chain's base token in `tokens` to avoid the generic `BASETOKEN` label.
 </details>
 
 ---

@@ -43,7 +43,11 @@ export default (tokens: Ref<Token[]>, balances: Ref<TokenAmount[] | undefined>) 
   });
 
   const feeToken = computed(() => {
-    return tokens.value.find((e) => e.address.toUpperCase() === utils.ETH_ADDRESS.toUpperCase());
+    return tokens.value.find(
+      (e) =>
+        e.address.toUpperCase() === utils.ETH_ADDRESS.toUpperCase() ||
+        e.address.toUpperCase() === utils.ETH_ADDRESS_IN_CONTRACTS.toUpperCase()
+    );
   });
   const enoughBalanceToCoverFee = computed(() => {
     if (!feeToken.value || !balances.value || inProgress.value) {

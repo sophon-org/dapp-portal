@@ -101,6 +101,8 @@
 <script lang="ts" setup>
 import { LockClosedIcon } from "@heroicons/vue/24/outline";
 
+import { useSentryLogger } from "@/composables/useSentryLogger";
+
 import type { Token, TokenAmount } from "@/types";
 
 const props = defineProps({
@@ -157,6 +159,7 @@ const handleAdditionalToken = (token: TokenAmount) => {
   additionalToken.value = token;
   emit("additional-token-found", token);
 };
+const { captureException } = useSentryLogger();
 
 const selectedTokenAddress = computed({
   get: () => props.tokenAddress,
@@ -186,6 +189,12 @@ const totalComputeAmount = computed(() => {
     }
     return decimalToBigNumber(inputted.value, selectedToken.value.decimals);
   } catch (error) {
+    captureException({
+      error: error as Error,
+      parentFunctionName: "totalComputeAmount",
+      parentFunctionParams: [],
+      filePath: "components/common/input/TransactionAmount.vue",
+    });
     return 0n;
   }
 });

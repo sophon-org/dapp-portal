@@ -1,6 +1,8 @@
 import { parseEther } from "ethers";
 import { utils } from "zksync-ethers";
 
+import { useSentryLogger } from "@/composables/useSentryLogger";
+
 import type { Token, TokenAmount } from "@/types";
 import type { BigNumberish } from "ethers";
 
@@ -18,6 +20,7 @@ export default (tokens: Ref<Token[]>, balances: Ref<TokenAmount[] | undefined>) 
   const { requestProvider } = useZkSyncProviderStore();
   const onboardStore = useOnboardStore();
   const { account } = storeToRefs(onboardStore);
+  const { captureException } = useSentryLogger();
 
   let params = {
     to: undefined as string | undefined,
@@ -55,7 +58,7 @@ export default (tokens: Ref<Token[]>, balances: Ref<TokenAmount[] | undefined>) 
   });
 
   const getEthTransactionFee = async () => {
-    const signer = getL1VoidSigner();
+    const signer = await getL1VoidSigner();
     if (!signer) throw new Error("Signer is not available");
 
     return await retry(() =>
@@ -71,7 +74,7 @@ export default (tokens: Ref<Token[]>, balances: Ref<TokenAmount[] | undefined>) 
     };
   };
   const getGasPrice = async () => {
-    return (BigInt(await retry(() => onboardStore.getPublicClient().getGasPrice())) * 110n) / 100n;
+    return (BigInt(await retry(() => onboardStore.getPublicClient().getGasPrice())) * 130n) / 100n;
   };
   const {
     inProgress,
@@ -83,7 +86,7 @@ export default (tokens: Ref<Token[]>, balances: Ref<TokenAmount[] | undefined>) 
       recommendedBalance.value = undefined;
       if (!feeToken.value) throw new Error("Fee tokens is not available");
 
-      const provider = requestProvider();
+      const provider = await requestProvider();
       const isEthBasedChain = await provider.isEthBasedChain();
 
       try {
@@ -104,11 +107,31 @@ export default (tokens: Ref<Token[]>, balances: Ref<TokenAmount[] | undefined>) 
         } else if (message?.includes("insufficient funds for gas * price + value")) {
           throw new Error("Insufficient funds to cover deposit fee! Please, top up your account with ETH.");
         }
+        captureException({
+          error: err as Error,
+          parentFunctionName: "executeEstimateFee",
+          parentFunctionParams: [],
+          filePath: "composables/zksync/deposit/useFee.ts",
+        });
         throw err;
       }
       /* It can be either maxFeePerGas or gasPrice */
       if (fee.value && !fee.value?.maxFeePerGas) {
         fee.value.gasPrice = await getGasPrice();
+      } else if (fee.value?.maxFeePerGas) {
+        // Apply 130% buffer to EIP-1559 parameters
+        fee.value.maxFeePerGas = (fee.value.maxFeePerGas * 130n) / 100n;
+        if (fee.value.maxPriorityFeePerGas) {
+          fee.value.maxPriorityFeePerGas = (fee.value.maxPriorityFeePerGas * 130n) / 100n;
+        }
+        if (fee.value.l1GasLimit) {
+          fee.value.l1GasLimit = (fee.value.l1GasLimit * 130n) / 100n;
+        }
+      }
+
+      // Apply 130% buffer to baseCost to prevent MsgValueTooLow errors
+      if (fee.value?.baseCost) {
+        fee.value.baseCost = (fee.value.baseCost * 130n) / 100n;
       }
     },
     { cache: false }

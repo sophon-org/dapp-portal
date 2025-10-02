@@ -18,7 +18,7 @@ export const l1Networks = {
     network: "mainnet",
     rpcUrls: {
       default: {
-        http: ["https://rpc.ankr.com/eth/", "https://ethereum-rpc.publicnode.com", "https://cloudflare-eth.com"],
+        http: ["https://ethereum-rpc.publicnode.com", "https://cloudflare-eth.com"],
       },
     },
   },
@@ -27,11 +27,7 @@ export const l1Networks = {
     name: "Ethereum Sepolia Testnet",
     rpcUrls: {
       default: {
-        http: [
-          "https://rpc.ankr.com/eth_sepolia/",
-          "https://ethereum-sepolia-rpc.publicnode.com",
-          "https://rpc.sepolia.org",
-        ],
+        http: ["https://ethereum-sepolia-rpc.publicnode.com", "https://rpc.sepolia.org"],
       },
     },
   },
@@ -48,11 +44,15 @@ export type ZkSyncNetwork = {
   l1Network?: L1Network;
   blockExplorerUrl?: string;
   blockExplorerApi?: string;
-  nativeCurrency?: { name: string; symbol: string; decimals: number };
   displaySettings?: {
+    onramp?: boolean;
     showPartnerLinks?: boolean;
+    isTestnet?: boolean;
   };
+  nativeCurrency?: { name: string; symbol: string; decimals: number };
+  nativeTokenBridgingOnly?: boolean;
   getTokens?: () => Token[] | Promise<Token[]>; // If blockExplorerApi is specified, tokens will be fetched from there. Otherwise, this function will be used.
+  isPrividium?: boolean;
 };
 
 // See the official documentation on running a local ZKsync node: https://era.zksync.io/docs/tools/testing/
@@ -87,24 +87,28 @@ const publicChains: ZkSyncNetwork[] = [
   {
     id: 324,
     key: "mainnet",
-    name: "ZKsync",
+    name: "ZKsync Era",
     rpcUrl: "https://mainnet.era.zksync.io",
     blockExplorerUrl: "https://era.zksync.network",
     blockExplorerApi: "https://block-explorer-api.mainnet.zksync.io",
     displaySettings: {
+      onramp: true,
       showPartnerLinks: true,
+      isTestnet: false,
     },
     l1Network: l1Networks.mainnet,
   },
   {
     id: 300,
     key: "sepolia",
-    name: "ZKsync Sepolia Testnet",
+    name: "ZKsync Era Sepolia",
     rpcUrl: "https://sepolia.era.zksync.dev",
     blockExplorerUrl: "https://sepolia-era.zksync.network",
     blockExplorerApi: "https://block-explorer-api.sepolia.zksync.dev",
     displaySettings: {
+      onramp: false,
       showPartnerLinks: true,
+      isTestnet: true,
     },
     l1Network: l1Networks.sepolia,
   },
@@ -117,6 +121,83 @@ const publicChains: ZkSyncNetwork[] = [
     blockExplorerApi: "https://block-explorer-api.stage.zksync.dev",
     l1Network: l1Networks.sepolia,
     hidden: true,
+    displaySettings: {
+      isTestnet: true,
+    },
+  },
+  {
+    id: 9075,
+    key: "gateway",
+    name: "ZKsync Gateway",
+    rpcUrl: "https://rpc.era-gateway-mainnet.zksync.dev",
+    blockExplorerUrl: "https://explorer.era-gateway-mainnet.zksync.dev",
+    blockExplorerApi: "https://block-explorer-api.era-gateway-mainnet.zksync.dev",
+    l1Network: l1Networks.mainnet,
+    displaySettings: {
+      onramp: false,
+      showPartnerLinks: false,
+      isTestnet: false,
+    },
+    nativeCurrency: {
+      name: "ZKsync",
+      symbol: "ZK",
+      decimals: 18,
+    },
+    nativeTokenBridgingOnly: true,
+  },
+  {
+    id: 32657,
+    key: "gateway-testnet",
+    name: "ZKsync Gateway Testnet",
+    rpcUrl: "https://rpc.era-gateway-testnet.zksync.dev",
+    blockExplorerUrl: "https://explorer.era-gateway-testnet.zksync.dev",
+    blockExplorerApi: "https://block-explorer.era-gateway-testnet.zksync.dev",
+    l1Network: l1Networks.sepolia,
+    displaySettings: {
+      onramp: false,
+      showPartnerLinks: false,
+      isTestnet: true,
+    },
+    nativeCurrency: {
+      name: "ZKsync",
+      symbol: "ZK",
+      decimals: 18,
+    },
+    nativeTokenBridgingOnly: true,
+  },
+  {
+    id: 300,
+    hidden: true,
+    key: "prividium-era-testnet",
+    name: "Prividium Era Testnet",
+    rpcUrl: "https://proxy.era-prividium.zksync.dev/rpc",
+    blockExplorerUrl: "https://block-explorer.era-prividium.zksync.dev",
+    // blockExplorerApi: "https://block-explorer-api.sepolia.zksync.dev",
+    // l1Network: l1Networks.sepolia,
+    displaySettings: {
+      onramp: false,
+      showPartnerLinks: false,
+      isTestnet: true,
+    },
+    isPrividium: true,
+    getTokens: () => [
+      {
+        address: L2_BASE_TOKEN_ADDRESS,
+        l2Address: L2_BASE_TOKEN_ADDRESS,
+        symbol: "ETH",
+        name: "Ether",
+        decimals: 18,
+        iconUrl: "/img/eth.svg",
+      },
+      {
+        address: "0xd12660590f4D07864a6a077E4638F3f2235732A2",
+        l2Address: "0xd12660590f4D07864a6a077E4638F3f2235732A2",
+        symbol: "ZK",
+        name: "ZKsync Token",
+        decimals: 18,
+        iconUrl: "https://s2.coinmarketcap.com/static/img/coins/128x128/24091.png",
+      },
+    ],
   },
 ];
 
@@ -163,3 +244,5 @@ export const getDefaultNetworkByHost = (hostname: string) => {
   return chainList[0];
 };
 export const isMainnet = (networkId: number) => networkId === 50104;
+
+export const defaultNetwork = chainList[0];

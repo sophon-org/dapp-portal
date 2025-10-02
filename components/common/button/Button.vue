@@ -19,7 +19,7 @@ defineProps({
     default: "button",
   },
   variant: {
-    type: String as PropType<"default" | "primary" | "light" | "white" | "error" | "icon">,
+    type: String as PropType<"default" | "primary" | "light" | "white" | "error" | "icon" | "cancel">,
     default: "default",
   },
   size: {
@@ -115,6 +115,15 @@ defineProps({
     &icon {
       background-color: #fff;
       padding: 1em;
+    }
+    &cancel {
+      @apply bg-neutral-100 text-neutral-600 hover:bg-neutral-200 dark:bg-red-700/30 dark:text-red-300/70;
+      &:enabled,
+      &:is(a, label) {
+        &:not([aria-disabled="true"]) {
+          @apply hover:text-neutral-800 dark:hover:bg-red-700/60 dark:hover:text-red-300;
+        }
+      }
     }
   }
 

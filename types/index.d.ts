@@ -8,6 +8,7 @@ export type TokenPrice = number | undefined;
 export type Token = {
   address: string;
   l1Address?: string;
+  l2Address?: string;
   name?: string;
   symbol: string;
   decimals: number;
@@ -24,7 +25,7 @@ export type BlacklistedToken = {
   name: string;
   reason: string | null;
 };
-export type TokenAmount = Token & { amount: bigint };
+export type TokenAmount = Token & { amount: bigint; l1BridgeAddress?: string; l2BridgeAddress?: string };
 
 export type Paymaster = {
   address: string;
@@ -59,6 +60,8 @@ export declare namespace Api {
       usdPrice: number | null;
       liquidity: number | null;
       iconURL: string | null;
+      l1BridgeAddress?: string;
+      l2BridgeAddress?: string;
     };
 
     type Transfer = {

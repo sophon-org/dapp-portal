@@ -16,7 +16,7 @@ export const useZkSyncTokensStore = defineStore("zkSyncTokens", () => {
     execute: requestTokens,
     reset: resetTokens,
   } = usePromise<Token[]>(async () => {
-    const provider = providerStore.requestProvider();
+    const provider = await providerStore.requestProvider();
     const ethL2TokenAddress = await provider.l2TokenAddress(utils.ETH_ADDRESS);
 
     let baseToken = null;
@@ -47,8 +47,8 @@ export const useZkSyncTokensStore = defineStore("zkSyncTokens", () => {
 
     if (!baseToken) {
       baseToken = {
-        address: "0x000000000000000000000000000000000000800A",
-        l1Address: await provider.getBaseTokenContractAddress(),
+        address: L2_BASE_TOKEN_ADDRESS,
+        l1Address: eraNetwork.value.l1Network ? await provider.getBaseTokenContractAddress() : undefined,
         symbol: "BASETOKEN",
         name: "Base Token",
         decimals: 18,
@@ -83,7 +83,7 @@ export const useZkSyncTokensStore = defineStore("zkSyncTokens", () => {
     );
     return [
       baseToken,
-      ...(baseToken.address.toUpperCase() !== ethToken.address.toUpperCase() ? [ethToken] : []),
+      ...(ethToken && baseToken.address.toUpperCase() !== ethToken.address.toUpperCase() ? [ethToken] : []),
       ...nonBaseOrEthExplorerTokens,
     ].map((token) => ({
       ...token,

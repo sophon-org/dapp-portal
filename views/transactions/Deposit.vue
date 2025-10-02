@@ -37,9 +37,9 @@
       Getting balances error: {{ balanceError.message }}
     </CommonErrorBlock>
     <form v-else @submit.prevent="">
-      <CommonAlert v-if="isTokenBlacklisted" variant="error" :icon="ExclamationTriangleIcon" class="mb-4">
+      <!-- <CommonAlert v-if="isTokenBlacklisted" variant="error" :icon="ExclamationTriangleIcon" class="mb-4">
         <p>This token cannot be bridged. Please select a different token.</p>
-      </CommonAlert>
+      </CommonAlert> -->
       <template v-if="step === 'form'">
         <TransactionWithdrawalsAvailableForClaimAlert />
         <CommonInputTransactionAmount
@@ -70,6 +70,26 @@
             </CommonButtonDropdown>
           </template>
         </CommonInputTransactionAmount>
+        <CommonHeightTransition
+          :opened="!!tokenCustomBridge && !tokenCustomBridge.bridgingDisabled && !tokenCustomBridge.hideAlertMessage"
+        >
+          <div class="mb-block-padding-1/2 sm:mb-block-gap">
+            <CommonAlert variant="warning" size="sm">
+              <p>
+                Bridged {{ tokenCustomBridge?.symbol }} ({{ tokenCustomBridge?.bridgedSymbol }}) will work but is
+                different from native {{ tokenCustomBridge?.symbol }}.
+              </p>
+              <a
+                v-if="tokenCustomBridge?.learnMoreUrl"
+                class="underline underline-offset-2"
+                target="_blank"
+                :href="tokenCustomBridge.learnMoreUrl"
+              >
+                Learn more
+              </a>
+            </CommonAlert>
+          </div>
+        </CommonHeightTransition>
         <CommonInputTransactionAddress
           v-model="address"
           label="To"
@@ -97,6 +117,12 @@
           class="mt-6"
           :custom-bridge-token="tokenCustomBridge"
         />
+        <TransactionNativeBridge
+          v-if="nativeTokenBridgingOnly"
+          :era-network="eraNetwork"
+          type="deposit"
+          class="mt-6"
+        ></TransactionNativeBridge>
       </template>
       <template v-else-if="step === 'wallet-warning'">
         <CommonAlert variant="warning" :icon="ExclamationTriangleIcon" class="mb-block-padding-1/2 sm:mb-block-gap">
@@ -143,7 +169,11 @@
       </template>
 
       <template
-        v-if="(!tokenCustomBridge || !tokenCustomBridge?.bridgingDisabled) && (step === 'form' || step === 'confirm')"
+        v-if="
+          !nativeTokenBridgingOnly &&
+          (!tokenCustomBridge || !tokenCustomBridge?.bridgingDisabled) &&
+          (step === 'form' || step === 'confirm')
+        "
       >
         <CommonErrorBlock v-if="feeError && account.chainId === l1Network?.id" class="mt-2" @try-again="estimate">
           Fee estimation error: {{ feeError.message }}
@@ -278,7 +308,7 @@
         <EthereumTransactionFooter>
           <template #after-checks>
             <template v-if="step === 'form'">
-              <template v-if="!enoughAllowance && !continueButtonDisabled">
+              <template v-if="!enoughAllowance && !continueButtonDisabled && !nativeTokenBridgingOnly">
                 <CommonButton
                   type="submit"
                   :disabled="continueButtonDisabled || setAllowanceInProgress"
@@ -340,27 +370,15 @@
                 </div>
               </transition>
               <CommonButton
-                :disabled="
-                  continueButtonDisabled ||
-                  transactionStatus !== 'not-started' ||
-                  transactionStatusLayerzero !== 'not-started'
-                "
+                :disabled="continueButtonDisabled || transactionStatus !== 'not-started'"
                 class="w-full"
                 size="lg"
                 variant="primary"
                 @click="buttonContinue()"
               >
                 <transition v-bind="TransitionPrimaryButtonText" mode="out-in">
-                  <span v-if="transactionStatus === 'processing' || transactionStatusLayerzero === 'processing'"
-                    >Processing...</span
-                  >
-                  <span
-                    v-else-if="
-                      transactionStatus === 'waiting-for-signature' ||
-                      transactionStatusLayerzero === 'waiting-for-signature'
-                    "
-                    >Waiting for confirmation</span
-                  >
+                  <span v-if="transactionStatus === 'processing'">Processing...</span>
+                  <span v-else-if="transactionStatus === 'waiting-for-signature'">Waiting for confirmation</span>
                   <span v-else>Bridge now</span>
                 </transition>
               </CommonButton>
@@ -385,23 +403,16 @@ import { type Address, isAddress } from "viem";
 
 import EthereumTransactionFooter from "@/components/transaction/EthereumTransactionFooter.vue";
 import useLayerzeroFee from "@/composables/layerzero/deposit/useFee";
-import useLayerzeroTransaction from "@/composables/layerzero/deposit/useTransaction";
 import useAllowance from "@/composables/transaction/useAllowance";
+import { useSentryLogger } from "@/composables/useSentryLogger";
 import useEcosystemBanner from "@/composables/zksync/deposit/useEcosystemBanner";
 import useFee from "@/composables/zksync/deposit/useFee";
 import useTransaction from "@/composables/zksync/deposit/useTransaction";
 import { customBridgeTokens } from "@/data/customBridgeTokens";
-import { isCustomNode, isMainnet } from "@/data/networks";
+import { isCustomNode } from "@/data/networks";
 import DepositSubmitted from "@/views/transactions/DepositSubmitted.vue";
-import { MAINNET } from "~/data/mainnet";
-import { TESTNET } from "~/data/testnet";
 
-import type { BlacklistedToken, Token, TokenAmount } from "@/types";
-
-// TODO(@consvic): Add noon token to the blacklist
-const BLACKLISTED_TOKENS: globalThis.ComputedRef<BlacklistedToken[]> = computed(() => {
-  return isMainnet(selectedNetwork.value.id) ? MAINNET.BLACKLISTED_TOKENS : [];
-});
+import type { Token, TokenAmount } from "@/types";
 
 const route = useRoute();
 const router = useRouter();
@@ -414,10 +425,11 @@ const eraWalletStore = useZkSyncWalletStore();
 const { account, isConnected, walletNotSupported, walletWarningDisabled } = storeToRefs(onboardStore);
 const { eraNetwork } = storeToRefs(providerStore);
 const { destinations } = storeToRefs(useDestinationsStore());
-const { l1BlockExplorerUrl, selectedNetwork, l1Network } = storeToRefs(useNetworkStore());
-const NETWORK_CONFIG = selectedNetwork.value.key === "sophon" ? MAINNET : TESTNET;
+const { l1BlockExplorerUrl, l1Network } = storeToRefs(useNetworkStore());
 const { l1Tokens, baseToken, tokensRequestInProgress, tokensRequestError } = storeToRefs(tokensStore);
 const { balance, balanceInProgress, balanceError } = storeToRefs(zkSyncEthereumBalance);
+
+const { captureException } = useSentryLogger();
 
 const toNetworkModalOpened = ref(false);
 const toNetworkSelected = (networkKey?: string) => {
@@ -450,7 +462,7 @@ const availableTokens = computed<Token[]>(() => {
   if (balanceWithAdditionalTokens.value) {
     return balanceWithAdditionalTokens.value;
   }
-  return Object.values(l1Tokens.value ?? []);
+  return getTokensWithCustomBridgeTokens(Object.values(l1Tokens.value ?? []), AddressChainType.L1);
 });
 const availableBalances = computed<TokenAmount[]>(() => {
   return balanceWithAdditionalTokens.value ?? [];
@@ -470,9 +482,20 @@ const selectedToken = computed<Token | undefined>(() => {
   if (!selectedTokenAddress.value) {
     return defaultToken.value;
   }
+
+  // Handle special case for L1 tokens with multiple L2 counterparts (native and bridged)
+  // In the case of those tokens, we create the identifier by combining the L1 address and L2 address
+  const getTokenId = (token: Token): string => {
+    const hasMultipleL2Counterparts =
+      selectedTokenAddress.value?.includes(token.address) &&
+      selectedTokenAddress.value?.includes(String(token.l2Address));
+
+    return hasMultipleL2Counterparts ? `${token.address}-${token.l2Address}` : token.address;
+  };
+
   return (
-    availableTokens.value.find((e) => e.address === selectedTokenAddress.value) ||
-    availableBalances.value.find((e) => e.address === selectedTokenAddress.value) ||
+    availableTokens.value.find((e) => getTokenId(e) === selectedTokenAddress.value) ||
+    availableBalances.value.find((e) => getTokenId(e) === selectedTokenAddress.value) ||
     defaultToken.value
   );
 });
@@ -511,7 +534,7 @@ const {
 } = useAllowance(
   computed(() => account.value.address),
   computed(() => selectedToken.value?.address),
-  async () => await NETWORK_CONFIG.L1_GLOBAL_PAYMASTER.address,
+  async () => (await providerStore.requestProvider().then((provider) => provider.getDefaultBridgeAddresses())).sharedL1,
   eraWalletStore.getL1Signer,
   onboardStore.getWallet
 );
@@ -657,6 +680,12 @@ const totalComputeAmount = computed(() => {
     }
     return decimalToBigNumber(amount.value, selectedToken.value.decimals);
   } catch (error) {
+    captureException({
+      error: error as Error,
+      parentFunctionName: "totalComputeAmount",
+      parentFunctionParams: [],
+      filePath: "views/transactions/Deposit.vue",
+    });
     return 0n;
   }
 });
@@ -746,15 +775,19 @@ watch(
   { immediate: true }
 );
 
-const isTokenBlacklisted = computed(() => {
-  if (!selectedToken.value?.address) return false;
-  return BLACKLISTED_TOKENS.value.some(
-    (token) => token.address.toLowerCase() === selectedToken.value?.address.toLowerCase()
-  );
+const nativeTokenBridgingOnly = computed(() => {
+  if (
+    eraNetwork.value.nativeTokenBridgingOnly &&
+    eraNetwork.value.nativeCurrency &&
+    selectedToken.value &&
+    selectedToken.value.address !== baseToken.value?.l1Address
+  ) {
+    return true;
+  }
+  return false;
 });
 
 const continueButtonDisabled = computed(() => {
-  if (isTokenBlacklisted.value) return true;
   if (
     !transaction.value ||
     !enoughBalanceToCoverFee.value ||
@@ -798,18 +831,18 @@ const {
   error: transactionError,
   commitTransaction,
 } = useTransaction(eraWalletStore.getL1Signer);
-const {
-  status: transactionStatusLayerzero,
-  error: transactionErrorLayerzero,
-  commitTransaction: commitLayerzeroTransaction,
-} = useLayerzeroTransaction();
+// const {
+//   status: transactionStatusLayerzero,
+//   error: transactionErrorLayerzero,
+//   commitTransaction: commitLayerzeroTransaction,
+// } = useLayerzeroTransaction();
 const { recentlyBridged } = useEcosystemBanner();
 const { saveTransaction, waitForCompletion } = useZkSyncTransactionStatusStore();
 
 watch(step, (newStep) => {
   if (newStep === "form") {
     transactionError.value = undefined;
-    transactionErrorLayerzero.value = undefined;
+    // transactionErrorLayerzero.value = undefined;
   }
 });
 
@@ -817,26 +850,17 @@ const transactionInfo = ref<TransactionInfo | undefined>();
 const makeTransaction = async () => {
   if (continueButtonDisabled.value) return;
 
-  let tx: string | undefined;
-  if (transaction.value?.token.isOft) {
-    tx = await commitLayerzeroTransaction({
-      token: transaction.value.token,
+  const tx = await commitTransaction(
+    {
       to: transaction.value!.to.address as Address,
-      nativeFee: fee.value ? BigInt(fee.value) : BigInt(0),
-      fee: feeValues.value!,
-    });
-  } else {
-    tx = await commitTransaction(
-      {
-        to: transaction.value!.to.address,
-        tokenAddress: transaction.value!.token.address,
-        amount: transaction.value!.token.amount,
-      },
-      feeValues.value!
-    );
-  }
+      tokenAddress: transaction.value!.token.address as Address,
+      amount: transaction.value!.token.amount,
+      bridgeAddress: transaction.value!.token.l1BridgeAddress as Address | undefined,
+    },
+    feeValues.value!
+  );
 
-  if (transactionStatus.value === "done" || transactionStatusLayerzero.value === "done") {
+  if (transactionStatus.value === "done") {
     step.value = "submitted";
     previousTransactionAddress.value = transaction.value!.to.address;
     recentlyBridged.value = true;
@@ -847,7 +871,7 @@ const makeTransaction = async () => {
     zkSyncEthereumBalance.deductBalance(transaction.value!.token.address!, String(transaction.value!.token.amount));
     transactionInfo.value = {
       type: "deposit",
-      transactionHash: tx,
+      transactionHash: tx.hash,
       timestamp: new Date().toISOString(),
       token: transaction.value!.token,
       from: transaction.value!.from,
@@ -881,7 +905,7 @@ const makeTransaction = async () => {
       .catch((err) => {
         transactionError.value = err as Error;
         transactionStatus.value = "not-started";
-        transactionStatusLayerzero.value = "not-started";
+        // transactionStatusLayerzero.value = "not-started";
       });
   }
 };

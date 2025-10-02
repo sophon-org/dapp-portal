@@ -4,6 +4,7 @@ import { utils } from "zksync-ethers";
 
 import { l1Networks } from "@/data/networks";
 import { wagmiConfig } from "@/data/wagmi";
+import { getBalancesWithCustomBridgeTokens, AddressChainType } from "@/utils/helpers";
 
 import type { Hash, Token, TokenAmount } from "@/types";
 
@@ -124,9 +125,11 @@ export const useZkSyncEthereumBalanceStore = defineStore("zkSyncEthereumBalances
         portalRuntimeConfig.alchemyApiKey ?? l1Network.value?.rpcUrls.public.http[0].split("/").pop();
 
       if (([l1Networks.mainnet.id, l1Networks.sepolia.id] as number[]).includes(l1Network.value?.id) && alchemyApiKey) {
-        return await getBalancesFromApi();
+        const apiBalances = await getBalancesFromApi();
+        return getBalancesWithCustomBridgeTokens(apiBalances, AddressChainType.L1);
       } else {
-        return await getBalancesFromRPC();
+        const rpcBalances = await getBalancesFromRPC();
+        return getBalancesWithCustomBridgeTokens(rpcBalances, AddressChainType.L1);
       }
     },
     { cache: 30000 }

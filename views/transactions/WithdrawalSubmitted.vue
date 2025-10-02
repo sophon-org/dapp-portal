@@ -42,7 +42,12 @@
         >
           <p>You can claim your withdrawal now.</p>
         </CommonAlert>
-        <CommonAlert v-else-if="isCustomBridgeToken" variant="warning" :icon="ExclamationTriangleIcon" class="mb-4">
+        <CommonAlert
+          v-else-if="!props.transaction.token.l1Address && !isCustomBridgeToken"
+          variant="warning"
+          :icon="ExclamationTriangleIcon"
+          class="mb-4"
+        >
           <p>This withdrawal was made through a third-party bridge. Please use that bridge to claim your withdrawal.</p>
         </CommonAlert>
         <CommonAlert v-else-if="!canSkipClaim" variant="warning" :icon="ExclamationTriangleIcon" class="mb-4">
@@ -71,7 +76,7 @@
       :failed="transaction.info.failed"
       :animation-state="withdrawalFinalizationAvailable ? 'stopped-in-the-end' : undefined"
       :expected-complete-timestamp="
-        withdrawalFinalizationAvailable || isCustomBridgeToken ? undefined : transaction.info.expectedCompleteTimestamp
+        withdrawalFinalizationAvailable ? undefined : transaction.info.expectedCompleteTimestamp
       "
       :transaction-info="transaction"
     >
@@ -112,7 +117,7 @@
         <TransactionFeeDetails
           v-else
           label="Claiming fee:"
-          :fee-token="feeToken.value"
+          :fee-token="feeToken"
           :fee-amount="fee"
           :loading="feeLoading"
           class="mt-4"
@@ -172,8 +177,7 @@
 import { ExclamationTriangleIcon } from "@heroicons/vue/24/outline";
 
 import useWithdrawalFinalization from "@/composables/zksync/useWithdrawalFinalization";
-import { MAINNET } from "~/data/mainnet";
-import { TESTNET } from "~/data/testnet";
+import { customBridgeTokens } from "@/data/customBridgeTokens";
 
 const props = defineProps({
   transaction: {
@@ -189,27 +193,34 @@ const props = defineProps({
 const onboardStore = useOnboardStore();
 const transactionStatusStore = useZkSyncTransactionStatusStore();
 const { eraNetwork, blockExplorerUrl } = storeToRefs(useZkSyncProviderStore());
-const { l1BlockExplorerUrl, selectedNetwork } = storeToRefs(useNetworkStore());
+const { l1BlockExplorerUrl } = storeToRefs(useNetworkStore());
 const { connectorName, isCorrectNetworkSet } = storeToRefs(onboardStore);
-const NETWORK_CONFIG = selectedNetwork.value.key === "sophon" ? MAINNET : TESTNET;
 
 const canSkipClaim = computed(() => {
   return props.transaction.token.isOft;
 });
 
-const isCustomBridgeToken = computed(
-  () =>
-    !props.transaction.token.l1Address && props.transaction.token.address !== NETWORK_CONFIG.CUSTOM_USDC_TOKEN.address
-);
+const isCustomBridgeToken = computed(() => {
+  // Check if this is a custom bridge token by looking for l1BridgeAddress
+  // For existing withdrawals, we need to look it up from the custom bridge tokens config
+  if (props.transaction.token.l1BridgeAddress) {
+    return true;
+  }
+
+  // Fallback: lookup from custom bridge tokens configuration
+  const customBridgeToken = customBridgeTokens.find(
+    (token) =>
+      token.l2Address.toLowerCase() === props.transaction.token.address.toLowerCase() &&
+      token.chainId === eraNetwork.value.l1Network?.id
+  );
+
+  return !!customBridgeToken?.l1BridgeAddress;
+});
 const withdrawalManualFinalizationRequired = computed(() => {
   return !props.transaction.info.completed;
 });
 const withdrawalFinalizationAvailable = computed(() => {
-  return (
-    !isCustomBridgeToken.value &&
-    withdrawalManualFinalizationRequired.value &&
-    props.transaction.info.withdrawalFinalizationAvailable
-  );
+  return withdrawalManualFinalizationRequired.value && props.transaction.info.withdrawalFinalizationAvailable;
 });
 
 const {

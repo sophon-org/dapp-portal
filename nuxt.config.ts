@@ -50,18 +50,23 @@ export default defineNuxtConfig({
       ],
     },
   },
+
   plugins: [],
+
   modules: [
     "@kevinmarrec/nuxt-pwa",
     "@pinia/nuxt", // https://pinia.vuejs.org/ssr/nuxt.html
     "@nuxtjs/eslint-module", // https://nuxt.com/modules/eslint
     "@nuxtjs/tailwindcss", // https://nuxt.com/modules/tailwindcss
   ],
-  css: ["@/assets/css/tailwind.css", "@/assets/css/style.scss"],
+
+  css: ["@/assets/css/tailwind.css", "@/assets/css/style.scss", "web3-avatar-vue/dist/style.css"],
   ssr: false,
+
   pinia: {
     storesDirs: ["./store/**"],
   },
+
   pwa: {
     meta: {
       name: portalMeta.title,
@@ -72,12 +77,14 @@ export default defineNuxtConfig({
       short_name: "Portal",
     },
   },
+
   postcss: {
     plugins: {
       tailwindcss: {},
       autoprefixer: {},
     },
   },
+
   vite: {
     // Make listed envs public and accessible in the runtime
     define: Object.fromEntries(
@@ -99,6 +106,7 @@ export default defineNuxtConfig({
       },
     },
   },
+
   devtools: { enabled: true },
   nitro: {
     routeRules: {

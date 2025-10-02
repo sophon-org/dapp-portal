@@ -1,6 +1,8 @@
 import { L1Signer, utils } from "zksync-ethers";
 import IERC20 from "zksync-ethers/abi/IERC20.json";
 
+import { useSentryLogger } from "../useSentryLogger";
+
 import type { DepositFeeValues } from "../zksync/deposit/useFee";
 import type { Hash, TokenAllowance } from "@/types";
 import type { BigNumberish } from "ethers";
@@ -14,6 +16,7 @@ export default (
   getWallet: () => Promise<WalletClient | undefined>
 ) => {
   const { getPublicClient } = useOnboardStore();
+  const { captureException } = useSentryLogger();
   const {
     result,
     inProgress,
@@ -98,6 +101,12 @@ export default (
         return receipt;
       } catch (err) {
         setAllowanceStatus.value = "not-started";
+        captureException({
+          error: err as Error,
+          parentFunctionName: "executeSetAllowance",
+          parentFunctionParams: [],
+          filePath: "composables/transaction/useAllowance.ts",
+        });
         throw err;
       }
     },

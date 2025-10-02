@@ -29,7 +29,15 @@ const inputted = computed({
 </script>
 
 <style lang="scss" scoped>
-.input-line.has-error {
-  @apply border-error-300;
+.input-line {
+  @apply block w-full overflow-hidden rounded-none border-b-2 bg-transparent leading-snug outline-none transition placeholder:text-neutral-300 dark:placeholder:text-neutral-700;
+  @apply border-neutral-200 dark:border-neutral-800;
+  &:not(.has-error) {
+    @apply hover:border-neutral-300 focus:border-neutral-950;
+    @apply dark:hover:border-neutral-600 dark:focus:border-white;
+  }
+  &.has-error {
+    @apply border-error-300;
+  }
 }
 </style>

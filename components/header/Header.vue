@@ -120,9 +120,9 @@ const routes = {
 };
 
 const onboardStore = useOnboardStore();
+const { selectedNetwork } = storeToRefs(useNetworkStore());
 const { isConnected } = storeToRefs(onboardStore);
 const { withdrawalsAvailableForClaiming } = storeToRefs(useZkSyncWithdrawalsStore());
-const { selectedNetwork } = storeToRefs(useNetworkStore());
 
 const logoImage = computed(() => {
   if (isMainnet(selectedNetwork.value.id)) {

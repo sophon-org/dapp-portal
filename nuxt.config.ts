@@ -109,6 +109,10 @@ export default defineNuxtConfig({
 
   devtools: { enabled: true },
   nitro: {
+    preset: "static",
+    output: {
+      publicDir: "dist",
+    },
     routeRules: {
       "/**": {
         headers: {

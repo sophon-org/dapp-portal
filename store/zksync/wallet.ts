@@ -26,7 +26,7 @@ export const useZkSyncWalletStore = defineStore("zkSyncWallet", () => {
 
     const web3Provider = new BrowserProvider((await onboardStore.getWallet(eraNetwork.value.id)) as any, "any");
     const rawEthersSigner = await web3Provider.getSigner();
-    const eraL2Signer = Signer.from(rawEthersSigner, providerStore.requestProvider());
+    const eraL2Signer = Signer.from(rawEthersSigner, walletNetworkId, providerStore.requestProvider());
 
     return eraL2Signer;
   });

@@ -52,7 +52,6 @@ export type ZkSyncNetwork = {
   nativeCurrency?: { name: string; symbol: string; decimals: number };
   nativeTokenBridgingOnly?: boolean;
   getTokens?: () => Token[] | Promise<Token[]>; // If blockExplorerApi is specified, tokens will be fetched from there. Otherwise, this function will be used.
-  isPrividium?: boolean;
 };
 
 // See the official documentation on running a local ZKsync node: https://era.zksync.io/docs/tools/testing/
@@ -85,23 +84,13 @@ export const dockerizedNode: ZkSyncNetwork = {
 
 const publicChains: ZkSyncNetwork[] = [
   {
-    id: 270,
+    id: 8022833,
     key: "testnet",
-    name: "ZKsyncOS Local",
-    rpcUrl: "http://localhost:5050",
-    // blockExplorerUrl: "https://zksync-os-testnet-alpha.staging-scan-v2.zksync.dev",
-    // blockExplorerApi: "https://block-explorer-api.zksync-os-testnet-alpha.zksync.dev",
-    l1Network: {
-      id: 31337,
-      name: "Local L1",
-      rpcUrls: {
-        default: {
-          http: ["http://localhost:5010"],
-        },
-      },
-      nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
-    },
-    isPrividium: true,
+    name: "ZKsyncOS Testnet",
+    rpcUrl: "https://zksync-os-testnet-alpha.zksync.dev",
+    blockExplorerUrl: "https://zksync-os-testnet-alpha.staging-scan-v2.zksync.dev",
+    blockExplorerApi: "https://block-explorer-api.zksync-os-testnet-alpha.zksync.dev",
+    l1Network: l1Networks.sepolia,
     hidden: false,
     displaySettings: {
       isTestnet: true,

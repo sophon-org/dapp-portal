@@ -48,7 +48,8 @@ export const useZkSyncTokensStore = defineStore("zkSyncTokens", () => {
     }
     // TODO: @zksyncos add helper for retrieving base token address for chainID
     if (!baseToken) {
-      const baseTokenAddress = await walletStore.getL1VoidSigner(true).getBaseToken();
+      const l1VoidSigner = await walletStore.getL1VoidSigner(true);
+      const baseTokenAddress = await l1VoidSigner.getBaseToken();
       baseToken =
         baseTokenAddress === utils.ETH_ADDRESS_IN_CONTRACTS
           ? {

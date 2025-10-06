@@ -24,10 +24,12 @@ import { useStorage } from "@vueuse/core";
 
 import { isCustomNode } from "@/data/networks";
 
+const { selectedNetwork } = storeToRefs(useNetworkStore());
+
 const checkbox = ref<HTMLInputElement | undefined>();
 const legalNoticeAccepted = useStorage("zksync-bridge-legal-notice-accepted", false);
 const warningChecked = ref(legalNoticeAccepted.value);
-const modalDisplayed = ref(!legalNoticeAccepted.value && !isCustomNode);
+const modalDisplayed = ref(!legalNoticeAccepted.value && !isCustomNode && !selectedNetwork.value.isPrividium);
 
 const proceed = () => {
   legalNoticeAccepted.value = true;

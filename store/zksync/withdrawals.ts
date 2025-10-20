@@ -1,4 +1,5 @@
 import { $fetch } from "ofetch";
+import { Wallet } from "zksync-ethers";
 
 import { MAINNET } from "~/data/mainnet";
 import { TESTNET } from "~/data/testnet";
@@ -56,11 +57,13 @@ export const useZkSyncWithdrawalsStore = defineStore("zkSyncWithdrawals", () => 
 
             // Get the withdrawal parameters from the transaction receipt
             const provider = providerStore.requestProvider();
-            const receipt = await provider.getTransactionReceipt(withdrawal.transactionHash);
-            const l2ToL1Log = receipt?.l2ToL1Logs?.[0];
-            if (!l2ToL1Log) {
-              throw new Error("No L2ToL1Log found in transaction receipt");
-            }
+            const wallet = new Wallet(
+              // random private key cause we don't care about actual signer
+              // finalizeWithdrawalParams method only exists on Wallet class
+              "0x7726827caac94a7f9e1b160f7ea819f172f7b6f9d2a97f992c38edeab82d4110",
+              provider
+            );
+            const { l1BatchNumber, l2MessageIndex } = await wallet.finalizeWithdrawalParams(withdrawal.transactionHash);
 
             // Call the isWithdrawalFinalized function on the correct bridge with proper parameters
             isFinalized = await publicClient.readContract({
@@ -79,7 +82,7 @@ export const useZkSyncWithdrawalsStore = defineStore("zkSyncWithdrawals", () => 
                 },
               ],
               functionName: "isWithdrawalFinalized",
-              args: [BigInt(eraNetwork.value.id), BigInt(receipt?.l1BatchNumber ?? 0), BigInt(l2ToL1Log.logIndex)],
+              args: [BigInt(eraNetwork.value.id), BigInt(l1BatchNumber ?? 0), BigInt(l2MessageIndex)],
             });
           } else {
             // For non-USDC tokens, use the regular SDK method

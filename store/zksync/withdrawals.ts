@@ -1,5 +1,5 @@
 import { $fetch } from "ofetch";
-import { Wallet } from "zksync-ethers";
+import { utils, Wallet } from "zksync-ethers";
 
 import { MAINNET } from "~/data/mainnet";
 import { TESTNET } from "~/data/testnet";
@@ -25,6 +25,8 @@ export const useZkSyncWithdrawalsStore = defineStore("zkSyncWithdrawals", () => 
     const response: Api.Response.Collection<Api.Response.Transfer> = await $fetch(
       `${eraNetwork.value.blockExplorerApi}/address/${account.value.address}/transfers?type=withdrawal`
     );
+    const provider = providerStore.requestProvider();
+    const ethL2TokenAddress = await provider.l2TokenAddress(utils.ETH_ADDRESS);
 
     for (const withdrawal of response.items.map(mapApiTransfer)) {
       if (!withdrawal.transactionHash) continue;
@@ -33,9 +35,7 @@ export const useZkSyncWithdrawalsStore = defineStore("zkSyncWithdrawals", () => 
       if (transactionFromStorage?.info.completed) continue;
 
       if (new Date(withdrawal.timestamp).getTime() < Date.now() - FETCH_TIME_LIMIT) break;
-      const transactionDetails = await retry(() =>
-        providerStore.requestProvider().getTransactionDetails(withdrawal.transactionHash!)
-      );
+      const transactionDetails = await retry(() => provider.getTransactionDetails(withdrawal.transactionHash!));
 
       const withdrawalFinalizationAvailable = !!transactionDetails.ethExecuteTxHash;
 
@@ -56,7 +56,6 @@ export const useZkSyncWithdrawalsStore = defineStore("zkSyncWithdrawals", () => 
             const customBridgeAddress = NETWORK_CONFIG.CUSTOM_USDC_TOKEN.l1BridgeAddress;
 
             // Get the withdrawal parameters from the transaction receipt
-            const provider = providerStore.requestProvider();
             const wallet = new Wallet(
               // random private key cause we don't care about actual signer
               // finalizeWithdrawalParams method only exists on Wallet class
@@ -108,6 +107,10 @@ export const useZkSyncWithdrawalsStore = defineStore("zkSyncWithdrawals", () => 
         token: {
           ...withdrawal.token!,
           amount: BigInt(withdrawal.amount!),
+          l1Address:
+            withdrawal.token?.address.toLowerCase() === ethL2TokenAddress.toLowerCase()
+              ? utils.ETH_ADDRESS
+              : withdrawal.token?.l1Address ?? undefined,
         },
         from: {
           address: withdrawal.from,

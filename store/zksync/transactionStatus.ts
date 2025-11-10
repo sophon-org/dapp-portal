@@ -1,9 +1,8 @@
 import { useStorage } from "@vueuse/core";
 import { decodeEventLog, type Address } from "viem";
-import { Wallet } from "zksync-ethers";
+import { Wallet, typechain } from "zksync-ethers";
 import IL1Nullifier from "zksync-ethers/abi/IL1Nullifier.json";
 import IZkSyncHyperchain from "zksync-ethers/abi/IZkSyncHyperchain.json";
-import { IL1AssetRouter__factory as IL1AssetRouterFactory } from "zksync-ethers/typechain";
 
 import { selectL2ToL1LogIndex, isLocalRootIsZero } from "@/utils/helpers";
 
@@ -44,18 +43,7 @@ export const useZkSyncTransactionStatusStore = defineStore("zkSyncTransactionSta
 
   const storageSavedTransactions = useStorage<{ [networkKey: string]: TransactionInfo[] }>(
     "zksync-bridge-transactions",
-    {},
-    undefined,
-    {
-      serializer: {
-        read: (v: any) => (v ? JSON.parse(v) : null),
-        write: (v: any) =>
-          JSON.stringify(
-            v,
-            (_, value) => (typeof value === "bigint" ? value.toString() : value) // return everything else unchanged
-          ),
-      },
-    }
+    {}
   );
   const savedTransactions = computed<TransactionInfo[]>({
     get: () => {
@@ -187,7 +175,10 @@ export const useZkSyncTransactionStatusStore = defineStore("zkSyncTransactionSta
 
         const l1Signer = await useZkSyncWalletStore().getL1VoidSigner(true);
         const bridges = await provider.getDefaultBridgeAddresses();
-        const l1NullifierAddr = await IL1AssetRouterFactory.connect(bridges.sharedL1, l1Signer).L1_NULLIFIER();
+        const l1NullifierAddr = await typechain.IL1AssetRouter__factory.connect(
+          bridges.sharedL1,
+          l1Signer
+        ).L1_NULLIFIER();
 
         const publicClient = useOnboardStore().getPublicClient();
         const chainId = BigInt((await provider.getNetwork()).chainId);

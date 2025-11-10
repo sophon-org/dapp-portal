@@ -190,34 +190,8 @@
           </transition>
           <CommonButtonLabel v-if="!isCustomNode" as="span" class="ml-auto text-right">~15 seconds</CommonButtonLabel>
         </div>
-        <transition v-bind="TransitionAlertScaleInOutTransition" mode="out-in">
-          <CommonAlert
-            v-if="recommendedBalance && feeToken && account.chainId === l1Network?.id"
-            class="mt-4"
-            variant="error"
-            :icon="ExclamationTriangleIcon"
-          >
-            <p>
-              Insufficient <span class="font-medium">{{ feeToken?.symbol }}</span> balance on
-              {{ destinations.ethereum.label }} to cover the fee. We recommend having at least
-              <span class="font-medium"
-                >{{
-                  feeToken?.price
-                    ? removeSmallAmountPretty(recommendedBalance, feeToken?.decimals, feeToken?.price)
-                    : parseTokenAmount(recommendedBalance, feeToken?.decimals || 18)
-                }}
-                {{ feeToken?.symbol }}</span
-              >
-              on {{ eraNetwork.l1Network?.name ?? "L1" }} for deposit.
-            </p>
-            <NuxtLink :to="{ name: 'receive-methods' }" class="alert-link">Receive funds</NuxtLink>
-          </CommonAlert>
-          <CommonAlert
-            v-else-if="!enoughBalanceToCoverFee && account.chainId === l1Network?.id"
-            class="mt-4"
-            variant="error"
-            :icon="ExclamationTriangleIcon"
-          >
+        <transition v-bind="TransitionAlertScaleInOutTransition">
+          <CommonAlert v-if="!enoughBalanceToCoverFee" class="mt-4" variant="error" :icon="ExclamationTriangleIcon">
             <p>
               Insufficient <span class="font-medium">{{ feeToken?.symbol }}</span> balance on
               <span class="font-medium">{{ destinations.ethereum.label }}</span> to cover the fee
@@ -233,19 +207,20 @@
         </CommonErrorBlock>
         <CommonHeightTransition
           v-if="step === 'form'"
-          :opened="(!enoughAllowance && !continueButtonDisabled) || !!setAllowanceReceipt"
+          :opened="(!enoughAllowance && !continueButtonDisabled) || !!setAllowanceReceipts"
         >
           <CommonCardWithLineButtons class="mt-4">
             <DestinationItem
-              v-if="enoughAllowance && setAllowanceReceipt"
+              v-if="enoughAllowance && setAllowanceReceipts"
               as="div"
               :description="`You can now proceed to deposit`"
             >
               <template #label>
                 {{ selectedToken?.symbol }} allowance approved
-                <template v-if="l1BlockExplorerUrl && setAllowanceReceipt">
+                <template v-for="allowanceReceipt in setAllowanceReceipts" :key="allowanceReceipt.transactionHash">
                   <a
-                    :href="`${l1BlockExplorerUrl}/tx/${setAllowanceReceipt.transactionHash}`"
+                    v-if="l1BlockExplorerUrl"
+                    :href="`${l1BlockExplorerUrl}/tx/${allowanceReceipt.transactionHash}`"
                     target="_blank"
                     class="inline-flex items-center gap-1 underline underline-offset-2"
                   >
@@ -263,10 +238,13 @@
             <DestinationItem v-else as="div">
               <template #label>
                 Approve {{ selectedToken?.symbol }} allowance
-                <template v-if="setAllowanceTransactionHash">
+                <template
+                  v-for="allowanceTransactionHash in setAllowanceTransactionHashes"
+                  :key="allowanceTransactionHash"
+                >
                   <a
-                    v-if="l1BlockExplorerUrl && setAllowanceTransactionHash"
-                    :href="`${l1BlockExplorerUrl}/tx/${setAllowanceTransactionHash}`"
+                    v-if="l1BlockExplorerUrl && allowanceTransactionHash"
+                    :href="`${l1BlockExplorerUrl}/tx/${allowanceTransactionHash}`"
                     target="_blank"
                     class="inline-flex items-center gap-1 underline underline-offset-2"
                   >
@@ -395,7 +373,7 @@ import { useRouteQuery } from "@vueuse/router";
 import { type Address, isAddress } from "viem";
 
 import EthereumTransactionFooter from "@/components/transaction/EthereumTransactionFooter.vue";
-import useLayerzeroFee from "@/composables/layerzero/deposit/useFee";
+// import useLayerzeroFee from "@/composables/layerzero/deposit/useFee";
 import useAllowance from "@/composables/transaction/useAllowance";
 import { useSentryLogger } from "@/composables/useSentryLogger";
 import useEcosystemBanner from "@/composables/zksync/deposit/useEcosystemBanner";
@@ -455,7 +433,11 @@ const availableTokens = computed<Token[]>(() => {
   if (balanceWithAdditionalTokens.value) {
     return balanceWithAdditionalTokens.value;
   }
-  return getTokensWithCustomBridgeTokens(Object.values(l1Tokens.value ?? []), AddressChainType.L1);
+  return getTokensWithCustomBridgeTokens(
+    Object.values(l1Tokens.value ?? []),
+    AddressChainType.L1,
+    eraNetwork.value.l1Network?.id
+  );
 });
 const availableBalances = computed<TokenAmount[]>(() => {
   return balanceWithAdditionalTokens.value ?? [];
@@ -517,8 +499,8 @@ const {
   error: allowanceRequestError,
   requestAllowance,
 
-  setAllowanceTransactionHash,
-  setAllowanceReceipt,
+  setAllowanceTransactionHashes,
+  setAllowanceReceipts,
   setAllowanceStatus,
   setAllowanceInProgress,
   setAllowanceError,
@@ -527,9 +509,8 @@ const {
 } = useAllowance(
   computed(() => account.value.address),
   computed(() => selectedToken.value?.address),
-  async () => (await providerStore.requestProvider().getDefaultBridgeAddresses()).sharedL1,
+  async () => (await providerStore.requestProvider().then((provider) => provider.getDefaultBridgeAddresses())).sharedL1,
   eraWalletStore.getL1Signer,
-  onboardStore.getWallet
 );
 const enoughAllowance = computed(() => {
   if (allowance?.value === undefined || !selectedToken.value) {
@@ -571,65 +552,16 @@ const unsubscribe = onboardStore.subscribeOnAccountChange(() => {
 });
 
 const {
-  fee: feeValuesDefault,
-  result: feeDefault,
-  inProgress: feeInProgressDefault,
-  error: feeErrorDefault,
-  recommendedBalance: recommendedBalanceDefault,
-  feeToken: feeTokenDefault,
-  enoughBalanceToCoverFee: enoughBalanceToCoverFeeDefault,
-  estimateFee: estimateFeeDefault,
-  resetFee: resetFeeDefault,
-} = useFee(availableTokens, balanceWithAdditionalTokens);
-
-const {
-  fee: feeValuesLayerzero,
-  result: feeLayerzero,
-  inProgress: feeInProgressLayerzero,
-  error: feeErrorLayerzero,
-  recommendedBalance: recommendedBalanceLayerzero,
-  feeToken: feeTokenLayerzero,
-  enoughBalanceToCoverFee: enoughBalanceToCoverFeeLayerzero,
-  estimateFee: estimateLayerzeroFee,
-  resetFee: resetLayerzeroFee,
-} = useLayerzeroFee(availableTokens, balanceWithAdditionalTokens);
-
-// Computed properties to select between default and layerzero fees
-const feeValues = computed(() => (selectedToken.value?.isOft ? feeValuesLayerzero.value : feeValuesDefault.value));
-const fee = computed(() =>
-  selectedToken.value?.isOft ? (feeLayerzero.value ? feeLayerzero.value.toString() : undefined) : feeDefault.value
-);
-const feeInProgress = computed(() =>
-  selectedToken.value?.isOft ? feeInProgressLayerzero.value : feeInProgressDefault.value
-);
-const feeError = computed(() => (selectedToken.value?.isOft ? feeErrorLayerzero.value : feeErrorDefault.value));
-const recommendedBalance = computed(() =>
-  selectedToken.value?.isOft ? recommendedBalanceLayerzero.value : recommendedBalanceDefault.value
-);
-const feeToken = computed(() => (selectedToken.value?.isOft ? feeTokenLayerzero.value : feeTokenDefault.value));
-const enoughBalanceToCoverFee = computed(() =>
-  selectedToken.value?.isOft ? enoughBalanceToCoverFeeLayerzero.value : enoughBalanceToCoverFeeDefault.value
-);
-const estimateFee = async (to: string, tokenAddress: string) => {
-  if (selectedToken.value?.isOft) {
-    await estimateLayerzeroFee(
-      {
-        ...selectedToken.value,
-        amount: totalComputeAmount.value,
-      } as TokenAmount,
-      to as Address
-    );
-  } else {
-    await estimateFeeDefault(to, tokenAddress);
-  }
-};
-const resetFee = () => {
-  if (selectedToken.value?.isOft) {
-    resetLayerzeroFee();
-  } else {
-    resetFeeDefault();
-  }
-};
+  fee: feeValues,
+  result: fee,
+  inProgress: feeInProgress,
+  error: feeError,
+  feeToken,
+  feeTokenBalance,
+  enoughBalanceToCoverFee,
+  estimateFee,
+  resetFee,
+} = useFee(availableTokens, balance);
 
 const queryAddress = useRouteQuery<string | undefined>("address", undefined, {
   transform: String,
@@ -720,7 +652,7 @@ const estimate = async () => {
   await estimateFee(transaction.value.to.address, selectedToken.value.address);
 };
 watch(
-  [() => selectedToken.value?.address, () => transaction.value?.from.address],
+  [() => selectedToken.value?.address, () => transaction.value?.from.address, feeTokenBalance],
   () => {
     resetFee();
     estimate();
@@ -751,7 +683,9 @@ watch(
   }
 );
 
-const autoUpdatingFee = computed(() => !feeError.value && fee.value && !feeLoading.value);
+const autoUpdatingFee = computed(
+  () => feeTokenBalance.value !== undefined && !feeError.value && fee.value && !feeLoading.value
+);
 const { reset: resetAutoUpdateEstimate, stop: stopAutoUpdateEstimate } = useInterval(async () => {
   if (!autoUpdatingFee.value) return;
   await estimate();

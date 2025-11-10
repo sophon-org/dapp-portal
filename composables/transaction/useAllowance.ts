@@ -6,14 +6,12 @@ import { useSentryLogger } from "../useSentryLogger";
 import type { DepositFeeValues } from "../zksync/deposit/useFee";
 import type { Hash, TokenAllowance } from "@/types";
 import type { BigNumberish } from "ethers";
-import type { WalletClient } from "viem";
 
 export default (
   accountAddress: Ref<string | undefined>,
   tokenAddress: Ref<string | undefined>,
   getContractAddress: () => Promise<string | undefined>,
   getL1Signer: () => Promise<L1Signer | undefined>,
-  getWallet: () => Promise<WalletClient | undefined>
 ) => {
   const { getPublicClient } = useOnboardStore();
   const { captureException } = useSentryLogger();
@@ -47,7 +45,7 @@ export default (
       accountAddress.value &&
       tokenAddress.value &&
       tokenAddress.value !== utils.ETH_ADDRESS &&
-      tokenAddress.value !== utils.ETH_ADDRESS_IN_CONTRACTS
+      tokenAddress.value !== L2_BASE_TOKEN_ADDRESS
     ) {
       await getAllowance();
     } else {
@@ -59,51 +57,56 @@ export default (
   const setAllowanceStatus = ref<"not-started" | "processing" | "waiting-for-signature" | "sending" | "done">(
     "not-started"
   );
-  const setAllowanceTransactionHash = ref<Hash | undefined>(undefined);
+  const setAllowanceTransactionHashes = ref<(Hash | undefined)[]>([]);
 
   const {
-    result: setAllowanceReceipt,
+    result: setAllowanceReceipts,
     inProgress: setAllowanceInProgress,
     error: setAllowanceError,
     execute: executeSetAllowance,
     reset: resetExecuteSetAllowance,
   } = usePromise(
     async () => {
-      try {
+       try {
         setAllowanceStatus.value = "processing";
         if (!accountAddress.value) throw new Error("Account address is not available");
 
         const contractAddress = await getContractAddress();
         if (!contractAddress) throw new Error("Contract address is not available");
 
-        const wallet = await getWallet();
+        const wallet = await getL1Signer();
         setAllowanceStatus.value = "waiting-for-signature";
 
-        const approvalAmount = approvalAmounts[1] ?? approvalAmounts[0];
+        const receipts = [];
 
-        if (!approvalAmount) throw new Error("Approval amount is not available");
+        for (let i = 0; i < approvalAmounts.length; i++) {
+          const txResponse = await wallet?.approveERC20(approvalAmounts[i].token, approvalAmounts[i].allowance);
 
-        setAllowanceTransactionHash.value = await wallet?.writeContract({
-          address: tokenAddress.value as Hash,
-          abi: IERC20,
-          functionName: "approve",
-          args: [contractAddress, approvalAmount.allowance],
-          chain: getPublicClient().chain,
-          account: accountAddress.value as `0x${string}`,
-        });
+          setAllowanceTransactionHashes.value.push(txResponse?.hash as Hash);
 
-        setAllowanceStatus.value = "sending";
-        const receipt = await getPublicClient().waitForTransactionReceipt({
-          hash: setAllowanceTransactionHash.value!,
-          onReplaced: (replacement) => {
-            setAllowanceTransactionHash.value = replacement.transaction.hash;
-          },
-        });
+          setAllowanceStatus.value = "sending";
+
+          const receipt = await retry(
+            () =>
+              getPublicClient().waitForTransactionReceipt({
+                hash: setAllowanceTransactionHashes.value[i]!,
+                onReplaced: (replacement) => {
+                  setAllowanceTransactionHashes.value[i] = replacement.transaction.hash;
+                },
+              }),
+            {
+              retries: 3,
+              delay: 5_000,
+            }
+          );
+
+          receipts.push(receipt);
+        }
 
         await requestAllowance();
 
         setAllowanceStatus.value = "done";
-        return receipt;
+        return receipts;
       } catch (err) {
         setAllowanceStatus.value = "not-started";
         captureException({
@@ -149,7 +152,7 @@ export default (
   const resetSetAllowance = () => {
     approvalAmounts = [];
     setAllowanceStatus.value = "not-started";
-    setAllowanceTransactionHash.value = undefined;
+    setAllowanceTransactionHashes.value = [];
     resetExecuteSetAllowance();
   };
 
@@ -168,8 +171,8 @@ export default (
     error: computed(() => error.value),
     requestAllowance,
 
-    setAllowanceTransactionHash,
-    setAllowanceReceipt,
+    setAllowanceTransactionHashes,
+    setAllowanceReceipts,
     setAllowanceStatus,
     setAllowanceInProgress,
     setAllowanceError,

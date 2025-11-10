@@ -26,7 +26,7 @@ export const useZkSyncWalletStore = defineStore("zkSyncWallet", () => {
 
     const web3Provider = new BrowserProvider((await onboardStore.getWallet(eraNetwork.value.id)) as any, "any");
     const rawEthersSigner = await web3Provider.getSigner();
-    const eraL2Signer = Signer.from(rawEthersSigner, walletNetworkId, providerStore.requestProvider());
+    const eraL2Signer = Signer.from(rawEthersSigner, await providerStore.requestProvider());
 
     return eraL2Signer;
   });
@@ -42,7 +42,7 @@ export const useZkSyncWalletStore = defineStore("zkSyncWallet", () => {
 
     const web3Provider = new BrowserProvider((await onboardStore.getWallet()) as any, "any");
     const rawL1Signer = (await web3Provider.getSigner()) as unknown as any;
-    const eraL1Signer = L1Signer.from(rawL1Signer, providerStore.requestProvider());
+    const eraL1Signer = L1Signer.from(rawL1Signer, await providerStore.requestProvider());
     return eraL1Signer;
   });
   const getL1VoidSigner = (anyAddress = false) => {
@@ -72,12 +72,17 @@ export const useZkSyncWalletStore = defineStore("zkSyncWallet", () => {
     await Promise.all([requestAccountState({ force: true }), tokensStore.requestTokens()]);
     if (!accountState.value) throw new Error("Account state is not available");
     if (!tokens.value) throw new Error("Tokens are not available");
+    const baseToken = tokens.value?.[L2_BASE_TOKEN_ADDRESS];
     return Object.entries(accountState.value.balances)
       .filter(([tokenAddress, { token }]) => token || tokens.value?.[tokenAddress])
       .map(([tokenAddress, { balance, token }]) => {
         const tokenInfo = token ? mapApiToken(token) : tokens.value?.[tokenAddress];
         return {
-          address: tokenInfo!.address,
+          address:
+            tokenInfo!.address === "0x000000000000000000000000000000000000800A" &&
+            baseToken?.symbol === tokenInfo?.symbol
+              ? baseToken?.address
+              : tokenInfo!.address,
           l1Address: tokenInfo!.l1Address || undefined,
           name: tokenInfo!.name || undefined,
           symbol: tokenInfo!.symbol!,
@@ -170,14 +175,12 @@ export const useZkSyncWalletStore = defineStore("zkSyncWallet", () => {
       return bValue - aValue;
     });
 
-    return getBalancesWithCustomBridgeTokens(sortedTokens, AddressChainType.L2);
+    return getBalancesWithCustomBridgeTokens(sortedTokens, AddressChainType.L2, eraNetwork.value.l1Network?.id);
   });
 
   const deductBalance = (tokenAddress: string, amount: BigNumberish) => {
     if (!balance.value) return;
-    const tokenBalance = getBalancesWithCustomBridgeTokens(balance.value, AddressChainType.L2).find(
-      (balance) => balance.address === tokenAddress
-    );
+    const tokenBalance = balance.value.find((balance) => balance.address === tokenAddress);
     if (!tokenBalance) return;
     const newBalance = BigInt(tokenBalance.amount) - BigInt(amount);
     tokenBalance.amount = newBalance < 0n ? 0n : newBalance;

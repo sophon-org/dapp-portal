@@ -42,6 +42,7 @@ export type ZkSyncNetwork = {
   hidden?: boolean; // If set to true, the network will not be shown in the network selector
   deprecated?: boolean;
   l1Network?: L1Network;
+  isPrividium?: boolean; // If true, the network uses Prividium for authentication
   blockExplorerUrl?: string;
   blockExplorerApi?: string;
   displaySettings?: {
@@ -52,7 +53,6 @@ export type ZkSyncNetwork = {
   nativeCurrency?: { name: string; symbol: string; decimals: number };
   nativeTokenBridgingOnly?: boolean;
   getTokens?: () => Token[] | Promise<Token[]>; // If blockExplorerApi is specified, tokens will be fetched from there. Otherwise, this function will be used.
-  isPrividium?: boolean;
 };
 
 // See the official documentation on running a local ZKsync node: https://era.zksync.io/docs/tools/testing/

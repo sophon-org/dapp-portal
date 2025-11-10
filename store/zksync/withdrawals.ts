@@ -30,8 +30,7 @@ export const useZkSyncWithdrawalsStore = defineStore("zkSyncWithdrawals", () => 
 
       if (new Date(withdrawal.timestamp).getTime() < Date.now() - FETCH_TIME_LIMIT) break;
 
-      const isFinalized = await useZkSyncWalletStore()
-        .getL1VoidSigner(true)
+      const isFinalized = await (await useZkSyncWalletStore().getL1VoidSigner(true))
         ?.isWithdrawalFinalized(withdrawal.transactionHash)
         .catch(() => false);
 

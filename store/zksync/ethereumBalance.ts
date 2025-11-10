@@ -129,10 +129,10 @@ export const useZkSyncEthereumBalanceStore = defineStore("zkSyncEthereumBalances
 
       if (([l1Networks.mainnet.id, l1Networks.sepolia.id] as number[]).includes(l1Network.value?.id) && alchemyApiKey) {
         const apiBalances = await getBalancesFromApi();
-        return getBalancesWithCustomBridgeTokens(apiBalances, AddressChainType.L1);
+        return getBalancesWithCustomBridgeTokens(apiBalances, AddressChainType.L1, l1Network.value.id);
       } else {
         const rpcBalances = await getBalancesFromRPC();
-        return getBalancesWithCustomBridgeTokens(rpcBalances, AddressChainType.L1);
+        return getBalancesWithCustomBridgeTokens(rpcBalances, AddressChainType.L1, l1Network.value.id);
       }
     },
     { cache: 30000 }

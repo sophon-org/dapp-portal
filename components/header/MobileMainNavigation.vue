@@ -80,7 +80,7 @@
           >
             <template #image>
               <DestinationIconContainer>
-                <IconsEra aria-hidden="true" />
+                <IconsSophon class="h-7 w-7" aria-hidden="true" />
               </DestinationIconContainer>
             </template>
           </DestinationItem>

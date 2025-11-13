@@ -11,7 +11,7 @@ export default (
   accountAddress: Ref<string | undefined>,
   tokenAddress: Ref<string | undefined>,
   getContractAddress: () => Promise<string | undefined>,
-  getL1Signer: () => Promise<L1Signer | undefined>,
+  getL1Signer: () => Promise<L1Signer | undefined>
 ) => {
   const { getPublicClient } = useOnboardStore();
   const { captureException } = useSentryLogger();
@@ -67,7 +67,7 @@ export default (
     reset: resetExecuteSetAllowance,
   } = usePromise(
     async () => {
-       try {
+      try {
         setAllowanceStatus.value = "processing";
         if (!accountAddress.value) throw new Error("Account address is not available");
 

@@ -45,14 +45,15 @@ export const useZkSyncWalletStore = defineStore("zkSyncWallet", () => {
     const eraL1Signer = L1Signer.from(rawL1Signer, await providerStore.requestProvider());
     return eraL1Signer;
   });
-  const getL1VoidSigner = (anyAddress = false) => {
+  const getL1VoidSigner = async (anyAddress = false) => {
     if (!account.value.address && !anyAddress) throw new Error("Address is not available");
 
     const web3Provider = new BrowserProvider(onboardStore.getPublicClient() as any, "any");
+    const l2Provider = await providerStore.requestProvider();
     return new L1VoidSigner(
       account.value.address || L2_BASE_TOKEN_ADDRESS,
       web3Provider,
-      providerStore.requestProvider()
+      l2Provider
     ) as unknown as L1Signer;
   };
 

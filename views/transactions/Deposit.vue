@@ -1,14 +1,10 @@
 <template>
   <div>
     <NetworkDeprecationAlert v-if="step === 'form'" />
-    <PageTitle v-if="step === 'form'" class="text-balance text-center font-semibold text-black">
-      Bridge.
-      <span class="text-gray">The gateway to Sophon.</span>
-    </PageTitle>
-    <PageTitle v-else-if="step === 'wallet-warning'" class="font-semibold text-black">Wallet warning</PageTitle>
+    <PageTitle v-if="step === 'form'">Bridge</PageTitle>
+    <PageTitle v-else-if="step === 'wallet-warning'">Wallet warning</PageTitle>
     <PageTitle
       v-else-if="step === 'confirm'"
-      class="font-semibold text-black"
       :back-function="
         () => {
           step = 'form';
@@ -17,6 +13,7 @@
     >
       Confirm transaction
     </PageTitle>
+
     <NetworkSelectModal
       v-model:opened="fromNetworkModalOpened"
       title="From"
@@ -37,9 +34,6 @@
       Getting balances error: {{ balanceError.message }}
     </CommonErrorBlock>
     <form v-else @submit.prevent="">
-      <!-- <CommonAlert v-if="isTokenBlacklisted" variant="error" :icon="ExclamationTriangleIcon" class="mb-4">
-        <p>This token cannot be bridged. Please select a different token.</p>
-      </CommonAlert> -->
       <template v-if="step === 'form'">
         <TransactionWithdrawalsAvailableForClaimAlert />
         <CommonInputTransactionAmount
@@ -52,9 +46,7 @@
           :max-amount="maxAmount"
           :approve-required="!enoughAllowance && (!tokenCustomBridge || !tokenCustomBridge.bridgingDisabled)"
           :loading="tokensRequestInProgress || balanceInProgress || feeLoading"
-          :is-correct-network="account.chainId === l1Network?.id"
           class="mb-block-padding-1/2 sm:mb-block-gap"
-          @additional-token-found="handleAdditionalToken"
         >
           <template #dropdown>
             <CommonButtonDropdown
@@ -93,7 +85,6 @@
         <CommonInputTransactionAddress
           v-model="address"
           label="To"
-          :sns-support="true"
           :default-label="`To your account ${account.address ? shortenAddress(account.address) : ''}`"
           :address-input-hidden="tokenCustomBridge?.bridgingDisabled"
         >
@@ -127,21 +118,22 @@
       <template v-else-if="step === 'wallet-warning'">
         <CommonAlert variant="warning" :icon="ExclamationTriangleIcon" class="mb-block-padding-1/2 sm:mb-block-gap">
           <p>
-            Make sure the destination address supports {{ eraNetwork.name }} network, especially if it is a smart
-            account or contract. Otherwise, this can result in
-            <span class="font-medium text-red-600">loss of funds</span>.
+            Make sure your wallet supports {{ eraNetwork.name }} network before adding funds to your account. Otherwise,
+            this can result in <span class="font-medium text-red-600">loss of funds</span>. See the list of supported
+            wallets on the
+            <a
+              class="underline underline-offset-2"
+              href="https://zksync.dappradar.com/ecosystem?category=non_dapps_wallets"
+              target="_blank"
+              >Ecosystem</a
+            >
+            website.
           </p>
         </CommonAlert>
-        <CommonButton
-          type="submit"
-          size="lg"
-          variant="primary"
-          class="mt-block-gap w-full gap-1"
-          @click="buttonContinue()"
-        >
+        <CommonButton type="submit" variant="primary" class="mt-block-gap w-full gap-1" @click="buttonContinue()">
           I understand, proceed to bridge
         </CommonButton>
-        <CommonButton size="sm" variant="light" class="mx-auto mt-block-gap w-max" @click="disableWalletWarning()">
+        <CommonButton size="sm" class="mx-auto mt-block-gap w-max" @click="disableWalletWarning()">
           Don't show again
         </CommonButton>
       </template>
@@ -175,13 +167,13 @@
           (step === 'form' || step === 'confirm')
         "
       >
-        <CommonErrorBlock v-if="feeError && account.chainId === l1Network?.id" class="mt-2" @try-again="estimate">
+        <CommonErrorBlock v-if="feeError" class="mt-2" @try-again="estimate">
           Fee estimation error: {{ feeError.message }}
         </CommonErrorBlock>
         <div class="mt-4 flex items-center gap-4">
           <transition v-bind="TransitionOpacity()">
             <TransactionFeeDetails
-              v-if="!feeError && (fee || feeLoading) && account.chainId === l1Network?.id"
+              v-if="!feeError && (fee || feeLoading)"
               label="Fee:"
               :fee-token="feeToken"
               :fee-amount="fee"
@@ -207,11 +199,11 @@
         </CommonErrorBlock>
         <CommonHeightTransition
           v-if="step === 'form'"
-          :opened="(!enoughAllowance && !continueButtonDisabled) || !!setAllowanceReceipts"
+          :opened="(!enoughAllowance && !continueButtonDisabled) || !!setAllowanceReceipts?.length"
         >
           <CommonCardWithLineButtons class="mt-4">
             <DestinationItem
-              v-if="enoughAllowance && setAllowanceReceipts"
+              v-if="enoughAllowance && setAllowanceReceipts?.length"
               as="div"
               :description="`You can now proceed to deposit`"
             >
@@ -283,7 +275,6 @@
                 <CommonButton
                   type="submit"
                   :disabled="continueButtonDisabled || setAllowanceInProgress"
-                  size="lg"
                   variant="primary"
                   class="w-full"
                   @click="setTokenAllowance()"
@@ -308,7 +299,6 @@
                 v-else
                 type="submit"
                 :disabled="continueButtonDisabled"
-                size="lg"
                 variant="primary"
                 class="w-full"
                 @click="buttonContinue()"
@@ -343,7 +333,6 @@
               <CommonButton
                 :disabled="continueButtonDisabled || transactionStatus !== 'not-started'"
                 class="w-full"
-                size="lg"
                 variant="primary"
                 @click="buttonContinue()"
               >
@@ -369,11 +358,11 @@ import {
   ExclamationTriangleIcon,
   LockClosedIcon,
 } from "@heroicons/vue/24/outline";
+import { computedAsync } from "@vueuse/core";
 import { useRouteQuery } from "@vueuse/router";
-import { type Address, isAddress } from "viem";
+import { isAddress } from "ethers";
 
 import EthereumTransactionFooter from "@/components/transaction/EthereumTransactionFooter.vue";
-// import useLayerzeroFee from "@/composables/layerzero/deposit/useFee";
 import useAllowance from "@/composables/transaction/useAllowance";
 import { useSentryLogger } from "@/composables/useSentryLogger";
 import useEcosystemBanner from "@/composables/zksync/deposit/useEcosystemBanner";
@@ -384,6 +373,8 @@ import { isCustomNode } from "@/data/networks";
 import DepositSubmitted from "@/views/transactions/DepositSubmitted.vue";
 
 import type { Token, TokenAmount } from "@/types";
+import type { BigNumberish } from "ethers";
+import type { Address } from "viem";
 
 const route = useRoute();
 const router = useRouter();
@@ -396,7 +387,7 @@ const eraWalletStore = useZkSyncWalletStore();
 const { account, isConnected, walletWarningDisabled } = storeToRefs(onboardStore);
 const { eraNetwork } = storeToRefs(providerStore);
 const { destinations } = storeToRefs(useDestinationsStore());
-const { l1BlockExplorerUrl, l1Network } = storeToRefs(useNetworkStore());
+const { l1BlockExplorerUrl } = storeToRefs(useNetworkStore());
 const { l1Tokens, baseToken, tokensRequestInProgress, tokensRequestError } = storeToRefs(tokensStore);
 const { balance, balanceInProgress, balanceError } = storeToRefs(zkSyncEthereumBalance);
 
@@ -417,22 +408,9 @@ const fromNetworkSelected = (networkKey?: string) => {
 
 const step = ref<"form" | "wallet-warning" | "confirm" | "submitted">("form");
 const destination = computed(() => destinations.value.era);
-const additionalTokens = ref<TokenAmount[]>([]);
-const balanceWithAdditionalTokens = computed(() => {
-  if (additionalTokens.value) {
-    return [...(balance.value ?? []), ...additionalTokens.value];
-  }
-  return balance.value ?? [];
-});
-
-const handleAdditionalToken = (token: TokenAmount) => {
-  additionalTokens.value = [...additionalTokens.value, token];
-};
 
 const availableTokens = computed<Token[]>(() => {
-  if (balanceWithAdditionalTokens.value) {
-    return balanceWithAdditionalTokens.value;
-  }
+  if (balance.value) return balance.value;
   return getTokensWithCustomBridgeTokens(
     Object.values(l1Tokens.value ?? []),
     AddressChainType.L1,
@@ -440,7 +418,7 @@ const availableTokens = computed<Token[]>(() => {
   );
 });
 const availableBalances = computed<TokenAmount[]>(() => {
-  return balanceWithAdditionalTokens.value ?? [];
+  return balance.value ?? [];
 });
 const routeTokenAddress = computed(() => {
   if (!route.query.token || Array.isArray(route.query.token) || !isAddress(route.query.token)) {
@@ -489,8 +467,8 @@ const amountInputTokenAddress = computed({
     selectedTokenAddress.value = address;
   },
 });
-const tokenBalance = computed<bigint | undefined>(() => {
-  return balanceWithAdditionalTokens.value?.find((e) => e.address === selectedToken.value?.address)?.amount;
+const tokenBalance = computed<BigNumberish | undefined>(() => {
+  return balance.value?.find((e) => e.address === selectedToken.value?.address)?.amount;
 });
 
 const {
@@ -506,22 +484,22 @@ const {
   setAllowanceError,
   setAllowance,
   resetSetAllowance,
+  getApprovalAmounts,
 } = useAllowance(
   computed(() => account.value.address),
   computed(() => selectedToken.value?.address),
   async () => (await providerStore.requestProvider().then((provider) => provider.getDefaultBridgeAddresses())).sharedL1,
-  eraWalletStore.getL1Signer,
+  eraWalletStore.getL1Signer
 );
-const enoughAllowance = computed(() => {
+const enoughAllowance = computedAsync(async () => {
   if (allowance?.value === undefined || !selectedToken.value) {
     return true;
   }
-  if (selectedToken.value.isOft) {
-    return true;
-  }
 
-  return allowance.value !== 0n && allowance.value >= totalComputeAmount.value;
-});
+  const approvalAmounts = await getApprovalAmounts(totalComputeAmount.value, feeValues.value!);
+  const approvalAllowance = approvalAmounts.length ? approvalAmounts[0]?.allowance : 0;
+  return allowance.value !== 0n && allowance?.value >= BigInt(approvalAllowance);
+}, false);
 const setAmountToCurrentAllowance = () => {
   if (!allowance.value || !selectedToken.value) {
     return;
@@ -529,22 +507,9 @@ const setAmountToCurrentAllowance = () => {
   amount.value = parseTokenAmount(allowance.value, selectedToken.value.decimals);
 };
 const setTokenAllowance = async () => {
-  try {
-    await setAllowance(totalComputeAmount.value, feeValues.value!);
-    // Wait for balances and blockchain state to update
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    // Reset all relevant states
-    await Promise.all([
-      fetchBalances(true),
-      requestAllowance(), // Re-fetch allowance state
-      resetFee(), // Reset fee state
-    ]);
-    await estimate();
-  } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error("Error setting token allowance:", error);
-    throw error;
-  }
+  await setAllowance(totalComputeAmount.value, feeValues.value!);
+  await new Promise((resolve) => setTimeout(resolve, 2000)); // Wait for balances to be updated on API side
+  await fetchBalances(true);
 };
 
 const unsubscribe = onboardStore.subscribeOnAccountChange(() => {
@@ -584,7 +549,7 @@ const maxAmount = computed(() => {
   if (!selectedToken.value || !tokenBalance.value) {
     return undefined;
   }
-  if (feeToken.value?.address === selectedToken.value.address && account.value.chainId === l1Network?.value?.id) {
+  if (feeToken.value?.address === selectedToken.value.address) {
     if (BigInt(tokenBalance.value) === 0n) {
       return "0";
     }
@@ -660,29 +625,6 @@ watch(
   { immediate: true }
 );
 
-// Add a watcher to re-estimate fees when allowance changes
-watch(
-  [allowance, setAllowanceStatus, () => selectedToken.value?.address],
-  async ([newAllowance, _newStatus, newTokenAddress], [oldAllowance, _oldStatus, oldTokenAddress]) => {
-    if (setAllowanceStatus.value !== "done") return;
-    if (newAllowance && oldAllowance && newAllowance !== oldAllowance && newTokenAddress === oldTokenAddress) {
-      await resetFee();
-      await estimate();
-    }
-  }
-);
-
-// Add a watcher to re-estimate fees when account's chainId changes
-watch(
-  () => account.value.chainId,
-  async (newChainId, oldChainId) => {
-    if (newChainId !== oldChainId) {
-      await resetFee();
-      await estimate();
-    }
-  }
-);
-
 const autoUpdatingFee = computed(
   () => feeTokenBalance.value !== undefined && !feeError.value && fee.value && !feeLoading.value
 );
@@ -754,18 +696,12 @@ const {
   error: transactionError,
   commitTransaction,
 } = useTransaction(eraWalletStore.getL1Signer);
-// const {
-//   status: transactionStatusLayerzero,
-//   error: transactionErrorLayerzero,
-//   commitTransaction: commitLayerzeroTransaction,
-// } = useLayerzeroTransaction();
-const { recentlyBridged } = useEcosystemBanner();
+const { recentlyBridged, ecosystemBannerVisible } = useEcosystemBanner();
 const { saveTransaction, waitForCompletion } = useZkSyncTransactionStatusStore();
 
 watch(step, (newStep) => {
   if (newStep === "form") {
     transactionError.value = undefined;
-    // transactionErrorLayerzero.value = undefined;
   }
 });
 
@@ -828,7 +764,6 @@ const makeTransaction = async () => {
       .catch((err) => {
         transactionError.value = err as Error;
         transactionStatus.value = "not-started";
-        // transactionStatusLayerzero.value = "not-started";
       });
   }
 };

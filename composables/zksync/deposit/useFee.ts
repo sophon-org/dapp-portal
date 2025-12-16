@@ -71,7 +71,8 @@ export default (tokens: Ref<Token[]>, balances: Ref<TokenAmount[] | undefined>) 
     };
   };
   const getGasPrice = async () => {
-    return (BigInt(await retry(() => onboardStore.getPublicClient().getGasPrice())) * 110n) / 100n;
+    // 130% margin to cover for gas price fluctuations
+    return (BigInt(await retry(() => onboardStore.getPublicClient().getGasPrice())) * 130n) / 100n;
   };
   const {
     inProgress,

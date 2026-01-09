@@ -93,7 +93,7 @@
       >
         <div v-if="transactionInfo.type === 'withdrawal' && !token.isOft">
           <span class="text-gray"
-            >Withdrawals are usually processed in 3 hours, but can take longer in some occasions.</span
+            >Withdrawals are usually processed within 6 hours, but can take longer in some occasions.</span
           >
         </div>
         <div v-else>
